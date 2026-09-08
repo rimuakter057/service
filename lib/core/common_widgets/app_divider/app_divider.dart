@@ -18,10 +18,6 @@ class AppDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      assetPath,
-      height: height,
-      fit: BoxFit.fill,
-    );
+    return SvgPicture.asset(assetPath, height: height, fit: BoxFit.fill);
   }
 }

@@ -21,13 +21,14 @@ class AppColors {
 
   // Background colors
   static const Color bgApp = Color(0xFFFFFBF8);
-  static const Color bgCard = Color(0xFFFFFFFF);
+  static const Color bgCard = Color(0xFFF6F2EF);
   static const Color bgOverlay = Color(0xFF000000);
 
   // Text colors
   static const Color textBlackPrimary = Color(0xFF111814);
   static const Color textSecondary = Color(0xFF5F6964);
   static const Color textGrey = Color(0xFF929A96);
+  static const Color textGreyPrimary = Color(0xFF4B5563);
   static const Color textOnPrimary = Color(0xFFFFFFFF);
 
   // Border colors

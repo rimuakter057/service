@@ -13,6 +13,7 @@ class AppIcon extends StatelessWidget {
   final double? height;
   final Color? color;
   final BoxFit fit;
+  final Alignment alignment;
 
   const AppIcon({
     super.key,
@@ -22,6 +23,7 @@ class AppIcon extends StatelessWidget {
     this.height,
     this.color,
     this.fit = BoxFit.contain,
+    this.alignment = Alignment.center,
   });
 
   @override
@@ -35,7 +37,10 @@ class AppIcon extends StatelessWidget {
         width: resolvedWidth,
         height: resolvedHeight,
         fit: fit,
-        colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+        alignment: alignment,
+        colorFilter: color != null
+            ? ColorFilter.mode(color!, BlendMode.srcIn)
+            : null,
       );
     }
 
@@ -44,6 +49,7 @@ class AppIcon extends StatelessWidget {
       width: resolvedWidth,
       height: resolvedHeight,
       fit: fit,
+      alignment: alignment,
       color: color,
     );
   }

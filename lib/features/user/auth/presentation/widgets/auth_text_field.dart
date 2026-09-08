@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nchito/core/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 
-
 class AuthTextField extends StatelessWidget {
   final String label;
   final String hint;

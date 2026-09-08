@@ -1,4 +1,3 @@
-
 class Validators {
   Validators._();
 
@@ -27,6 +26,20 @@ class Validators {
     }
     if (value.length < minLength) {
       return 'Password must be at least $minLength characters';
+    }
+    return null;
+  }
+
+  static String? match(
+    String? value,
+    String other, {
+    String message = 'Values do not match',
+  }) {
+    if (value == null || value.isEmpty) {
+      return 'This field is required';
+    }
+    if (value != other) {
+      return message;
     }
     return null;
   }

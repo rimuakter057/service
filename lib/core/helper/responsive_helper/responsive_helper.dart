@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-enum DeviceType {
-  mobile,
-  tablet,
-}
+enum DeviceType { mobile, tablet }
 
 class ResponsiveHelper {
   ResponsiveHelper._();
@@ -44,8 +41,7 @@ class ResponsiveHelper {
 
     _safeAreaPadding = mediaQuery.padding;
 
-    _textScaleFactor =
-        mediaQuery.textScaler.scale(1.0).clamp(0.85, 1.2);
+    _textScaleFactor = mediaQuery.textScaler.scale(1.0).clamp(0.85, 1.2);
 
     _isInitialized = true;
   }
@@ -84,20 +80,15 @@ class ResponsiveHelper {
 
   static bool get isTablet => deviceType == DeviceType.tablet;
 
-  static bool get isLandscape =>
-      _orientation == Orientation.landscape;
+  static bool get isLandscape => _orientation == Orientation.landscape;
 
-  static bool get isPortrait =>
-      _orientation == Orientation.portrait;
+  static bool get isPortrait => _orientation == Orientation.portrait;
 
   // ============================================================
   // DEVICE BASED VALUE
   // ============================================================
 
-  static T value<T>({
-    required T mobile,
-    T? tablet,
-  }) {
+  static T value<T>({required T mobile, T? tablet}) {
     if (isTablet) {
       return tablet ?? mobile;
     }
@@ -109,10 +100,7 @@ class ResponsiveHelper {
   // INTERNAL SCALE
   // ============================================================
 
-  static double _scale(
-      double value, {
-        double tabletMultiplier = 1.0,
-      }) {
+  static double _scale(double value, {double tabletMultiplier = 1.0}) {
     if (isTablet) {
       return value * tabletMultiplier;
     }
@@ -124,14 +112,8 @@ class ResponsiveHelper {
   // FONT SIZE
   // ============================================================
 
-  static double fontSize(
-      double mobileSize, {
-        double tabletMultiplier = 1.15,
-      }) {
-    return _scale(
-      mobileSize,
-      tabletMultiplier: tabletMultiplier,
-    ) *
+  static double fontSize(double mobileSize, {double tabletMultiplier = 1.15}) {
+    return _scale(mobileSize, tabletMultiplier: tabletMultiplier) *
         _textScaleFactor;
   }
 
@@ -140,13 +122,10 @@ class ResponsiveHelper {
   // ============================================================
 
   static double titleFontSize(
-      double mobileSize, {
-        double tabletMultiplier = 1.2,
-      }) {
-    return _scale(
-      mobileSize,
-      tabletMultiplier: tabletMultiplier,
-    ) *
+    double mobileSize, {
+    double tabletMultiplier = 1.2,
+  }) {
+    return _scale(mobileSize, tabletMultiplier: tabletMultiplier) *
         _textScaleFactor;
   }
 
@@ -154,56 +133,32 @@ class ResponsiveHelper {
   // SPACING
   // ============================================================
 
-  static double spacing(
-      double mobileSpacing, {
-        double tabletMultiplier = 1.2,
-      }) {
-    return _scale(
-      mobileSpacing,
-      tabletMultiplier: tabletMultiplier,
-    );
+  static double spacing(double mobileSpacing, {double tabletMultiplier = 1.2}) {
+    return _scale(mobileSpacing, tabletMultiplier: tabletMultiplier);
   }
 
   // ============================================================
   // PADDING
   // ============================================================
 
-  static double padding(
-      double mobilePadding, {
-        double tabletMultiplier = 1.5,
-      }) {
-    return _scale(
-      mobilePadding,
-      tabletMultiplier: tabletMultiplier,
-    );
+  static double padding(double mobilePadding, {double tabletMultiplier = 1.5}) {
+    return _scale(mobilePadding, tabletMultiplier: tabletMultiplier);
   }
 
   // ============================================================
   // WIDTH
   // ============================================================
 
-  static double width(
-      double mobileWidth, {
-        double tabletMultiplier = 1.2,
-      }) {
-    return _scale(
-      mobileWidth,
-      tabletMultiplier: tabletMultiplier,
-    );
+  static double width(double mobileWidth, {double tabletMultiplier = 1.2}) {
+    return _scale(mobileWidth, tabletMultiplier: tabletMultiplier);
   }
 
   // ============================================================
   // HEIGHT
   // ============================================================
 
-  static double height(
-      double mobileHeight, {
-        double tabletMultiplier = 1.2,
-      }) {
-    return _scale(
-      mobileHeight,
-      tabletMultiplier: tabletMultiplier,
-    );
+  static double height(double mobileHeight, {double tabletMultiplier = 1.2}) {
+    return _scale(mobileHeight, tabletMultiplier: tabletMultiplier);
   }
 
   // ============================================================
@@ -211,13 +166,10 @@ class ResponsiveHelper {
   // ============================================================
 
   static double iconSize(
-      double mobileIconSize, {
-        double tabletMultiplier = 1.2,
-      }) {
-    return _scale(
-      mobileIconSize,
-      tabletMultiplier: tabletMultiplier,
-    );
+    double mobileIconSize, {
+    double tabletMultiplier = 1.2,
+  }) {
+    return _scale(mobileIconSize, tabletMultiplier: tabletMultiplier);
   }
 
   // ============================================================
@@ -225,13 +177,10 @@ class ResponsiveHelper {
   // ============================================================
 
   static double borderWidth(
-      double mobileBorderWidth, {
-        double tabletMultiplier = 1.5,
-      }) {
-    return _scale(
-      mobileBorderWidth,
-      tabletMultiplier: tabletMultiplier,
-    );
+    double mobileBorderWidth, {
+    double tabletMultiplier = 1.5,
+  }) {
+    return _scale(mobileBorderWidth, tabletMultiplier: tabletMultiplier);
   }
 
   // ============================================================
@@ -239,13 +188,10 @@ class ResponsiveHelper {
   // ============================================================
 
   static double borderRadius(
-      double mobileRadius, {
-        double tabletMultiplier = 1.2,
-      }) {
-    return _scale(
-      mobileRadius,
-      tabletMultiplier: tabletMultiplier,
-    );
+    double mobileRadius, {
+    double tabletMultiplier = 1.2,
+  }) {
+    return _scale(mobileRadius, tabletMultiplier: tabletMultiplier);
   }
 
   // ============================================================
@@ -253,13 +199,10 @@ class ResponsiveHelper {
   // ============================================================
 
   static double buttonHeight(
-      double mobileHeight, {
-        double tabletMultiplier = 1.15,
-      }) {
-    return _scale(
-      mobileHeight,
-      tabletMultiplier: tabletMultiplier,
-    );
+    double mobileHeight, {
+    double tabletMultiplier = 1.15,
+  }) {
+    return _scale(mobileHeight, tabletMultiplier: tabletMultiplier);
   }
 
   // ============================================================
@@ -294,14 +237,8 @@ class ResponsiveHelper {
   // GRID COLUMNS
   // ============================================================
 
-  static int gridColumns({
-    int mobile = 2,
-    int tablet = 3,
-  }) {
-    return value(
-      mobile: mobile,
-      tablet: tablet,
-    );
+  static int gridColumns({int mobile = 2, int tablet = 3}) {
+    return value(mobile: mobile, tablet: tablet);
   }
 }
 
@@ -312,14 +249,10 @@ class ResponsiveHelper {
 class ResponsiveWrapper extends StatefulWidget {
   final Widget child;
 
-  const ResponsiveWrapper({
-    super.key,
-    required this.child,
-  });
+  const ResponsiveWrapper({super.key, required this.child});
 
   @override
-  State<ResponsiveWrapper> createState() =>
-      _ResponsiveWrapperState();
+  State<ResponsiveWrapper> createState() => _ResponsiveWrapperState();
 }
 
 class _ResponsiveWrapperState extends State<ResponsiveWrapper>

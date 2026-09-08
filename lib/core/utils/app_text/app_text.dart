@@ -52,7 +52,8 @@ class AppText {
   // LOG IN SCREEN (AUTH_SECTION)
   // ==========================================================
   static const String welcomeBack = "Welcome Back";
-  static const String logInToContinueWithNchito = "Log in to continue with Nchito.";
+  static const String logInToContinueWithNchito =
+      "Log in to continue with Nchito.";
   static const String emailAddress = "Email Address";
   static const String enterYourEmailAddress = "Enter your email address";
   static const String password = "Password";
@@ -67,17 +68,20 @@ class AppText {
   // ==========================================================
   // AGE CONFIRMATION ALERT SCREEN (AUTH_SECTION)
   // ==========================================================
-  static const String ageConfirmation = "Age Confirmation ?";
-  static const String youMustBe18YearsOrOlderToCreateAnAccountAndUseNchitoServicesPleaseConfirmYourAgeToContinue =
-      "You must be 18+ years or older to create an account and use Nchito services. Please confirm your age to continue.";
+  static const String ageConfirmation = "Age Confirmation !";
+  static const String
+  youMustBe18YearsOrOlderToCreateAnAccountAndUseNchitoServicesPleaseConfirmYourAgeToContinue =
+      "You must be 21+ years or older to create an account and use Nchito services. Please confirm your age to continue.";
   static const String exit = "Exit";
   static const String enter21Plus = "21+ Enter";
 
   // ==========================================================
   // SPLASH SCREEN / role selection (AUTH_SECTION)
   // ==========================================================
-  static const String howWouldYouLikeToUseNchito = "How would you like to use Nchito?";
-  static const String chooseHowYoudLikeToUseNchitoFindTheHelpYouNeedOrOfferYourSkillsToOthers =
+  static const String howWouldYouLikeToUseNchito =
+      "How would you like to use Nchito?";
+  static const String
+  chooseHowYoudLikeToUseNchitoFindTheHelpYouNeedOrOfferYourSkillsToOthers =
       "Choose how you'd like to use Nchito. Find the help you need or offer your skills to others.";
   static const String findAService = "Find a Service";
   static const String offerAService = "Offer a Service";
@@ -87,19 +91,21 @@ class AppText {
   // SIGN UP SCREEN (AUTH_SECTION)
   // ==========================================================
   static const String createYourAccount = "Create Your Account";
-  static const String signUpToGetStartedWithNchito = "Sign up to get started with Nchito.";
+  static const String signUpToGetStartedWithNchito =
+      "Sign up to get started with Nchito.";
   static const String fullName = "Full Name";
   static const String enterYourFullName = "Enter your full name";
   static const String emailOrPhoneNumber = "Email or Phone Number";
-  static const String enterYourEmailAddressOrMobileNumber = "Enter your email address or mobile number";
+  static const String enterYourEmailAddressOrMobileNumber =
+      "Enter your email address or mobile number";
   static const String confirmPassword = "Confirm Password";
   static const String iAgreeToThe = "I agree to the";
   static const String termsOfService = "Terms of Service";
   static const String andConnector = "and";
   static const String privacyPolicy = "Privacy Policy";
   static const String createAccount = "Create Account";
-  static const String alreadyHaveAnAccount = "Already have an account?";
-  static const String logInQuestion = "Log In ?";
+  static const String alreadyHaveAnAccount = "Already have an account! ";
+  static const String logInQuestion = "Log In !";
 
   // ==========================================================
   // VERIFY YOUR OTP SCREEN (AUTH_SECTION)
@@ -108,8 +114,9 @@ class AppText {
   static const String enterThe6DigitVerificationCodeSentToYourEmailAddress =
       "Enter the 6-digit verification code sent to your email address.";
   static const String verificationCode = "Verification Code";
-  static const String didntReceiveTheCode = "Didn't receive the code?";
+  static const String didntReceiveTheCode = "Didn't receive the code!";
   static const String resendIn = "Resend in";
+  static const String resendAgain = "Resend Again";
   static const String verifyCode = "Verify Code";
 
   // ==========================================================
@@ -117,7 +124,8 @@ class AppText {
   // ==========================================================
   static const String skip = "Skip";
   static const String findTheHelpYouNeed = "Find the Help You Need";
-  static const String discoverLocalProfessionalsReadyToHelpWithEverydayServices =
+  static const String
+  discoverLocalProfessionalsReadyToHelpWithEverydayServices =
       "Discover local professionals ready to help with everyday services.";
   static const String next = "Next";
 
@@ -125,7 +133,8 @@ class AppText {
   // ONBOARDING 05 SCREEN (AUTH_SECTION)
   // ==========================================================
   static const String chooseWithConfidence = "Choose With Confidence";
-  static const String exploreServicesCompareProfessionalsAndFindTheRightFitForYourNeeds =
+  static const String
+  exploreServicesCompareProfessionalsAndFindTheRightFitForYourNeeds =
       "Explore services, compare professionals, and find the right fit for your needs.";
 
   // ==========================================================
@@ -139,9 +148,11 @@ class AppText {
   // FORGOT PASSWORD SCREEN (AUTH_SECTION)
   // ==========================================================
   static const String forgotPasswordTitle = "Forgot Password";
-  static const String enterYourRegisteredEmailAddressAndWellSendYouAVerificationCodeToResetYourPassword =
+  static const String
+  enterYourRegisteredEmailAddressAndWellSendYouAVerificationCodeToResetYourPassword =
       "Enter your registered email address and we'll send you a verification code to reset your password.";
-  static const String enterYourRegisteredEmailAddress = "Enter your registered email address";
+  static const String enterYourRegisteredEmailAddress =
+      "Enter your registered email address";
   static const String sendVerificationCode = "Send Verification Code";
 
   // ==========================================================
@@ -180,11 +191,13 @@ class AppText {
   static const String selectAvailableSlot = "Select Available Slot";
   static const String enterServiceAddress = "Enter service address";
   static const String bookingInstructions = "Booking Instructions";
-  static const String egDescribeTheIssueAccessInstructionsOrSpecificRequirements =
+  static const String
+  egDescribeTheIssueAccessInstructionsOrSpecificRequirements =
       "e.g., describe the issue, access instructions, or specific requirements.";
   static const String submitRequest = "Submit Request";
   static const String readyToRequest = "Ready to Request?";
-  static const String pleaseReviewYourBookingDetailsBeforeSendingYourServiceRequestToTheProvider =
+  static const String
+  pleaseReviewYourBookingDetailsBeforeSendingYourServiceRequestToTheProvider =
       "Please review your booking details before sending your service request to the provider.";
   static const String cancel = "Cancel";
   static const String confirm = "Confirm";
