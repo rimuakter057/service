@@ -10,9 +10,12 @@ class LoginScreen extends StatelessWidget {
 
       backgroundColor: Colors.white,
 
-      body: Column(children: [
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
 
-
+        Text("data")
 
       ],),
 
