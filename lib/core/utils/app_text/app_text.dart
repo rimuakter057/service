@@ -56,12 +56,13 @@ class AppText {
   static const String emailAddress = "Email Address";
   static const String enterYourEmailAddress = "Enter your email address";
   static const String password = "Password";
+  static const String enterYourPassword = "Enter your password";
   static const String rememberMe = "Remember me";
   static const String forgotPassword = "Forgot password?";
   static const String logIn = "Log In";
   static const String orContinueWith = "Or continue with";
-  static const String noAccountYet = "No account yet?";
-  static const String createAnAccount = "Create an account ?";
+  static const String noAccountYet = "No account yet!";
+  static const String createAnAccount = "Create an account !";
 
   // ==========================================================
   // AGE CONFIRMATION ALERT SCREEN (AUTH_SECTION)

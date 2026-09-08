@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'core/helper/responsive_helper/responsive_helper.dart';
+import 'core/utils/app_theme/app_theme.dart';
+import 'features/splash/presentation/screens/splash_screen.dart';
 import 'features/user/auth/presentation/screens/login/login_screen.dart';
 
 
@@ -14,9 +16,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.themeData,
       builder: (context, child) => ResponsiveWrapper(child: child!),
       home: LoginScreen(),
     );

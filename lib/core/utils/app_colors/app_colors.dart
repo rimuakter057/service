@@ -15,6 +15,7 @@ class AppColors {
 
   // Brand colors
   static const Color brandPrimary = Color(0xFF0D3F26);
+  static const Color bgColor = Color(0xFFFFFBF8);
   static const Color brandSoft = Color(0xFFE8F1EC);
   static const Color brandSecondaryHover = Color(0xFFE89100);
 
@@ -24,16 +25,16 @@ class AppColors {
   static const Color bgOverlay = Color(0xFF000000);
 
   // Text colors
-  static const Color textPrimary = Color(0xFF111814);
+  static const Color textBlackPrimary = Color(0xFF111814);
   static const Color textSecondary = Color(0xFF5F6964);
-  static const Color textPlaceholder = Color(0xFF929A96);
+  static const Color textGrey = Color(0xFF929A96);
   static const Color textOnPrimary = Color(0xFFFFFFFF);
 
   // Border colors
   static const Color borderDefault = Color(0xFFE2E7E3);
 
   // Status colors
-  static const Color statusInfo = Color(0xFF3B82F6);
+  static const Color blueStatusInfo = Color(0xFF3B82F6);
 
   // Category tag colors (50 = background tint, 400 = accent)
   static const Color red50 = Color(0xFFFEF2F2);

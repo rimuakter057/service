@@ -227,4 +227,11 @@ class AssetsPath {
   static const String _accountBlockedByAdminIconBase = 'assets/icons/user/auth_section/account_blocked_by_admin';
 
   static const String accountBlockedByAdminIconBlocked = '$_accountBlockedByAdminIconBase/icon_blocked.svg';
+
+  // ==========================================================
+  // APP SPLASH SCREEN — assets/icons/spash
+  // ==========================================================
+  static const String _splashIconBase = 'assets/icons/spash';
+
+  static const String splashIcon = '$_splashIconBase/splash_icon.svg';
 }
