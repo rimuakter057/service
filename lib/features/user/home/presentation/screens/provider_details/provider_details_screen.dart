@@ -14,6 +14,7 @@ import 'package:nchito/features/user/home/presentation/screens/provider_availabi
 import 'package:nchito/features/user/home/presentation/widgets/detail_field.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_sample_data.dart';
 
+
 /// Full provider profile — reached by tapping a provider card on Home.
 class ProviderDetailsScreen extends StatefulWidget {
   static const String routeName = '/provider-details';
@@ -44,7 +45,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                 onTap: () => setState(() => _isFavorite = !_isFavorite),
                 child: BgIcon(
                   assetPath: AssetsPath.exploreProviderDetailsIconFavoriteOutline,
-                  bgColor: AppColors.red50,
+                  bgColor: AppColors.brandSoft,
                   iconColor: _isFavorite ? AppColors.red400 : AppColors.textGrey,
                   bgSize: ResponsiveHelper.width(40),
                   radius: ResponsiveHelper.width(20),
@@ -83,25 +84,25 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                       ],
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(20)),
-
+///name===================
                     DetailField(label: AppText.name, value: provider.name),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-
+///email===============
                     DetailField(label: AppText.email, value: provider.email),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-
+///contact=======================
                     DetailField(
                       label: AppText.contactPhone,
                       value: provider.phone,
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-
+///service area===================
                     DetailField(
                       label: AppText.serviceArea,
                       value: provider.area,
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-
+///service type=====================================
                     DetailField(
                       label: AppText.serviceType,
                       child: Wrap(
@@ -113,39 +114,54 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                       ),
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-
+///description==================================
                     DetailField(
                       label: AppText.serviceDescription,
                       value: provider.description,
                       emphasizeValue: false,
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-
+///reviews==============================
                     DetailField(
                       label: AppText.reviews,
+                      trailing: GestureDetector(
+                        onTap: () => context.push(
+                          AllReviewsScreen.routeName,
+                          extra: provider.reviewCount,
+                        ),
+                        child: BgIcon(
+                          assetPath: AssetsPath.logInIconEyeToggle,
+                          bgColor: const Color(0xFFDCE6F8),
+                          iconColor: AppColors.blueStatusInfo,
+                          bgSize: ResponsiveHelper.width(36),
+                          radius: ResponsiveHelper.borderRadius(10),
+                          iconSize: ResponsiveHelper.iconSize(12),
+                        ),
+                      ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           AppIcon(
                             assetPath: AssetsPath.providerDetailsIconStar,
-                            size: ResponsiveHelper.iconSize(14),
+                            size: ResponsiveHelper.iconSize(16),
                           ),
-                          SizedBox(width: ResponsiveHelper.spacing(4)),
-                          Text(
-                            '${provider.rating} (${provider.reviewCount})',
-                            style: context.labelMedium.copyWith(
-                              color: AppColors.textBlackPrimary,
-                            ),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            onPressed: () => context.push(
-                              AllReviewsScreen.routeName,
-                              extra: provider.reviewCount,
-                            ),
-                            icon: AppIcon(
-                              assetPath: AssetsPath.logInIconEyeToggle,
-                              size: ResponsiveHelper.iconSize(18),
-                              color: AppColors.blueStatusInfo,
+                          SizedBox(width: ResponsiveHelper.spacing(6)),
+                          Text.rich(
+                            TextSpan(
+                              text: '${provider.rating} ',
+                              style: context.labelMedium.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textBlackPrimary,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: '(${provider.reviewCount})',
+                                  style: context.labelMedium.copyWith(
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -206,7 +222,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     );
   }
 }
-
+///service=================================
 class _ServiceTagChip extends StatelessWidget {
   final ProviderTag tag;
 
@@ -232,7 +248,7 @@ class _ServiceTagChip extends StatelessWidget {
             size: ResponsiveHelper.iconSize(14),
           ),
           SizedBox(width: ResponsiveHelper.spacing(4)),
-          Text(tag.label, style: context.bodySmall),
+          Text(tag.label, style: context.bodySmall.copyWith(fontWeight: FontWeight.w600)),
         ],
       ),
     );

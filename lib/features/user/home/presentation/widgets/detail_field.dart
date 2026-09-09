@@ -9,6 +9,7 @@ class DetailField extends StatelessWidget {
   final String label;
   final String? value;
   final Widget? child;
+  final Widget? trailing;
 
   final bool emphasizeValue;
 
@@ -17,35 +18,51 @@ class DetailField extends StatelessWidget {
     required this.label,
     this.value,
     this.child,
+    this.trailing,
     this.emphasizeValue = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppContainerBg(
-        width: double.infinity,
-        child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: context.bodySmall.copyWith(
-          fontWeight: FontWeight.w500,
-          fontStyle: FontStyle.italic,
-          color: AppColors.textSecondary
-
-        )),
-        SizedBox(height: ResponsiveHelper.spacing(4)),
-        child ??
-            Text(
-              value ?? '',
-              style: emphasizeValue
-                  ? context.labelSmall.copyWith(
-                color: AppColors.textBlackPrimary,
-              )
-                  : context.labelSmall.copyWith(
-                color: AppColors.textBlackPrimary,
-              ),
+      width: double.infinity,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: context.bodySmall.copyWith(
+                    fontWeight: FontWeight.w500,
+                    fontStyle: FontStyle.italic,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                SizedBox(height: ResponsiveHelper.spacing(6)),
+                child ??
+                    Text(
+                      value ?? '',
+                      style: emphasizeValue
+                          ? context.labelSmall.copyWith(
+                              color: AppColors.textBlackPrimary,
+                            )
+                          : context.labelSmall.copyWith(
+                              color: AppColors.textBlackPrimary,
+                            ),
+                    ),
+              ],
             ),
-      ],
-    ));
+          ),
+          if (trailing != null) ...[
+            SizedBox(width: ResponsiveHelper.spacing(12)),
+            trailing!,
+          ],
+        ],
+      ),
+    );
   }
 }

@@ -32,6 +32,7 @@ class BgIcon extends StatelessWidget {
       height: containerBgWeight,
       decoration: BoxDecoration(
         color: bgColor,
+        border: Border.all(color: AppColors.iconBorderBg),
         borderRadius: BorderRadius.circular(
           radius ?? ResponsiveHelper.borderRadius(16),
         ),
