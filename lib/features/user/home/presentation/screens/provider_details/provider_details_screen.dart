@@ -168,7 +168,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                       ),
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-
+///complete count===============================
                     DetailField(
                       label: AppText.totalJobsCompleted,
                       value: provider.totalJobsCompleted,

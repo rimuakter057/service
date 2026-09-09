@@ -13,6 +13,7 @@ import 'package:nchito/features/user/home/presentation/widgets/home_category_gri
 import 'package:nchito/features/user/home/presentation/widgets/home_header.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_popular_providers.dart';
 import 'package:nchito/features/user/home/presentation/widgets/section_header.dart';
+import 'package:nchito/features/user/profile/presentation/screens/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -29,6 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onNavTap(int index) {
     if (index == 1) {
       context.push(ExploreProviderScreen.routeName);
+      return;
+    }
+    if (index == 4) {
+      context.push(ProfileScreen.routeName);
       return;
     }
     setState(() => _currentNavIndex = index);

@@ -43,6 +43,7 @@ class AppColors {
   // Category tag colors (50 = background tint, 400 = accent)
   static const Color red50 = Color(0xFFFEF2F2);
   static const Color red400 = Color(0xFFF87171);
+  static const Color red = Color(0xFFD64545);
 
   static const Color orange50 = Color(0xFFFFF7ED);
   static const Color orange400 = Color(0xFFFB923C);

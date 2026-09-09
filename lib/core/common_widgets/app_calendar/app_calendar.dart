@@ -4,10 +4,7 @@ import '../../extensions/context_extension/context_extension.dart';
 import '../../helper/responsive_helper/responsive_helper.dart';
 import '../../utils/app_colors/app_colors.dart';
 import '../../utils/app_text/app_text.dart';
-import '../../utils/assets_path/assets_path.dart';
-import '../app_button/app_button.dart';
 import '../app_container_bg/app_container_bg.dart';
-import '../app_icon/bg_icon.dart';
 
 const List<String> _weekdayLabels = [
   AppText.mon,
@@ -39,9 +36,17 @@ const List<String> _monthNames = [
 /// Provider, ...).
 class AppCalendar extends StatefulWidget {
   final DateTime? initialSelectedDate;
+  final DateTime? initialDisplayedMonth;
+  final DateTime? today;
   final ValueChanged<DateTime>? onDateSelected;
 
-  const AppCalendar({super.key, this.initialSelectedDate, this.onDateSelected});
+  const AppCalendar({
+    super.key,
+    this.initialSelectedDate,
+    this.initialDisplayedMonth,
+    this.today,
+    this.onDateSelected,
+  });
 
   @override
   State<AppCalendar> createState() => _AppCalendarState();
@@ -55,10 +60,10 @@ class _AppCalendarState extends State<AppCalendar> {
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
-    _today = DateTime(now.year, now.month, now.day);
-    _selectedDate = widget.initialSelectedDate ?? _today;
-    _displayedMonth = DateTime(_selectedDate!.year, _selectedDate!.month);
+    _today = widget.today ?? DateTime(2025, 10, 17);
+    _selectedDate = widget.initialSelectedDate ?? DateTime(2025, 10, 26);
+    _displayedMonth = widget.initialDisplayedMonth ??
+        DateTime(_selectedDate!.year, _selectedDate!.month);
   }
 
   void _changeMonth(int delta) {
@@ -81,9 +86,9 @@ class _AppCalendarState extends State<AppCalendar> {
       _displayedMonth.month,
       1,
     );
-    final leadingDays = firstOfMonth.weekday - DateTime.monday;
+    final leadingDays = (firstOfMonth.weekday - DateTime.monday) % 7;
     final gridStart = firstOfMonth.subtract(Duration(days: leadingDays));
-    return List.generate(42, (i) => gridStart.add(Duration(days: i)));
+    return List.generate(35, (i) => gridStart.add(Duration(days: i)));
   }
 
   @override
@@ -93,13 +98,22 @@ class _AppCalendarState extends State<AppCalendar> {
         '${_monthNames[_displayedMonth.month - 1]} ${_displayedMonth.year}';
 
     return AppContainerBg(
+      color: AppColors.white,
+      padding: EdgeInsets.all(ResponsiveHelper.padding(20)),
+      radius: ResponsiveHelper.borderRadius(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(monthLabel, style: context.labelMedium),
+              Text(
+                monthLabel,
+                style: context.titleMedium.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textBlackPrimary,
+                ),
+              ),
               Row(
                 children: [
                   _MonthNavButton(
@@ -120,28 +134,50 @@ class _AppCalendarState extends State<AppCalendar> {
             children: _weekdayLabels
                 .map(
                   (day) => Expanded(
-                    child: Center(child: Text(day, style: context.bodySmall)),
+                    child: Center(
+                      child: Text(
+                        day,
+                        style: context.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
                 )
                 .toList(),
           ),
-          SizedBox(height: ResponsiveHelper.spacing(8)),
+          SizedBox(height: ResponsiveHelper.spacing(12)),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: monthDays.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 7,
-              mainAxisSpacing: ResponsiveHelper.spacing(4),
+              mainAxisSpacing: ResponsiveHelper.spacing(8),
             ),
             itemBuilder: (context, index) {
               final day = monthDays[index];
+              final isCurrentMonth = day.month == _displayedMonth.month;
+              final isPastInMonth = isCurrentMonth &&
+                  (day.year == _today.year &&
+                      day.month == _today.month &&
+                      day.day < _today.day);
+              final isToday = day.year == _today.year &&
+                  day.month == _today.month &&
+                  day.day == _today.day;
+              final isSelected = _selectedDate != null &&
+                  day.year == _selectedDate!.year &&
+                  day.month == _selectedDate!.month &&
+                  day.day == _selectedDate!.day;
+
               return Center(
                 child: _DayCell(
                   date: day,
-                  isCurrentMonth: day.month == _displayedMonth.month,
-                  isToday: day == _today,
-                  isSelected: day == _selectedDate,
+                  isCurrentMonth: isCurrentMonth,
+                  isToday: isToday,
+                  isSelected: isSelected,
+                  isPastInMonth: isPastInMonth,
                   onTap: () => _selectDate(day),
                 ),
               );
@@ -154,9 +190,6 @@ class _AppCalendarState extends State<AppCalendar> {
 }
 
 class _MonthNavButton extends StatelessWidget {
-  /// Mirrors the shared "back" arrow instead of a dedicated forward icon —
-  /// several Figma-exported "chevron" assets in this project don't match
-  /// their filename, so a known-good arrow flipped is more reliable.
   final bool pointsForward;
   final VoidCallback onTap;
 
@@ -164,18 +197,24 @@ class _MonthNavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = BgIcon(
-      assetPath: AssetsPath.exploreProviderDetailsIconBack,
-      bgColor: AppColors.borderDefault.withValues(alpha: 0.3),
-      iconColor: AppColors.textBlackPrimary,
-      bgSize: ResponsiveHelper.width(28),
-      iconSize: ResponsiveHelper.iconSize(12),
-      radius: ResponsiveHelper.width(14),
-    );
-
     return GestureDetector(
       onTap: onTap,
-      child: pointsForward ? Transform.flip(flipX: true, child: icon) : icon,
+      child: Container(
+        width: ResponsiveHelper.width(36),
+        height: ResponsiveHelper.width(36),
+        decoration: const BoxDecoration(
+          color: Color(0xFFF3F4F6),
+          shape: BoxShape.circle,
+        ),
+        alignment: Alignment.center,
+        child: Icon(
+          pointsForward
+              ? Icons.chevron_right_rounded
+              : Icons.chevron_left_rounded,
+          size: ResponsiveHelper.iconSize(20),
+          color: AppColors.textBlackPrimary,
+        ),
+      ),
     );
   }
 }
@@ -185,6 +224,7 @@ class _DayCell extends StatelessWidget {
   final bool isCurrentMonth;
   final bool isToday;
   final bool isSelected;
+  final bool isPastInMonth;
   final VoidCallback onTap;
 
   const _DayCell({
@@ -192,6 +232,7 @@ class _DayCell extends StatelessWidget {
     required this.isCurrentMonth,
     required this.isToday,
     required this.isSelected,
+    required this.isPastInMonth,
     required this.onTap,
   });
 
@@ -200,39 +241,49 @@ class _DayCell extends StatelessWidget {
     final size = ResponsiveHelper.width(36);
     final Color textColor;
     final Color bgColor;
-    final Color? borderColor;
+    final Border? border;
 
-    if (!isCurrentMonth) {
-      textColor = AppColors.textGrey.withValues(alpha: 0.5);
+    if (!isCurrentMonth || isPastInMonth) {
+      textColor = const Color(0xFFD1D5DB);
       bgColor = Colors.transparent;
-      borderColor = null;
+      border = null;
     } else if (isSelected) {
       textColor = AppColors.brandPrimary;
-      bgColor = Colors.transparent;
-      borderColor = AppColors.brandPrimary;
+      bgColor = AppColors.brandSoft;
+      border = Border.all(color: AppColors.brandPrimary, width: 1.5);
     } else if (isToday) {
       textColor = AppColors.textBlackPrimary;
-      bgColor = AppColors.borderDefault.withValues(alpha: 0.4);
-      borderColor = null;
+      bgColor = const Color(0xFFF3F4F6);
+      border = null;
     } else {
       textColor = AppColors.textBlackPrimary;
       bgColor = Colors.transparent;
-      borderColor = null;
+      border = null;
     }
 
-    return AppButton(
-      text: '${date.day}',
-      onPressed: isCurrentMonth ? onTap : null,
-      width: size,
-      height: size,
-      radius: size / 2,
-      backgroundColor: bgColor,
-      borderColor: borderColor,
-      textColor: textColor,
-      textStyle: TextStyle(
-        fontSize: ResponsiveHelper.fontSize(13),
-        fontWeight: FontWeight.w500,
-        color: textColor,
+    return GestureDetector(
+      onTap: (isCurrentMonth && !isPastInMonth) ? onTap : null,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: bgColor,
+          shape: BoxShape.circle,
+          border: border,
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          '${date.day}',
+          style: TextStyle(
+            fontSize: ResponsiveHelper.fontSize(14),
+            fontWeight: (isSelected ||
+                    isToday ||
+                    (isCurrentMonth && !isPastInMonth))
+                ? FontWeight.w600
+                : FontWeight.w400,
+            color: textColor,
+          ),
+        ),
       ),
     );
   }

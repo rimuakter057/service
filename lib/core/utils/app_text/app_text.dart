@@ -271,4 +271,17 @@ class AppText {
       "Please review your booking details before sending your service request to the provider.";
   static const String cancel = "Cancel";
   static const String confirm = "Confirm";
+
+  // ==========================================================
+  // PROFILE SCREEN
+  // ==========================================================
+  static const String userNameVaughan = "Vaughan Gething";
+  static const String myProfile = "My Profile";
+  static const String accountSetting = "Account Setting";
+  static const String favoriteProviders = "Favorite Providers";
+  static const String more = "More";
+  static const String termsAndCondition = "Terms & Condition";
+  static const String legalAndCompanyInfo = "Legal & Company Info";
+  static const String helpAndSupport = "Help & Support";
+  static const String logOut = "Log Out";
 }

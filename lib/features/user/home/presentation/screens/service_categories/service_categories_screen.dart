@@ -14,11 +14,6 @@ class ServiceCategoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uniqueCategories = homeCategories
-        .where((category) => category.label != AppText.viewMore)
-        .toList();
-    final categories = [...uniqueCategories, ...uniqueCategories];
-
     return Scaffold(
       backgroundColor: AppColors.bgApp,
       body: SafeArea(
@@ -32,7 +27,7 @@ class ServiceCategoriesScreen extends StatelessWidget {
                   horizontal: ResponsiveHelper.padding(24),
                 ),
                 child: GridView.builder(
-                  itemCount: categories.length,
+                  itemCount: serviceCategoriesList.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
                     mainAxisSpacing: ResponsiveHelper.spacing(20),
@@ -40,7 +35,10 @@ class ServiceCategoriesScreen extends StatelessWidget {
                     childAspectRatio: 0.8,
                   ),
                   itemBuilder: (context, index) {
-                    final category = categories[index];
+                    final category = serviceCategoriesList[index];
+                    if (category == null) {
+                      return const SizedBox.shrink();
+                    }
                     return CategoryTile(
                       assetPath: category.assetPath,
                       label: category.label,

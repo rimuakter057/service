@@ -155,6 +155,103 @@ const List<HomeCategoryData> homeCategories = [
   ),
 ];
 
+/// Full list of categories for Service Categories screen matching Figma artboard
+const List<HomeCategoryData?> serviceCategoriesList = [
+  // Row 1
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryCleaning,
+    label: AppText.categoryCleaning,
+    bgColor: AppColors.emerald50,
+    iconColor: AppColors.emerald400,
+  ),
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryPlumbing,
+    label: AppText.categoryPlumbing,
+    bgColor: AppColors.red50,
+    iconColor: AppColors.red400,
+  ),
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryCleaning,
+    label: AppText.categoryCleaning,
+    bgColor: AppColors.emerald50,
+    iconColor: AppColors.emerald400,
+  ),
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryPlumbing,
+    label: AppText.categoryPlumbing,
+    bgColor: AppColors.red50,
+    iconColor: AppColors.red400,
+  ),
+
+  // Row 2
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryElectrical,
+    label: AppText.categoryElectrical,
+    bgColor: AppColors.orange50,
+    iconColor: AppColors.orange400,
+  ),
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryGardening,
+    label: AppText.categoryGardening,
+    bgColor: AppColors.lime50,
+    iconColor: AppColors.lime400,
+  ),
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryElectrical,
+    label: AppText.categoryElectrical,
+    bgColor: AppColors.orange50,
+    iconColor: AppColors.orange400,
+  ),
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryGardening,
+    label: AppText.categoryGardening,
+    bgColor: AppColors.lime50,
+    iconColor: AppColors.lime400,
+  ),
+
+  // Row 3
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryPainting,
+    label: AppText.categoryPainting,
+    bgColor: AppColors.teal50,
+    iconColor: AppColors.cyan400,
+  ),
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryGardening,
+    label: AppText.categoryGardening,
+    bgColor: AppColors.lime50,
+    iconColor: AppColors.lime400,
+  ),
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryPainting,
+    label: AppText.categoryPainting,
+    bgColor: AppColors.teal50,
+    iconColor: AppColors.cyan400,
+  ),
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryMoving,
+    label: AppText.categoryMoving,
+    bgColor: AppColors.blue50,
+    iconColor: AppColors.blue400,
+  ),
+
+  // Row 4 (centered: Col 1 empty, Col 2 Moving, Col 3 Personal Care, Col 4 empty)
+  null,
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryMoving,
+    label: AppText.categoryMoving,
+    bgColor: AppColors.blue50,
+    iconColor: AppColors.blue400,
+  ),
+  HomeCategoryData(
+    assetPath: AssetsPath.categoryPersonalCare,
+    label: AppText.categoryPersonalCare,
+    bgColor: AppColors.blue50,
+    iconColor: AppColors.blueStatusInfo,
+  ),
+  null,
+];
+
 const HomeProviderData robertJuniorProvider = HomeProviderData(
   photo: AssetsPath.providerRobert,
   name: 'Robert Junior',

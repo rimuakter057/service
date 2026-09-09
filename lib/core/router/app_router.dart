@@ -17,6 +17,7 @@ import 'package:nchito/features/user/home/presentation/screens/provider_availabi
 import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/service_categories/service_categories_screen.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_sample_data.dart';
+import 'package:nchito/features/user/profile/presentation/screens/profile_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -83,8 +84,15 @@ class AppRouter {
       ),
       GoRoute(
         path: AllReviewsScreen.routeName,
-        builder: (context, state) =>
-            AllReviewsScreen(reviewCount: state.extra as String),
+        builder: (context, state) {
+          final extra = state.extra;
+          final reviewCount = extra is String
+              ? extra
+              : (extra is HomeProviderData
+                  ? extra.reviewCount
+                  : (extra != null ? extra.toString() : '0'));
+          return AllReviewsScreen(reviewCount: reviewCount);
+        },
       ),
       GoRoute(
         path: ProviderAvailabilityScreen.routeName,
@@ -98,6 +106,10 @@ class AppRouter {
       GoRoute(
         path: ExploreProviderScreen.routeName,
         builder: (context, state) => const ExploreProviderScreen(),
+      ),
+      GoRoute(
+        path: ProfileScreen.routeName,
+        builder: (context, state) => const ProfileScreen(),
       ),
     ],
   );

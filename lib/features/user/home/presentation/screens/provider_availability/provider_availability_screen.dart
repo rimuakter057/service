@@ -35,7 +35,7 @@ class ProviderAvailabilityScreen extends StatefulWidget {
 
 class _ProviderAvailabilityScreenState
     extends State<ProviderAvailabilityScreen> {
-  int? _selectedSlotIndex;
+  final Set<int> _selectedSlots = {0, 3};
 
   @override
   Widget build(BuildContext context) {
@@ -53,11 +53,19 @@ class _ProviderAvailabilityScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AppCalendar(),
-                    SizedBox(height: ResponsiveHelper.spacing(20)),
+                    const AppCalendar(
+                      initialSelectedDate: null, // defaults to 2025-10-26 in AppCalendar
+                    ),
+                    SizedBox(height: ResponsiveHelper.spacing(24)),
 
-                    Text(AppText.availableTime, style: context.labelMedium),
-                    SizedBox(height: ResponsiveHelper.spacing(12)),
+                    Text(
+                      AppText.availableTime,
+                      style: context.titleSmall.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textBlackPrimary,
+                      ),
+                    ),
+                    SizedBox(height: ResponsiveHelper.spacing(14)),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -66,36 +74,68 @@ class _ProviderAvailabilityScreenState
                         crossAxisCount: 2,
                         mainAxisSpacing: ResponsiveHelper.spacing(12),
                         crossAxisSpacing: ResponsiveHelper.spacing(12),
-                        childAspectRatio: 2.6,
+                        childAspectRatio: 3.2,
                       ),
                       itemBuilder: (context, index) {
                         final slot = _timeSlots[index];
-                        final isSelected = _selectedSlotIndex == index;
-                        return AppButton(
-                          text: slot.label,
-                          onPressed: slot.isAvailable
-                              ? () => setState(() => _selectedSlotIndex = index)
-                              : null,
-                          backgroundColor: isSelected
-                              ? AppColors.brandSoft
-                              : Colors.transparent,
-                          borderColor: slot.isAvailable
-                              ? AppColors.brandPrimary
-                              : AppColors.borderDefault,
-                          textColor: slot.isAvailable
-                              ? AppColors.brandPrimary
-                              : AppColors.textGrey,
-                          textStyle: TextStyle(
-                            fontSize: ResponsiveHelper.fontSize(12),
-                            fontWeight: FontWeight.w600,
-                            color: slot.isAvailable
+                        final isAvailable = slot.isAvailable;
+                        final isSelected = _selectedSlots.contains(index);
+
+                        final bgColor = isAvailable
+                            ? (isSelected
+                                ? AppColors.brandSoft
+                                : AppColors.white)
+                            : const Color(0xFFF6F6F6);
+                        final borderColor = isAvailable
+                            ? (isSelected
                                 ? AppColors.brandPrimary
-                                : AppColors.textGrey,
+                                : AppColors.borderDefault)
+                            : const Color(0xFFD1D5DB);
+                        final textColor = isAvailable
+                            ? AppColors.brandPrimary
+                            : const Color(0xFF9CA3AF);
+
+                        return GestureDetector(
+                          onTap: isAvailable
+                              ? () {
+                                  setState(() {
+                                    if (_selectedSlots.contains(index)) {
+                                      _selectedSlots.remove(index);
+                                    } else {
+                                      _selectedSlots.add(index);
+                                    }
+                                  });
+                                }
+                              : null,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: bgColor,
+                              borderRadius: BorderRadius.circular(
+                                ResponsiveHelper.borderRadius(10),
+                              ),
+                              border: Border.all(
+                                color: borderColor,
+                                width: isAvailable && isSelected ? 1.4 : 1.0,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              slot.label,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: ResponsiveHelper.fontSize(12),
+                                fontWeight: isAvailable
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
+                                fontStyle: FontStyle.italic,
+                                color: textColor,
+                              ),
+                            ),
                           ),
                         );
                       },
                     ),
-                    SizedBox(height: ResponsiveHelper.spacing(20)),
+                    SizedBox(height: ResponsiveHelper.spacing(24)),
                   ],
                 ),
               ),
@@ -103,14 +143,21 @@ class _ProviderAvailabilityScreenState
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: ResponsiveHelper.padding(24),
-                vertical: ResponsiveHelper.padding(16),
+                vertical: ResponsiveHelper.padding(20),
               ),
               child: AppButton(
                 text: AppText.bookNow,
                 onPressed: () {},
                 width: double.infinity,
+                height: ResponsiveHelper.height(52),
+                radius: ResponsiveHelper.borderRadius(12),
                 backgroundColor: AppColors.brandPrimary,
                 textColor: AppColors.textOnPrimary,
+                textStyle: TextStyle(
+                  fontSize: ResponsiveHelper.fontSize(16),
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textOnPrimary,
+                ),
               ),
             ),
           ],
