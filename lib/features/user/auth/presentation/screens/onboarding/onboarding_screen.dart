@@ -38,7 +38,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       illustration: AssetsPath.onboarding01IllustrationHero,
       title: AppText.findTheHelpYouNeed,
       subtitle:
-      AppText.discoverLocalProfessionalsReadyToHelpWithEverydayServices,
+          AppText.discoverLocalProfessionalsReadyToHelpWithEverydayServices,
       buttonText: AppText.next,
     ),
     _OnboardingPage(
@@ -90,9 +90,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         final bool isActive = _currentPage == index;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          margin: EdgeInsets.symmetric(
-            horizontal: ResponsiveHelper.width(3),
-          ),
+          margin: EdgeInsets.symmetric(horizontal: ResponsiveHelper.width(3)),
           height: ResponsiveHelper.height(6),
           width: isActive
               ? ResponsiveHelper.width(32)

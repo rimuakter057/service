@@ -6,7 +6,7 @@ import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
 import 'package:nchito/features/user/auth/presentation/screens/set_new_password/set_new_password_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/verify_otp/verify_otp_screen.dart';
-import 'package:nchito/features/user/auth/presentation/widgets/auth_text_field.dart';
+import 'package:nchito/core/common_widgets/app_text_field/app_text_field.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   static const String routeName = '/forgot-password';
@@ -68,7 +68,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                         SizedBox(height: ResponsiveHelper.spacing(32)),
 
-                        AuthTextField(
+                        AppTextField(
                           label: AppText.emailAddress,
                           hint: AppText.enterYourRegisteredEmailAddress,
                           controller: _emailController,

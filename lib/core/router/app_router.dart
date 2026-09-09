@@ -9,6 +9,14 @@ import 'package:nchito/features/user/auth/presentation/screens/role_selection/ro
 import 'package:nchito/features/user/auth/presentation/screens/set_new_password/set_new_password_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/signup/signup_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/verify_otp/verify_otp_screen.dart';
+import 'package:nchito/features/user/explore/presentation/screens/explore_provider/explore_provider_screen.dart';
+import 'package:nchito/features/user/home/presentation/screens/all_reviews/all_reviews_screen.dart';
+import 'package:nchito/features/user/home/presentation/screens/booking_details/booking_details_screen.dart';
+import 'package:nchito/features/user/home/presentation/screens/home_screen/home_screen.dart';
+import 'package:nchito/features/user/home/presentation/screens/provider_availability/provider_availability_screen.dart';
+import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
+import 'package:nchito/features/user/home/presentation/screens/service_categories/service_categories_screen.dart';
+import 'package:nchito/features/user/home/presentation/widgets/home_sample_data.dart';
 
 class AppRouter {
   AppRouter._();
@@ -59,6 +67,37 @@ class AppRouter {
       GoRoute(
         path: AgeConfirmationScreen.routeName,
         builder: (context, state) => const AgeConfirmationScreen(),
+      ),
+      GoRoute(
+        path: HomeScreen.routeName,
+        builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: ServiceCategoriesScreen.routeName,
+        builder: (context, state) => const ServiceCategoriesScreen(),
+      ),
+      GoRoute(
+        path: ProviderDetailsScreen.routeName,
+        builder: (context, state) =>
+            ProviderDetailsScreen(provider: state.extra as HomeProviderData),
+      ),
+      GoRoute(
+        path: AllReviewsScreen.routeName,
+        builder: (context, state) =>
+            AllReviewsScreen(reviewCount: state.extra as String),
+      ),
+      GoRoute(
+        path: ProviderAvailabilityScreen.routeName,
+        builder: (context, state) => const ProviderAvailabilityScreen(),
+      ),
+      GoRoute(
+        path: BookingDetailsScreen.routeName,
+        builder: (context, state) =>
+            BookingDetailsScreen(booking: state.extra as HomeBookingData),
+      ),
+      GoRoute(
+        path: ExploreProviderScreen.routeName,
+        builder: (context, state) => const ExploreProviderScreen(),
       ),
     ],
   );

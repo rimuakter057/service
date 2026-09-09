@@ -1,0 +1,51 @@
+import 'package:flutter/material.dart';
+import 'package:nchito/core/common_widgets/app_container_bg/app_container_bg.dart';
+import 'package:nchito/core/extensions/context_extension/context_extension.dart';
+import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/core/utils/app_colors/app_colors.dart';
+
+
+class DetailField extends StatelessWidget {
+  final String label;
+  final String? value;
+  final Widget? child;
+
+  final bool emphasizeValue;
+
+  const DetailField({
+    super.key,
+    required this.label,
+    this.value,
+    this.child,
+    this.emphasizeValue = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppContainerBg(
+        width: double.infinity,
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: context.bodySmall.copyWith(
+          fontWeight: FontWeight.w500,
+          fontStyle: FontStyle.italic,
+          color: AppColors.textSecondary
+
+        )),
+        SizedBox(height: ResponsiveHelper.spacing(4)),
+        child ??
+            Text(
+              value ?? '',
+              style: emphasizeValue
+                  ? context.labelSmall.copyWith(
+                color: AppColors.textBlackPrimary,
+              )
+                  : context.labelSmall.copyWith(
+                color: AppColors.textBlackPrimary,
+              ),
+            ),
+      ],
+    ));
+  }
+}

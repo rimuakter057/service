@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:nchito/core/extensions/context_extension/context_extension.dart';
-import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 
-class AuthTextField extends StatelessWidget {
+import '../../extensions/context_extension/context_extension.dart';
+import '../../helper/responsive_helper/responsive_helper.dart';
+
+/// Label + input field — label above, themed field below. Used on every
+/// auth screen and anywhere else a labeled text field shows up.
+class AppTextField extends StatelessWidget {
   final String label;
   final String hint;
   final TextEditingController controller;
@@ -11,7 +14,7 @@ class AuthTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
 
-  const AuthTextField({
+  const AppTextField({
     super.key,
     required this.label,
     required this.hint,

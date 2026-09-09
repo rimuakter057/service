@@ -140,11 +140,13 @@ class AppTheme {
   static TextStyle get bodySmall => GoogleFonts.dmSans(
     fontSize: ResponsiveHelper.fontSize(12),
     fontWeight: FontWeight.w400,
+    color:AppColors.textBlackPrimary
   );
 
   static TextStyle get labelLarge => GoogleFonts.dmSans(
     fontSize: ResponsiveHelper.fontSize(14),
     fontWeight: FontWeight.w500,
+
   );
 
   ///===============
@@ -161,8 +163,6 @@ class AppTheme {
   static TextStyle get labelSmall => GoogleFonts.dmSans(
     fontSize: ResponsiveHelper.fontSize(14),
     fontWeight: FontWeight.w500,
-    height: 1.1,
-    letterSpacing: 0,
     color: AppColors.textGrey,
   );
 

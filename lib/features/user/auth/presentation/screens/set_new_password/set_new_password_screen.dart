@@ -8,7 +8,7 @@ import 'package:nchito/core/utils/app_theme/app_theme.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
 import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
-import 'package:nchito/features/user/auth/presentation/widgets/auth_text_field.dart';
+import 'package:nchito/core/common_widgets/app_text_field/app_text_field.dart';
 
 class SetNewPasswordScreen extends StatefulWidget {
   static const String routeName = '/set-new-password';
@@ -69,7 +69,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         ),
                         SizedBox(height: ResponsiveHelper.spacing(32)),
 
-                        AuthTextField(
+                        AppTextField(
                           label: AppText.newPassword,
                           hint: AppText.enterYourPassword,
                           controller: _newPasswordController,
@@ -91,7 +91,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         ),
                         SizedBox(height: ResponsiveHelper.spacing(20)),
 
-                        AuthTextField(
+                        AppTextField(
                           label: AppText.confirmNewPassword,
                           hint: AppText.enterYourPassword,
                           controller: _confirmNewPasswordController,

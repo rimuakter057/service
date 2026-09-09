@@ -9,7 +9,61 @@ class AppText {
   // ==========================================================
   // Shared (bottom navigation label)
   // ==========================================================
-  static const String explore = "explore";
+  static const String explore = "Explore";
+
+  // ==========================================================
+  // HOME SCREEN
+  // ==========================================================
+  static const String whatDoYouNeedHelpWith = "What do you need help with?";
+  static const String searchForAService = "Search for a service...";
+  static const String selectableFeaturedService = "Selectable Featured Service";
+  static const String popularNearYou = "Popular Near You";
+  static const String activeBooking = "Active Booking";
+  static const String viewAll = "View all";
+  static const String viewMore = "View more";
+  static const String serviceCategories = "Service Categories";
+  static const String startsFrom = "Starts From";
+  static const String reviews = "Reviews";
+  static const String allReviews = "All Reviews";
+  static const String categoryCleaning = "Cleaning";
+  static const String categoryPlumbing = "Plumbing";
+  static const String categoryElectrical = "Electrical";
+  static const String categoryGardening = "Gardening";
+  static const String categoryPainting = "Painting";
+  static const String categoryMoving = "Moving";
+  static const String categoryPersonalCare = "Personal Care";
+  static const String home = "Home";
+  static const String bookings = "Bookings";
+  static const String messages = "Messages";
+  static const String profile = "Profile";
+
+  // ==========================================================
+  // BOOKING DETAILS SCREEN (HOME_SECTION)
+  // ==========================================================
+  static const String bookingDetails = "Booking Details";
+  static const String location = "Location";
+  static const String date = "Date";
+  static const String time = "Time";
+  static const String details = "Details";
+  static const String provider = "Provider";
+  static const String cancelBooking = "Cancel Booking";
+  static const String service = "Service";
+
+  // ==========================================================
+  // PROVIDER DETAILS SCREEN (HOME_SECTION)
+  // ==========================================================
+  static const String providerDetails = "Provider Details";
+  static const String name = "Name";
+  static const String email = "Email";
+  static const String contactPhone = "Contact Phone";
+  static const String serviceArea = "Service Area";
+  static const String serviceDescription = "Service Description";
+  static const String totalJobsCompleted = "Total Jobs Completed";
+  static const String sendMessage = "Send Message";
+  static const String seeAvailability = "See Availability";
+  static const String providerAvailability = "Provider Availability";
+  static const String availableTime = "Available Time";
+  static const String bookNow = "Book Now";
 
   // ==========================================================
   // EXPLORE PROVIDER SCREEN
@@ -47,6 +101,22 @@ class AppText {
   static const String only1 = "Only \u{2605}1";
   static const String resetFilter = "Reset Filter";
   static const String applyFilter = "Apply Filter";
+
+  // Service Type list options (reuses categoryCleaning/categoryPlumbing/
+  // categoryElectrical above for the first three)
+  static const String serviceTypeGardeningLandscaping =
+      "Gardening & Landscaping";
+  static const String serviceTypeHomeMaintenance = "Home Maintenance";
+  static const String serviceTypePaintingDecorating = "Painting & Decorating";
+  static const String serviceTypeMovingRelocation = "Moving & Relocation";
+  static const String serviceTypeBeautyPersonalCare = "Beauty & Personal Care";
+
+  // Sort By list options
+  static const String sortRecommended = "Recommended";
+  static const String sortHighestRated = "Highest Rated";
+  static const String sortLowestPrice = "Lowest Price";
+  static const String sortHighestPrice = "Highest Price";
+  static const String sortNearestFirst = "Nearest First";
 
   // ==========================================================
   // LOG IN SCREEN (AUTH_SECTION)

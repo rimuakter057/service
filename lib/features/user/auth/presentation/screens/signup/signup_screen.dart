@@ -12,7 +12,7 @@ import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
 import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/verify_otp/verify_otp_screen.dart';
-import 'package:nchito/features/user/auth/presentation/widgets/auth_text_field.dart';
+import 'package:nchito/core/common_widgets/app_text_field/app_text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
   static const String routeName = '/signup';
@@ -97,7 +97,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         SizedBox(height: ResponsiveHelper.spacing(32)),
 
                         // Full Name
-                        AuthTextField(
+                        AppTextField(
                           label: AppText.fullName,
                           hint: AppText.enterYourFullName,
                           controller: _fullNameController,
@@ -109,7 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         SizedBox(height: ResponsiveHelper.spacing(20)),
 
                         // Email or Phone Number
-                        AuthTextField(
+                        AppTextField(
                           label: AppText.emailOrPhoneNumber,
                           hint: AppText.enterYourEmailAddressOrMobileNumber,
                           controller: _emailOrPhoneController,
@@ -122,7 +122,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         SizedBox(height: ResponsiveHelper.spacing(20)),
 
                         // Password
-                        AuthTextField(
+                        AppTextField(
                           label: AppText.password,
                           hint: AppText.enterYourPassword,
                           controller: _passwordController,
@@ -144,7 +144,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         SizedBox(height: ResponsiveHelper.spacing(20)),
 
                         // Confirm Password
-                        AuthTextField(
+                        AppTextField(
                           label: AppText.confirmPassword,
                           hint: AppText.enterYourPassword,
                           controller: _confirmPasswordController,

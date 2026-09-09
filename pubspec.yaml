@@ -75,6 +75,7 @@ flutter:
     - assets/images/user/home_section/provider_details/
     - assets/icons/user/home_section/booking_details/
     - assets/icons/user/explore_provider_section/explore_provider/
+    - assets/images/user/explore_provider_section/explore_provider/
     - assets/icons/user/explore_provider_section/filter/
     - assets/icons/user/explore_provider_section/provider_details/
     - assets/images/user/explore_provider_section/provider_details/

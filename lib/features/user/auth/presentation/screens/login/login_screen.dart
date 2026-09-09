@@ -13,7 +13,8 @@ import 'package:nchito/core/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/core/common_widgets/auth_header/auth_header.dart';
 import 'package:nchito/features/user/auth/presentation/screens/age_confirmation/age_confirmation_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/forgot_password/forgot_password_screen.dart';
-import 'package:nchito/features/user/auth/presentation/widgets/auth_text_field.dart';
+import 'package:nchito/core/common_widgets/app_text_field/app_text_field.dart';
+import 'package:nchito/features/user/home/presentation/screens/home_screen/home_screen.dart';
 import 'package:nchito/features/user/auth/presentation/widgets/social_icon_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -41,6 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onLoginPressed() {
     if (_formKey.currentState?.validate() ?? false) {
       // TODO: wire up login usecase
+      context.go(HomeScreen.routeName);
     }
   }
 
@@ -78,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: ResponsiveHelper.spacing(32)),
 
                         // Email Address
-                        AuthTextField(
+                        AppTextField(
                           label: AppText.emailAddress,
                           hint: AppText.enterYourEmailAddress,
                           controller: _emailController,
@@ -88,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: ResponsiveHelper.spacing(20)),
 
                         ///===================== Password
-                        AuthTextField(
+                        AppTextField(
                           label: AppText.password,
                           hint: AppText.enterYourPassword,
                           controller: _passwordController,

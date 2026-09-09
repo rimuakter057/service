@@ -18,6 +18,8 @@ class AppColors {
   static const Color bgColor = Color(0xFFFFFBF8);
   static const Color brandSoft = Color(0xFFE8F1EC);
   static const Color brandSecondaryHover = Color(0xFFE89100);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color borderColor = Color(0xFFF6F6F6);
 
   // Background colors
   static const Color bgApp = Color(0xFFFFFBF8);

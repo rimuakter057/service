@@ -30,6 +30,7 @@ class AssetsPath {
   // Header icons
   static const String iconLocation = '$_homeIconBase/icon_location.svg';
   static const String iconChevronDown = '$_homeIconBase/icon_chevron_down.svg';
+  static const String dropDown = '$_homeIconBase/drop_down.svg';
   static const String iconNotification = '$_homeIconBase/icon_notification.svg';
   static const String iconSearch = '$_homeIconBase/icon_search.svg';
   static const String iconStar = '$_homeIconBase/icon_star.svg';
@@ -138,6 +139,12 @@ class AssetsPath {
       '$_exploreProviderIconBase/icon_calendar_chevron.svg';
   static const String exploreProviderIllustrationNoResults =
       '$_exploreProviderIconBase/illustration_no_results.svg';
+
+  static const String _exploreProviderImageBase =
+      'assets/images/user/explore_provider_section/explore_provider';
+
+  static const String exploreProviderPhotoJhoneDoe =
+      '$_exploreProviderImageBase/provider_jhone.png';
 
   // FILTER modal (on Explore Provider) — assets/icons/user/explore_provider_section/filter
   static const String _filterIconBase =
