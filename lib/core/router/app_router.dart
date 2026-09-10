@@ -9,9 +9,11 @@ import 'package:nchito/features/user/auth/presentation/screens/role_selection/ro
 import 'package:nchito/features/user/auth/presentation/screens/set_new_password/set_new_password_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/signup/signup_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/verify_otp/verify_otp_screen.dart';
+import 'package:nchito/features/user/bookings/presentation/screens/booking_confirmed/booking_confirmed_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/screens/booking_details/booking_details_screen.dart'
     as bookings;
 import 'package:nchito/features/user/bookings/presentation/screens/bookings_screen.dart';
+import 'package:nchito/features/user/bookings/presentation/screens/dpo_checkout/dpo_checkout_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
 import 'package:nchito/features/user/explore/presentation/screens/explore_provider/explore_provider_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/all_reviews/all_reviews_screen.dart';
@@ -101,7 +103,21 @@ class AppRouter {
       ),
       GoRoute(
         path: ProviderAvailabilityScreen.routeName,
-        builder: (context, state) => const ProviderAvailabilityScreen(),
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is BookingHistoryData) {
+            return ProviderAvailabilityScreen(
+              isRescheduling: true,
+              booking: extra,
+            );
+          } else if (extra is Map<String, dynamic>) {
+            return ProviderAvailabilityScreen(
+              isRescheduling: extra['isRescheduling'] as bool? ?? false,
+              booking: extra['booking'],
+            );
+          }
+          return const ProviderAvailabilityScreen();
+        },
       ),
       GoRoute(
         path: BookingDetailsScreen.routeName,
@@ -128,6 +144,18 @@ class AppRouter {
         path: bookings.BookingDetailsScreen.routeName,
         builder: (context, state) => bookings.BookingDetailsScreen(
           booking: state.extra as BookingHistoryData,
+        ),
+      ),
+      GoRoute(
+        path: DpoCheckoutScreen.routeName,
+        builder: (context, state) => DpoCheckoutScreen(
+          booking: state.extra as BookingHistoryData,
+        ),
+      ),
+      GoRoute(
+        path: BookingConfirmedScreen.routeName,
+        builder: (context, state) => BookingConfirmedScreen(
+          booking: state.extra as BookingHistoryData?,
         ),
       ),
     ],

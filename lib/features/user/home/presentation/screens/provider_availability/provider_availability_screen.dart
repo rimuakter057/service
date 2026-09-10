@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nchito/core/common_widgets/app_button/app_button.dart';
 import 'package:nchito/core/common_widgets/app_calendar/app_calendar.dart';
 import 'package:nchito/core/common_widgets/app_top_bar/app_top_bar.dart';
@@ -6,6 +7,10 @@ import 'package:nchito/core/extensions/context_extension/context_extension.dart'
 import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
+
+import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
+import 'package:nchito/features/user/bookings/presentation/screens/booking_details/booking_details_screen.dart'
+    as bookings;
 
 class _TimeSlot {
   final String label;
@@ -22,11 +27,18 @@ const List<_TimeSlot> _timeSlots = [
 ];
 
 /// Calendar + time-slot picker — reached from Provider Details'
-/// "See Availability" button.
+/// "See Availability" button or from Reschedule Booking flow.
 class ProviderAvailabilityScreen extends StatefulWidget {
   static const String routeName = '/provider-availability';
 
-  const ProviderAvailabilityScreen({super.key});
+  final bool isRescheduling;
+  final dynamic booking;
+
+  const ProviderAvailabilityScreen({
+    super.key,
+    this.isRescheduling = false,
+    this.booking,
+  });
 
   @override
   State<ProviderAvailabilityScreen> createState() =>
@@ -146,8 +158,27 @@ class _ProviderAvailabilityScreenState
                 vertical: ResponsiveHelper.padding(20),
               ),
               child: AppButton(
-                text: AppText.bookNow,
-                onPressed: () {},
+                text: widget.isRescheduling
+                    ? AppText.rescheduleNow
+                    : AppText.bookNow,
+                onPressed: () {
+                  if (widget.isRescheduling) {
+                    if (widget.booking is BookingHistoryData) {
+                      final updated =
+                          (widget.booking as BookingHistoryData).copyWith(
+                        status: AppText.inProgress,
+                      );
+                      context.pushReplacement(
+                        bookings.BookingDetailsScreen.routeName,
+                        extra: updated,
+                      );
+                    } else {
+                      context.pop();
+                    }
+                  } else {
+                    context.push('/booking-confirmed');
+                  }
+                },
                 width: double.infinity,
                 height: ResponsiveHelper.height(52),
                 radius: ResponsiveHelper.borderRadius(12),

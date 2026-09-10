@@ -67,6 +67,9 @@ class AssetsPath {
   static const String avatarUser = '$_homeImageBase/avatar_user.png';
   static const String providerRobert = '$_homeImageBase/provider_robert.png';
   static const String providerAlex = '$_homeImageBase/provider_alex.png';
+  static const String evidenceImage1 = '$_homeImageBase/evidence_1.jpg';
+  static const String evidenceImage2 = '$_homeImageBase/evidence_2.jpg';
+  static const String evidenceImage3 = '$_homeImageBase/evidence_3.jpg';
 
   // ==========================================================
   // PROVIDER DETAILS SCREEN — assets/icons/user/home_section/provider_details, assets/images/user/home_section/provider_details
@@ -366,6 +369,15 @@ class AssetsPath {
       '$_myBookingsIconBase/service_icon_moving.svg';
   static const String myBookingsServiceIconElectrical =
       '$_myBookingsIconBase/service_icon_electrical.svg';
+  static const String myBookingsCard = '$_myBookingsIconBase/card.svg';
+  static const String myBookingsMobile = '$_myBookingsIconBase/mobile.svg';
+  static const String myBookingsDpo = '$_myBookingsIconBase/dpo.svg';
+  static const String myBookingsElectricalRepair =
+      '$_myBookingsIconBase/electrical_repair.svg';
+  static const String myBookingsConfirmIcon =
+      '$_myBookingsIconBase/confirm_icon.svg';
+  static const String myBookingsSuccessPayment =
+      '$_myBookingsIconBase/success_payment.svg';
 
   // BOOKING DETAILS SCREEN (BOOKINGS_SECTION — accepted/quote variant)
   // (reuses bookingDetailsIconDot, bookingDetailsIconVerifiedBadge and
@@ -379,6 +391,8 @@ class AssetsPath {
       '$_bookingsBookingDetailsIconBase/icon_cancel_booking.svg';
   static const String bookingsBookingDetailsIconProceedToPayment =
       '$_bookingsBookingDetailsIconBase/icon_proceed_to_payment.svg';
+  static const String bookingsBookingDetailsIconReschedule =
+      '$_bookingsBookingDetailsIconBase/icon_reschedule.svg';
 
   // ==========================================================
   // APP SPLASH SCREEN — assets/icons/spash

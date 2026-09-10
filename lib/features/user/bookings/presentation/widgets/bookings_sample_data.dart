@@ -42,6 +42,40 @@ class BookingHistoryData {
     required this.provider,
     this.serviceCost,
   });
+
+  BookingHistoryData copyWith({
+    String? iconAsset,
+    Color? iconBgColor,
+    String? providerName,
+    String? service,
+    String? price,
+    String? day,
+    String? month,
+    String? time,
+    String? status,
+    String? location,
+    String? date,
+    String? details,
+    HomeProviderData? provider,
+    String? serviceCost,
+  }) {
+    return BookingHistoryData(
+      iconAsset: iconAsset ?? this.iconAsset,
+      iconBgColor: iconBgColor ?? this.iconBgColor,
+      providerName: providerName ?? this.providerName,
+      service: service ?? this.service,
+      price: price ?? this.price,
+      day: day ?? this.day,
+      month: month ?? this.month,
+      time: time ?? this.time,
+      status: status ?? this.status,
+      location: location ?? this.location,
+      date: date ?? this.date,
+      details: details ?? this.details,
+      provider: provider ?? this.provider,
+      serviceCost: serviceCost ?? this.serviceCost,
+    );
+  }
 }
 
 /// Placeholder content for the My Bookings screen until it's wired to real data.

@@ -358,4 +358,94 @@ class AppText {
   onceThePaymentIsCompletedTheAgreedPriceWillBeConfirmedForThisBooking =
       ". Once payment is completed, the agreed price will be confirmed "
       "for this booking.";
+
+  // ==========================================================
+  // DPO CHECKOUT SCREEN
+  // ==========================================================
+  static const String dpoCheckOut = "DPO Check out";
+  static const String dpoGroup = "DPO GROUP";
+  static const String thinkPayments = "Think Payments";
+  static const String login = "Login";
+  static const String completePaymentWithin = "Complete payment within:";
+  static const String paymentReference = "PAYMENT REFERENCE";
+  static const String serviceDate = "SERVICE DATE";
+  static const String totalUpper = "TOTAL";
+  static const String personalDetails = "Personal Details";
+  static const String firstName = "First Name";
+  static const String lastName = "Last Name";
+  static const String countryCode = "Country Code";
+  static const String continueToPayment = "Continue to Payment";
+  static const String choosePaymentMethod = "Choose Payment Method";
+  static const String card = "Card";
+  static const String mobile = "Mobile";
+  static const String cardHolderName = "Card Holder Name";
+  static const String cardNumber = "Card Number";
+  static const String mmYy = "MM / YY";
+  static const String securityCodeCvv = "Security Code (CVV)";
+  static const String saveAllMyDetailsForFuturePayments =
+      "Save all my details for future payments";
+  static const String iAgreeToDpos = "I agree to DPO's";
+  static const String termsAndConditions = "terms and conditions";
+  static const String pay = "Pay";
+  static const String payViaMobile = "Pay via Mobile";
+  static const String backToDetails = "Back to details";
+  static const String backLink = "Back";
+  static const String paymentSuccessful = "Payment Successful";
+  static const String backToBookings = "Back to Bookings";
+  static const String ok = "OK";
+
+  // ==========================================================
+  // BOOKING CONFIRMED SCREEN
+  // ==========================================================
+  static const String bookingConfirmed = "Booking confirmed";
+  static const String yourSessionWith = "Your session with";
+  static const String isScheduled = "is scheduled.";
+  static const String seeMyBookings = "See my bookings";
+  static const String totalCost = "Total Cost";
+  static const String dateTime = "Date & Time";
+  static const String cancellationPolicy = "Cancellation Policy";
+  static const String cancellationPolicyNotice =
+      "You can cancel this booking up to 12 hours before the scheduled service time.";
+  static const String reschedule = "Reschedule";
+  static const String rescheduleBookingExclaim = "Reschedule Booking!";
+  static const String youReAboutToRequestANewDateAndTimeForThisBooking =
+      "You're about to request a new date and time for this booking. The change will be sent to the provider for confirmation.";
+  static const String youCanCancelOrRequestToReschedule =
+      "You can cancel or request to reschedule this booking up to 24 hours before the scheduled service time.";
+  static const String rescheduleNow = "Reschedule Now";
+  static const String bookingCompletionOtp = "Booking Completion OTP";
+  static const String
+  aSimpleOtpConfirmationEnsuresOnlyTheCustomerCanAuthorizeServiceCompletion =
+      "A simple OTP confirmation ensures only the customer can authorize service completion, reducing disputes and preventing premature completion.";
+  static const String completedOn = "Completed On";
+  static const String rateAndReview = "Rate & Review";
+  static const String reviewed = "Reviewed";
+  static const String bookAgain = "Book Again";
+  static const String reportAnIssue = "Report an Issue";
+
+  // ==========================================================
+  // LEAVE A REVIEW BOTTOM SHEET
+  // ==========================================================
+  static const String leaveAReview = "Leave a review";
+  static const String yourReview = "Your Review";
+  static const String shareYourFeedbackAboutTheProvider =
+      "Share your feedback about the provider, service quality, and overall experience.";
+  static const String submit = "Submit";
+
+  // ==========================================================
+  // REPORT AN ISSUE BOTTOM SHEET
+  // ==========================================================
+  static const String tellUsWhatWentWrongWithYourService =
+      "Tell us what went wrong with your service. Our team will review your issue and assist you.";
+  static const String issueType = "Issue Type";
+  static const String enterYourIssueType = "Enter your Issue Type";
+  static const String uploadEvidence = "Upload Evidence";
+  static const String uploadImagesHere = "Upload Images Here";
+  static const String describeTheIssue = "Describe The Issue";
+  static const String pleaseProvideAsMuchDetailAsPossible =
+      "Please provide as much detail as possible so we can review your issue quickly.";
+  static const String submitIssue = "Submit Issue";
+  static const String submitIssueExclaim = "Submit Issue!";
+  static const String areYouSureYouWantToSubmitThisIssue =
+      "Are you sure you want to submit this issue? Our team will review the details and get back to you.";
 }
