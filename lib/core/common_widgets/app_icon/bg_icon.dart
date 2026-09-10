@@ -11,6 +11,7 @@ class BgIcon extends StatelessWidget {
   final double? radius;
   final double? iconSize;
   final Color? iconColor;
+  final bool showBorder;
 
   const BgIcon({
     super.key,
@@ -20,6 +21,7 @@ class BgIcon extends StatelessWidget {
     this.radius,
     this.iconSize,
     this.iconColor,
+    this.showBorder = true,
   });
 
   @override
@@ -32,7 +34,9 @@ class BgIcon extends StatelessWidget {
       height: containerBgWeight,
       decoration: BoxDecoration(
         color: bgColor,
-        border: Border.all(color: AppColors.iconBorderBg),
+        border: showBorder
+            ? Border.all(color: AppColors.iconBorderBg)
+            : null,
         borderRadius: BorderRadius.circular(
           radius ?? ResponsiveHelper.borderRadius(16),
         ),

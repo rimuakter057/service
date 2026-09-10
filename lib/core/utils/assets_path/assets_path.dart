@@ -116,6 +116,8 @@ class AssetsPath {
       '$_bookingDetailsIconBase/icon_verified_badge.svg';
   static const String bookingDetailsServiceIconElectrical =
       '$_bookingDetailsIconBase/service_icon_electrical.svg';
+  static const String bookingDetailsIconViewProvider =
+      '$_bookingDetailsIconBase/icon_view_provider.svg';
 
   // ==========================================================
   // EXPLORE_PROVIDER_SECTION (home_section is done — new screens go here)
@@ -313,6 +315,70 @@ class AssetsPath {
 
   static const String accountBlockedByAdminIconBlocked =
       '$_accountBlockedByAdminIconBase/icon_blocked.svg';
+
+  // ==========================================================
+  // MESSAGES_SECTION (auth_section is done — new screens go here)
+  // ==========================================================
+
+  // MESSAGES SCREEN — assets/icons/user/messages_section/messages, assets/images/user/messages_section/messages
+  // (reuses navHome, navExplore, navBookings, navMessages, navProfile from
+  // HOME SCREEN for the bottom nav bar — identical assets)
+  static const String _messagesIconBase =
+      'assets/icons/user/messages_section/messages';
+  static const String _messagesImageBase =
+      'assets/images/user/messages_section/messages';
+
+  static const String messagesIconBack = '$_messagesIconBase/icon_back.svg';
+  static const String messagesIconSearch =
+      '$_messagesIconBase/icon_search.svg';
+  static const String messagesIconOnlineBadge =
+      '$_messagesIconBase/icon_online_badge.svg';
+
+  static const String messagesAvatarRobertsJunior =
+      '$_messagesImageBase/avatar_roberts_junior.png';
+  static const String messagesAvatarOliviaMartinez =
+      '$_messagesImageBase/avatar_olivia_martinez.png';
+  static const String messagesAvatarMichaelSmith =
+      '$_messagesImageBase/avatar_michael_smith.png';
+  static const String messagesAvatarDavidKim =
+      '$_messagesImageBase/avatar_david_kim.png';
+  static const String messagesAvatarSophiaWhite =
+      '$_messagesImageBase/avatar_sophia_white.png';
+
+  // ==========================================================
+  // BOOKINGS_SECTION (messages_section is done — new screens go here)
+  // ==========================================================
+
+  // MY BOOKINGS SCREEN — assets/icons/user/bookings_section/my_bookings
+  // (reuses navHome, navExplore, navBookings, navMessages, navProfile from
+  // HOME SCREEN and providerDetailsIconBack from PROVIDER DETAILS SCREEN
+  // for the header back button — identical assets)
+  static const String _myBookingsIconBase =
+      'assets/icons/user/bookings_section/my_bookings';
+
+  static const String myBookingsIconSearch =
+      '$_myBookingsIconBase/icon_search.svg';
+  static const String myBookingsIconFilter =
+      '$_myBookingsIconBase/icon_filter.svg';
+  static const String myBookingsServiceIconCleaning =
+      '$_myBookingsIconBase/service_icon_cleaning.svg';
+  static const String myBookingsServiceIconMoving =
+      '$_myBookingsIconBase/service_icon_moving.svg';
+  static const String myBookingsServiceIconElectrical =
+      '$_myBookingsIconBase/service_icon_electrical.svg';
+
+  // BOOKING DETAILS SCREEN (BOOKINGS_SECTION — accepted/quote variant)
+  // (reuses bookingDetailsIconDot, bookingDetailsIconVerifiedBadge and
+  // bookingDetailsIconViewProvider from HOME_SECTION above — identical
+  // assets, no duplicate files kept)
+  static const String _bookingsBookingDetailsIconBase =
+      'assets/icons/user/bookings_section/booking_details';
+  static const String bookingsBookingDetailsIconDeclineWarning =
+      '$_bookingsBookingDetailsIconBase/icon_decline_warning.svg';
+  static const String bookingsBookingDetailsIconCancelBooking =
+      '$_bookingsBookingDetailsIconBase/icon_cancel_booking.svg';
+  static const String bookingsBookingDetailsIconProceedToPayment =
+      '$_bookingsBookingDetailsIconBase/icon_proceed_to_payment.svg';
 
   // ==========================================================
   // APP SPLASH SCREEN — assets/icons/spash

@@ -12,6 +12,10 @@ class DetailField extends StatelessWidget {
   final Widget? trailing;
 
   final bool emphasizeValue;
+  final Color? color;
+  final double? radius;
+  final EdgeInsetsGeometry? contentPadding;
+  final double? gap;
 
   const DetailField({
     super.key,
@@ -20,12 +24,19 @@ class DetailField extends StatelessWidget {
     this.child,
     this.trailing,
     this.emphasizeValue = true,
+    this.color,
+    this.radius,
+    this.contentPadding,
+    this.gap,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppContainerBg(
       width: double.infinity,
+      color: color,
+      radius: radius,
+      padding: contentPadding,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -42,7 +53,7 @@ class DetailField extends StatelessWidget {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                SizedBox(height: ResponsiveHelper.spacing(6)),
+                SizedBox(height: gap ?? ResponsiveHelper.spacing(6)),
                 child ??
                     Text(
                       value ?? '',

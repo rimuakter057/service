@@ -10,28 +10,46 @@ import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
-import 'package:nchito/features/user/bookings/presentation/widgets/cancel_booking_bottom_sheet.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
 import 'package:nchito/features/user/home/presentation/widgets/detail_field.dart';
-import 'package:nchito/features/user/home/presentation/widgets/home_sample_data.dart';
+import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
+import 'package:nchito/features/user/bookings/presentation/widgets/cancel_booking_bottom_sheet.dart';
+import 'package:nchito/features/user/bookings/presentation/widgets/decline_quote_bottom_sheet.dart';
+import 'package:nchito/features/user/bookings/presentation/widgets/proceed_to_payment_bottom_sheet.dart';
 
-/// Single booking — reached by tapping an item in Home's "Active Booking"
-/// list.
+/// Single booking — reached by tapping an item on the My Bookings screen.
+///
+/// Shows the plain "Cancel Booking" action for most statuses, and swaps in
+/// a Payment Info card plus "Decline Quote" / "Proceed to Pay" / "Message
+/// Provider" actions once a quote has been accepted (`booking.serviceCost`
+/// is set).
 class BookingDetailsScreen extends StatelessWidget {
-  static const String routeName = '/booking-details';
+  static const String routeName = '/bookings/booking-details';
 
-  final HomeBookingData booking;
+  final BookingHistoryData booking;
 
   const BookingDetailsScreen({super.key, required this.booking});
 
+  bool get _hasQuote => booking.serviceCost != null;
+
   Color get _statusColor {
     switch (booking.status) {
-      case 'Confirmed':
+      case AppText.accepted:
+        return AppColors.blueStatusInfo;
+      case AppText.scheduled:
         return AppColors.emerald400;
-      case 'Cancelled':
+      case AppText.inProgress:
+        return AppColors.blue400;
+      case AppText.completed:
+        return AppColors.emerald400;
+      case AppText.cancelled:
         return AppColors.red400;
+      case AppText.rejected:
+        return AppColors.red;
+      case AppText.disputed:
+        return AppColors.orange400;
       default:
-        return AppColors.amber500;
+        return AppColors.amber500; // Pending
     }
   }
 
@@ -41,13 +59,49 @@ class BookingDetailsScreen extends StatelessWidget {
   static final _fieldPadding = EdgeInsets.all(ResponsiveHelper.padding(14));
   static final _fieldGap = ResponsiveHelper.spacing(8);
 
+  void _onDeclineQuote(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.1),
+      builder: (_) => DeclineQuoteBottomSheet(
+        onConfirm: () {
+          // TODO(backend): call the decline-quote API for `booking` here
+          // once the backend is available.
+        },
+      ),
+    );
+  }
+
+  void _onProceedToPay(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.1),
+      builder: (_) => ProceedToPaymentBottomSheet(
+        serviceCost: booking.serviceCost!,
+        onConfirm: () {
+          // TODO(backend): kick off the payment flow for `booking` here
+          // once the backend is available.
+        },
+      ),
+    );
+  }
+
   void _onCancelBooking(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.1),
-      builder: (_) => CancelBookingBottomSheet(onConfirm: () {}),
+      builder: (_) => CancelBookingBottomSheet(
+        onConfirm: () {
+          // TODO(backend): call the cancel-booking API for `booking` here
+          // once the backend is available.
+        },
+      ),
     );
   }
 
@@ -67,14 +121,12 @@ class BookingDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-        ///service type=============================================
+                    ///service type=============================================
                     Row(
                       children: [
                         BgIcon(
                           assetPath: booking.iconAsset,
                           bgColor: booking.iconBgColor,
-                          iconColor: booking.iconColor,
                           bgSize: ResponsiveHelper.width(44),
                           radius: ResponsiveHelper.borderRadius(11),
                           iconSize: ResponsiveHelper.iconSize(24),
@@ -117,19 +169,15 @@ class BookingDetailsScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ],
-                              ),),
-
+                              ),
+                            ),
                           ],
                         ),
                       ],
                     ),
-
-
-
-
-
                     SizedBox(height: ResponsiveHelper.spacing(20)),
-///location========================================
+
+                    ///location========================================
                     DetailField(
                       label: AppText.location,
                       value: booking.location,
@@ -139,7 +187,8 @@ class BookingDetailsScreen extends StatelessWidget {
                       gap: _fieldGap,
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(10)),
-///date======================================
+
+                    ///date======================================
                     DetailField(
                       label: AppText.date,
                       value: booking.date,
@@ -149,7 +198,8 @@ class BookingDetailsScreen extends StatelessWidget {
                       gap: _fieldGap,
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(10)),
-///time===================================
+
+                    ///time===================================
                     DetailField(
                       label: AppText.time,
                       value: booking.time,
@@ -159,7 +209,8 @@ class BookingDetailsScreen extends StatelessWidget {
                       gap: _fieldGap,
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(10)),
-///details==================================
+
+                    ///details==================================
                     DetailField(
                       label: AppText.details,
                       value: booking.details,
@@ -170,7 +221,8 @@ class BookingDetailsScreen extends StatelessWidget {
                       gap: _fieldGap,
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(10)),
-///provider==========================================
+
+                    ///provider==========================================
                     AppContainerBg(
                       width: double.infinity,
                       color: _fieldColor,
@@ -260,25 +312,129 @@ class BookingDetailsScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+
+                    ///payment info (accepted quote only)===================
+                    if (_hasQuote) ...[
+                      SizedBox(height: ResponsiveHelper.spacing(10)),
+                      AppContainerBg(
+                        width: double.infinity,
+                        color: _fieldColor,
+                        radius: ResponsiveHelper.borderRadius(12),
+                        padding: _fieldPadding,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  width: ResponsiveHelper.width(24),
+                                  height: ResponsiveHelper.width(24),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.brandSoft,
+                                    borderRadius: BorderRadius.circular(
+                                      ResponsiveHelper.borderRadius(6),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'ZMW',
+                                    style: TextStyle(
+                                      fontSize: ResponsiveHelper.fontSize(6),
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.brandPrimary,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: ResponsiveHelper.spacing(6)),
+                                Text(
+                                  AppText.paymentInfo,
+                                  style: context.labelMedium,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: ResponsiveHelper.spacing(10)),
+                            Container(
+                              width: double.infinity,
+                              height: 0.5,
+                              color: _fieldColor,
+                            ),
+                            SizedBox(height: ResponsiveHelper.spacing(10)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  AppText.serviceCost,
+                                  style: context.bodySmall.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    fontStyle: FontStyle.italic,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                Text(
+                                  booking.serviceCost!,
+                                  style: context.labelMedium.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                     SizedBox(height: ResponsiveHelper.spacing(20)),
                   ],
                 ),
               ),
             ),
 
-            ///cancel button ================================
+            ///actions ================================
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: ResponsiveHelper.padding(24),
                 vertical: ResponsiveHelper.padding(16),
               ),
-              child: AppButton(
-                text: AppText.cancelBooking,
-                onPressed: () => _onCancelBooking(context),
-                width: double.infinity,
-                backgroundColor: AppColors.red,
-                textColor: AppColors.white,
-              ),
+              child: _hasQuote
+                  ? Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppButton(
+                                text: AppText.declineQuote,
+                                onPressed: () => _onDeclineQuote(context),
+                                backgroundColor: AppColors.red,
+                                textColor: AppColors.white,
+                              ),
+                            ),
+                            SizedBox(width: ResponsiveHelper.spacing(10)),
+                            Expanded(
+                              child: AppButton(
+                                text: AppText.proceedToPay,
+                                onPressed: () => _onProceedToPay(context),
+                                backgroundColor: AppColors.brandPrimary,
+                                textColor: AppColors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: ResponsiveHelper.spacing(10)),
+                        AppButton(
+                          text: AppText.messageProvider,
+                          onPressed: () {},
+                          width: double.infinity,
+                          backgroundColor: AppColors.brandPrimary,
+                          textColor: AppColors.white,
+                        ),
+                      ],
+                    )
+                  : AppButton(
+                      text: AppText.cancelBooking,
+                      onPressed: () => _onCancelBooking(context),
+                      width: double.infinity,
+                      backgroundColor: AppColors.red,
+                      textColor: AppColors.white,
+                    ),
             ),
           ],
         ),

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nchito/core/common_widgets/app_bottom_nav_bar/app_bottom_nav_bar.dart';
-import 'package:nchito/core/common_widgets/app_button/app_button.dart';
-import 'package:nchito/core/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/core/common_widgets/app_icon/bg_icon.dart';
-import 'package:nchito/core/common_widgets/app_search_field/app_search_field.dart';
+import 'package:nchito/core/common_widgets/app_search_bar/app_search_bar.dart';
 import 'package:nchito/core/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
@@ -14,7 +12,6 @@ import 'package:nchito/features/user/explore/presentation/widgets/explore_empty_
 import 'package:nchito/features/user/explore/presentation/widgets/explore_provider_grid.dart';
 import 'package:nchito/features/user/explore/presentation/widgets/explore_sample_data.dart';
 import 'package:nchito/features/user/explore/presentation/widgets/filter_bottom_sheet.dart';
-import 'package:nchito/features/user/home/presentation/screens/home_screen/home_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
 
 /// Search + filter screen for browsing providers — reached from the bottom
@@ -46,27 +43,6 @@ class _ExploreProviderScreenState extends State<ExploreProviderScreen> {
         .toList();
   }
 
-  static final List<AppBottomNavItem> _navItems = [
-    AppBottomNavItem(
-      iconAsset: AssetsPath.exploreProviderNavHomeOutline,
-      label: AppText.home,
-    ),
-    AppBottomNavItem(
-      iconAsset: AssetsPath.exploreProviderNavExploreActive,
-      label: AppText.explore,
-      activeBackgroundColor: AppColors.brandPrimary,
-    ),
-    AppBottomNavItem(
-      iconAsset: AssetsPath.navBookings,
-      label: AppText.bookings,
-    ),
-    AppBottomNavItem(
-      iconAsset: AssetsPath.navMessages,
-      label: AppText.messages,
-    ),
-    AppBottomNavItem(iconAsset: AssetsPath.navProfile, label: AppText.profile),
-  ];
-
   @override
   void dispose() {
     _searchController.dispose();
@@ -80,17 +56,6 @@ class _ExploreProviderScreenState extends State<ExploreProviderScreen> {
       backgroundColor: Colors.transparent,
       builder: (_) => const FilterBottomSheet(),
     );
-  }
-
-  void _onNavTap(int index) {
-    if (index == 0) {
-      if (context.canPop()) {
-        context.pop();
-      } else {
-        context.go(HomeScreen.routeName);
-      }
-    }
-    // Bookings/Messages/Profile aren't built yet.
   }
 
   @override
@@ -133,33 +98,10 @@ class _ExploreProviderScreenState extends State<ExploreProviderScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AppSearchField(
-                            hint: AppText.search,
-                            searchIconAsset:
-                                AssetsPath.exploreProviderIconSearch,
-                            controller: _searchController,
-                            onChanged: (value) =>
-                                setState(() => _query = value),
-                          ),
-                        ),
-                        SizedBox(width: ResponsiveHelper.spacing(8)),
-                        AppButton(
-                          text: AppText.filter,
-                          onPressed: _onFilterTap,
-                          width: ResponsiveHelper.width(48),
-                          height: ResponsiveHelper.height(48),
-                          backgroundColor: AppColors.brandPrimary,
-                          radius: ResponsiveHelper.borderRadius(12),
-                          child: AppIcon(
-                            assetPath: AssetsPath.exploreProviderIconFilter,
-                            size: ResponsiveHelper.iconSize(18),
-                            color: AppColors.textOnPrimary,
-                          ),
-                        ),
-                      ],
+                    AppSearchBar(
+                      controller: _searchController,
+                      onChanged: (value) => setState(() => _query = value),
+                      onFilterTap: _onFilterTap,
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(20)),
 
@@ -180,11 +122,7 @@ class _ExploreProviderScreenState extends State<ExploreProviderScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: AppBottomNavBar(
-        items: _navItems,
-        currentIndex: 1,
-        onTap: _onNavTap,
-      ),
+      bottomNavigationBar: const UserBottomNavBar(currentIndex: 1),
     );
   }
 }

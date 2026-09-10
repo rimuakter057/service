@@ -9,6 +9,10 @@ import 'package:nchito/features/user/auth/presentation/screens/role_selection/ro
 import 'package:nchito/features/user/auth/presentation/screens/set_new_password/set_new_password_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/signup/signup_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/verify_otp/verify_otp_screen.dart';
+import 'package:nchito/features/user/bookings/presentation/screens/booking_details/booking_details_screen.dart'
+    as bookings;
+import 'package:nchito/features/user/bookings/presentation/screens/bookings_screen.dart';
+import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
 import 'package:nchito/features/user/explore/presentation/screens/explore_provider/explore_provider_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/all_reviews/all_reviews_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/booking_details/booking_details_screen.dart';
@@ -17,13 +21,14 @@ import 'package:nchito/features/user/home/presentation/screens/provider_availabi
 import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/service_categories/service_categories_screen.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_sample_data.dart';
+import 'package:nchito/features/user/messages/presentation/screens/messages_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/profile_screen.dart';
 
 class AppRouter {
   AppRouter._();
 
   static final GoRouter router = GoRouter(
-    initialLocation: SplashScreen.routeName,
+    initialLocation: BookingsScreen.routeName, // TEMP: preview only
     routes: [
       GoRoute(
         path: SplashScreen.routeName,
@@ -89,8 +94,8 @@ class AppRouter {
           final reviewCount = extra is String
               ? extra
               : (extra is HomeProviderData
-                  ? extra.reviewCount
-                  : (extra != null ? extra.toString() : '0'));
+                    ? extra.reviewCount
+                    : (extra != null ? extra.toString() : '0'));
           return AllReviewsScreen(reviewCount: reviewCount);
         },
       ),
@@ -110,6 +115,20 @@ class AppRouter {
       GoRoute(
         path: ProfileScreen.routeName,
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: MessagesScreen.routeName,
+        builder: (context, state) => const MessagesScreen(),
+      ),
+      GoRoute(
+        path: BookingsScreen.routeName,
+        builder: (context, state) => const BookingsScreen(),
+      ),
+      GoRoute(
+        path: bookings.BookingDetailsScreen.routeName,
+        builder: (context, state) => bookings.BookingDetailsScreen(
+          booking: state.extra as BookingHistoryData,
+        ),
       ),
     ],
   );

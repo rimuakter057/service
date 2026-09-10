@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+export 'user_bottom_nav_bar.dart';
+
 import '../../extensions/context_extension/context_extension.dart';
 import '../../helper/responsive_helper/responsive_helper.dart';
 import '../../utils/app_colors/app_colors.dart';

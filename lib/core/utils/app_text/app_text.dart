@@ -284,4 +284,78 @@ class AppText {
   static const String legalAndCompanyInfo = "Legal & Company Info";
   static const String helpAndSupport = "Help & Support";
   static const String logOut = "Log Out";
+
+  // ==========================================================
+  // MESSAGES SCREEN
+  // ==========================================================
+  static const String searchByName = "Search By Name";
+  static const String minAgo = "min ago";
+  static const String robertsJunior = "Roberts Junior";
+  static const String robertsJuniorLastMessage =
+      "Hi, I'd like to confirm the details of my upcoming service.";
+  static const String oliviaMartinez = "Olivia Martinez";
+  static const String oliviaMartinezLastMessage =
+      "Could you please confirm the available time for my booking!";
+  static const String michaelSmith = "Michael Smith";
+  static const String michaelSmithLastMessage =
+      "Hi, I have a question about the service I booked.";
+  static const String davidKim = "David Kim";
+  static const String davidKimLastMessage =
+      "Is there anything I need to prepare before you arrive!";
+  static const String sophiaWhite = "Sophia White";
+  static const String sophiaWhiteLastMessage =
+      "Hi, I would like to check the payment status for my property.";
+
+  // ==========================================================
+  // MY BOOKINGS SCREEN (BOOKINGS_SECTION)
+  // (reuses search, bookings from above)
+  // ==========================================================
+  static const String myBookings = "My Bookings";
+  static const String allBookings = "All Bookings";
+  static const String pending = "Pending";
+  static const String accepted = "Accepted";
+  static const String scheduled = "Scheduled";
+  static const String inProgress = "In Progress";
+  static const String completed = "Completed";
+  static const String cancelled = "Cancelled";
+  static const String rejected = "Rejected";
+  static const String disputed = "Disputed";
+
+  // ==========================================================
+  // BOOKING DETAILS SCREEN (BOOKINGS_SECTION — accepted/quote variant)
+  // (reuses location, date, time, details, provider, cancel, confirm)
+  // ==========================================================
+  static const String paymentInfo = "Payment Info";
+  static const String serviceCost = "Service Cost";
+  static const String declineQuote = "Decline Quote";
+  static const String proceedToPay = "Proceed to Pay";
+  static const String messageProvider = "Message Provider";
+  static const String declineQuoteExclaim = "Decline Quote!";
+  static const String
+  areYouSureYouWantToDeclineThisQuoteTheBookingWillBeMarkedAsCancelledAndYouWontBeAbleToProceedWithThisQuote =
+      "Are you sure you want to decline this quote! The booking will be "
+      "marked as Cancelled and you won't be able to proceed with this quote.";
+
+  // ==========================================================
+  // BOOKING DETAILS SCREEN — Cancel Booking confirmation sheet
+  // ==========================================================
+  static const String cancelBookingExclaim = "Cancel Booking!";
+  static const String
+  areYouSureYouWantToCancelThisBookingYourEligibleBookingAmountWillBeRefundedToYourAccountWithin =
+      "Are you sure you want to cancel this booking! Your eligible booking "
+      "amount will be refunded to your account within ";
+  static const String oneBusinessDay = "1 business day";
+  static const String afterTheCancellationIsProcessed =
+      " after the cancellation is processed.";
+
+  // ==========================================================
+  // BOOKING DETAILS SCREEN — Proceed to Payment confirmation sheet
+  // ==========================================================
+  static const String proceedToPaymentExclaim = "Proceed to Payment!";
+  static const String youReAboutToConfirmThisQuoteFor =
+      "You're about to confirm this quote for ";
+  static const String
+  onceThePaymentIsCompletedTheAgreedPriceWillBeConfirmedForThisBooking =
+      ". Once payment is completed, the agreed price will be confirmed "
+      "for this booking.";
 }

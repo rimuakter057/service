@@ -60,4 +60,14 @@ class AppColors {
 
   static const Color blue50 = Color(0xFFEFF6FF);
   static const Color blue400 = Color(0xFF60A5FA);
+
+  // ==========================================================
+  // BOOKING DETAILS SCREEN tokens
+  // ==========================================================
+  static const Color amber500 = Color(0xFFF59E0B);
+
+  // ==========================================================
+  // BOOKINGS — BOOKING DETAILS SCREEN tokens (accepted/quote variant)
+  // ==========================================================
+  static const Color textDisabled = Color(0xFFB5BCB8);
 }
