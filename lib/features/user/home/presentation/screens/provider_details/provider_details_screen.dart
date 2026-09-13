@@ -21,14 +21,23 @@ class ProviderDetailsScreen extends StatefulWidget {
 
   final HomeProviderData provider;
 
-  const ProviderDetailsScreen({super.key, required this.provider});
+  /// Whether the heart toggle should start filled — e.g. true when opened
+  /// from [FavoriteProvidersScreen], since the provider is already a
+  /// favorite there.
+  final bool initialFavorite;
+
+  const ProviderDetailsScreen({
+    super.key,
+    required this.provider,
+    this.initialFavorite = false,
+  });
 
   @override
   State<ProviderDetailsScreen> createState() => _ProviderDetailsScreenState();
 }
 
 class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
-  bool _isFavorite = false;
+  late bool _isFavorite = widget.initialFavorite;
 
   @override
   Widget build(BuildContext context) {

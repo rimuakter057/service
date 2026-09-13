@@ -286,6 +286,147 @@ class AppText {
   static const String logOut = "Log Out";
 
   // ==========================================================
+  // MY PROFILE SCREEN (PROFILE_SECTION)
+  // (reuses myProfile, name, userNameVaughan from above)
+  // ==========================================================
+  static const String emailPhoneNumber = "Email / Phone Number";
+  static const String userPhoneVaughan = "+260 97 123 4567";
+  static const String updateProfile = "Update Profile";
+
+  // ==========================================================
+  // UPDATE PROFILE SCREEN (PROFILE_SECTION)
+  // (reuses fullName, enterYourFullName from SIGN UP SCREEN and
+  // cancel, confirm from BOOK A SERVICE SCREEN above)
+  // ==========================================================
+  static const String phoneNumber = "Phone Number";
+  static const String enterYourPhoneNumber = "Enter your phone number";
+  static const String saveTheChanges = "Save the changes";
+  static const String
+  yourEmailAddressIsLinkedToYourNchitoAccountAndIsUsedForImportantAccountAndSecurityUpdatesSoItCannotBeChangedAtThisTime =
+      "Your email address is linked to your Nchito account and is used for "
+      "important account and security updates, so it cannot be changed at "
+      "this time.";
+  static const String saveProfileChangesExclaim = "Save Profile Changes!";
+  static const String
+  areYouSureYouWantToSaveYourProfileChangesYourUpdatedInformationWillBeAppliedToYourAccount =
+      "Are you sure you want to save your profile changes! Your updated "
+      "information will be applied to your account.";
+
+  // ==========================================================
+  // ACCOUNT SETTINGS SCREEN (PROFILE_SECTION)
+  // (reuses accountSetting from PROFILE SCREEN above)
+  // ==========================================================
+  static const String changePassword = "Change Password";
+  static const String deleteAccount = "Delete account";
+
+  // ==========================================================
+  // CHANGE PASSWORD SCREEN (PROFILE_SECTION)
+  // (reuses newPassword, confirmNewPassword, enterYourPassword,
+  // saveTheChanges, cancel, confirm from above)
+  // ==========================================================
+  static const String oldPassword = "Old Password";
+  static const String changePasswordExclaim = "Change Password!";
+  static const String
+  areYouSureYouWantToUpdateYourPasswordYoullNeedToUseYourNewPasswordTheNextTimeYouLogIn =
+      "Are you sure you want to update your password! You'll need to use "
+      "your new password the next time you log in.";
+
+  // ==========================================================
+  // DELETE ACCOUNT confirmation sheet (PROFILE_SECTION — Account Settings)
+  // (reuses cancel, confirm from above)
+  // ==========================================================
+  static const String deleteYourNchitoAccountExclaim =
+      "Delete Your Nchito Account!";
+  static const String
+  thisActionIsPermanentYourNchitoAccountBookingHistoryServicesMessagesAndSavedActivityWillBePermanentlyRemovedAndCannotBeRecovered =
+      "This action is permanent. Your Nchito account, booking history, "
+      "services, messages, and saved activity will be permanently removed "
+      "and cannot be recovered.";
+
+  // ==========================================================
+  // CONFIRM ACCOUNT DELETION sheet (PROFILE_SECTION — Account Settings)
+  // (reuses enterYourPassword, cancel from above)
+  // ==========================================================
+  static const String confirmAccountDeletion = "Confirm Account Deletion";
+  static const String
+  forSecurityReasonsWeNeedYourPasswordToContinueOnceDeletedYourAccountAndAssociatedDataCannotBeRestored =
+      "For security reasons, we need your password to continue. Once "
+      "deleted, your account and associated data cannot be restored.";
+  static const String confirmAndDelete = "Confirm & Delete";
+
+  // ==========================================================
+  // LEGAL & COMPANY INFO SCREEN (PROFILE_SECTION)
+  // (reuses legalAndCompanyInfo, contactPhone, userPhoneVaughan from above)
+  // ==========================================================
+  static const String companyName = "Company Name";
+  static const String nchitoCompanyName = "Nchito";
+  static const String businessType = "Business Type";
+  static const String onlineServiceMarketplacePlatform =
+      "Online Service Marketplace Platform";
+  static const String country = "Country";
+  static const String zambia = "Zambia";
+  static const String contactEmail = "Contact Email";
+  static const String supportAtNchitoEmail = "support@Nchito.com";
+  static const String officialWebsite = "Official Website";
+  static const String nchitoWebsite = "www.Nchito.com";
+
+  // ==========================================================
+  // HELP & SUPPORT SCREEN (PROFILE_SECTION)
+  // (reuses submit from LEAVE A REVIEW BOTTOM SHEET above)
+  // ==========================================================
+  static const String faqSectionTitle = "— FAQ";
+  static const String howDoIBookAService = "How do I book a service!";
+  static const String
+  chooseAServiceSelectAProviderChooseAnAvailableDateAndTimeAndConfirmYourBooking =
+      "Choose a service, select a provider, choose an available date and "
+      "time, and confirm your booking.";
+  static const String howDoIOfferAService = "How do I offer a service!";
+  static const String howCanICancelABooking = "How can I cancel a booking!";
+  static const String whatIfIHaveAnIssueWithAService =
+      "What if I have an issue with a service!";
+  static const String howCanIContactAProvider =
+      "How can I contact a provider!";
+  static const String howDoIContactNchitoSupport =
+      "How do I contact Nchito Support!";
+
+  static const String contactUsSectionTitle = "— Contact Us";
+  static const String reasonForContact = "Reason for Contact";
+  static const String enterYourReasonForContact =
+      "Enter your Reason for Contact";
+  static const String descriptionLabel = "Description";
+  static const String pleaseDescribeYourIssueOrQuestionInDetail =
+      "Please describe your issue or question in detail.";
+
+  // ==========================================================
+  // PROFILE SCREEN — Log Out confirmation sheet
+  // (reuses logOut from PROFILE SCREEN above)
+  // ==========================================================
+  static const String logOutExclaim = "Log Out!";
+  static const String areYouSureYouWantToLogOutOfYourNchitoAccount =
+      "Are you sure you want to log out of your Nchito account!";
+
+  // ==========================================================
+  // NOTIFICATIONS SCREEN (NOTIFICATIONS_SECTION)
+  // ==========================================================
+  static const String notifications = "Notifications";
+  static const String notifYourBookingWithRobertsJuniorHasBeenAccepted =
+      "Your booking with Roberts Junior has been accepted.";
+  static const String notifYourBookingRequestWasDeclinedByTheProvider =
+      "Your booking request was declined by the provider.";
+  static const String notifYourBookingHasBeenCancelled =
+      "Your booking has been cancelled.";
+  static const String notifYourServiceIsScheduledForTomorrowAt1000Am =
+      "Your service is scheduled for tomorrow at 10:00 AM.";
+  static const String notifYourProviderHasMarkedTheServiceAsCompleted =
+      "Your provider has marked the service as completed.";
+  static const String notifYourEligibleRefundHasBeenProcessed =
+      "Your eligible refund has been processed.";
+  static const String notifThereSAnUpdateRegardingYourReportedIssue =
+      "There's an update regarding your reported issue.";
+  static const String notifRobertsJuniorSentYouANewMessage =
+      "Roberts Junior sent you a new message.";
+
+  // ==========================================================
   // MESSAGES SCREEN
   // ==========================================================
   static const String searchByName = "Search By Name";
@@ -305,6 +446,44 @@ class AppText {
   static const String sophiaWhite = "Sophia White";
   static const String sophiaWhiteLastMessage =
       "Hi, I would like to check the payment status for my property.";
+  static const String block = "Block";
+  static const String unblock = "Unblock";
+  static const String delete = "Delete";
+
+  // ==========================================================
+  // CHAT SCREEN (MESSAGES_SECTION)
+  // ==========================================================
+  static const String today = "TODAY";
+  static const String enterMessage = "Enter message...";
+  static const String chatGreatThankYou = "Great, thank you!";
+  static const String
+  chatHiIJustWantedToConfirmOurAppointmentForTomorrowAt10AmDoesThatWorkForYou =
+      "Hi, I just wanted to confirm our appointment for tomorrow at 10 AM. "
+      "Does that work for you!";
+  static const String chatYesThatWorksForMeIllSeeYouTomorrowAt10Am =
+      "Yes, that works for me. I'll see you tomorrow at 10 AM.";
+  static const String blockThisProviderExclaim = "Block This Provider!";
+  static const String
+  areYouSureYouWantToBlockThisProviderYouWontBeAbleToSendOrReceiveMessagesWithEachOther =
+      "Are you sure you want to block this provider! You won't be able to "
+      "send or receive messages with each other.";
+  static const String deleteConversationExclaim = "Delete Conversation!";
+  static const String
+  thisWillPermanentlyRemoveThisConversationFromYourMessages =
+      "This will permanently remove this conversation from your messages.";
+  static const String youHaveBlockedThisProvider =
+      "You have blocked this Provider";
+  static const String youCantSendOrReceiveMessagesInThisConversation =
+      "You can't send or receive messages in this conversation.";
+  static const String unblockProvider = "Unblock Provider";
+  static const String unblockThisProviderExclaim = "Unblock This Provider!";
+  static const String
+  doYouWantToUnblockThisProviderAndAllowMessagesAgain =
+      "Do you want to unblock this provider and allow messages again!";
+  static const String messagingIsUnavailable = "Messaging is unavailable";
+  static const String youCanNoLongerSendMessagesInThisConversation =
+      "You can no longer send messages in this conversation.";
+  static const String deleteConversation = "Delete Conversation";
 
   // ==========================================================
   // MY BOOKINGS SCREEN (BOOKINGS_SECTION)
@@ -448,4 +627,115 @@ class AppText {
   static const String submitIssueExclaim = "Submit Issue!";
   static const String areYouSureYouWantToSubmitThisIssue =
       "Are you sure you want to submit this issue? Our team will review the details and get back to you.";
+
+  // ==========================================================
+  // VERIFY IDENTITY SCREEN (PROVIDER_AUTH_SECTION)
+  // ==========================================================
+  static const String verifyYourIdentity = "Verify Your Identity";
+  static const String
+  toKeepYourProviderAccountSecureAndReadyToOfferServicesPleaseVerifyYourIdentity =
+      "To keep your provider account secure and ready to offer services, please verify your identity.";
+  static const String identificationType = "Identification Type";
+  static const String selectYourIdType = "Select your ID type";
+  static const String nationalId = "National ID";
+  static const String passport = "Passport";
+  static const String driversLicense = "Driver's License";
+  static const String uploadId = "Upload ID";
+  static const String uploadAClearPhotoOfYourId =
+      "Upload a clear photo of your ID";
+  static const String saveAndContinue = "Save & Continue";
+
+  // ==========================================================
+  // CONNECT PAYMENTS SCREEN (PROVIDER_AUTH_SECTION)
+  // (reuses saveAndContinue from above)
+  // ==========================================================
+  static const String connectPayments = "Connect Payments";
+  static const String
+  connectYourMobileMoneyAccountToReceiveYourNchitoEarningsSecurely =
+      "Connect your mobile money account to receive your Nchito earnings "
+      "securely.";
+  static const String connected = "Connected";
+  static const String connect = "Connect";
+  static const String aboutNchitoPayments = "About Nchito Payments";
+  static const String
+  yourNchitoEarningsWillBeTransferredToYourConnectedMobileMoneyAccountAfterEligibleBookingsAreCompleted =
+      "Your Nchito earnings will be transferred to your connected mobile "
+      "money account after eligible bookings are completed.";
+  static const String skipForNow = "Skip for now";
+
+  // ==========================================================
+  // LINK PAYMENT ACCOUNT SCREEN (DPO-branded, standalone — not yet wired
+  // into a flow; reuses dpoGroup, thinkPayments from DPO CHECKOUT SCREEN)
+  // ==========================================================
+  static const String linkPaymentAccount = "Link Payment Account";
+  static const String secured = "Secured";
+  static const String connectYourMobileMoneyAccount =
+      "Connect your mobile money account";
+  static const String
+  payoutsGoOnlyToAVerifiedAccountWeSendA6DigitSmsToConfirmYouOwnTheNumber =
+      "Payouts go only to a verified account. We send a 6-digit SMS to "
+      "confirm you own the number.";
+  static const String yourWalletPinIsNeverCollected =
+      "Your wallet PIN is never collected";
+  static const String
+  weOnlyVerifyNumberOwnershipViaSmsOtpNoPinNoPasswordEver =
+      "We only verify number ownership via SMS OTP — no PIN, no password, "
+      "ever.";
+  static const String selectYourNetwork = "SELECT YOUR NETWORK";
+  static const String airtelMoney = "Airtel Money";
+  static const String airtelMoneySeries = "097 · 099 series";
+  static const String mtnMomo = "MTN MoMo";
+  static const String mtnMomoSeries = "096 · 076 series";
+  static const String zamtelKwacha = "Zamtel Kwacha";
+  static const String zamtelKwachaSeries = "095 series";
+  static const String poweredByDpoGroupThinkPayments =
+      "Powered by DPO GROUP · Think Payments";
+
+  // ==========================================================
+  // PROVIDER HOME SCREEN (PROVIDER_HOME_SECTION)
+  // (reuses home, bookings, messages, profile, viewAll from above)
+  // ==========================================================
+  static const String services = "Services";
+  static const String robertsJuniorProviderName = "Roberts Junior";
+  static const String todaysOverview = "Today's Overview";
+  static const String viewCalendar = "View Calendar";
+  static const String pendingRequests = "Pending Requests";
+  static const String upcomingBookings = "Upcoming Bookings";
+  static const String todaysBookings = "Today's Bookings";
+  static const String newBookingRequests = "New Booking Requests";
+
+  // ==========================================================
+  // PROVIDER BOOKING DETAILS SCREEN (PROVIDER_BOOKINGS_SECTION)
+  // (reuses bookingDetails, location, date, time, details, service,
+  // pending from above)
+  // ==========================================================
+  static const String requestedBy = "Requested By";
+  static const String reject = "Reject";
+  static const String accept = "Accept";
+  static const String messageCustomer = "Message Customer";
+  static const String customerDetails = "Customer Details";
+
+  // ==========================================================
+  // MY SERVICES SCREEN (PROVIDER_SERVICES_SECTION)
+  // ==========================================================
+  static const String myServices = "My Services";
+  static const String noServicesYet = "No Services Yet";
+  static const String
+  youHaventAddedAnyServicesToYourProfileYetCreateYourFirstServiceToStartReceivingBookingRequests =
+      "You haven't added any services to your profile yet. Create your "
+      "first service to start receiving booking requests.";
+  static const String addService = "Add Service";
+
+  // ==========================================================
+  // PROVIDER PROFILE SCREEN (PROVIDER_PROFILE_SECTION)
+  // (reuses profile, robertsJuniorProviderName, verifyYourIdentity, more,
+  // myProfile, accountSetting, termsAndCondition, privacyPolicy,
+  // legalAndCompanyInfo, helpAndSupport, logOut from above)
+  // ==========================================================
+  static const String completeYourAccount = "COMPLETE YOUR ACCOUNT";
+  static const String activateYourPayment = "Activate your payment";
+  static const String setAvailability = "Set availability";
+  static const String general = "General";
+  static const String availability = "Availability";
+  static const String earnings = "Earnings";
 }

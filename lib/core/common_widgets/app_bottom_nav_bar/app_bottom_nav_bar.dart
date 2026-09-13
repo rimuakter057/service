@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+export 'provider_bottom_nav_bar.dart';
 export 'user_bottom_nav_bar.dart';
 
 import '../../extensions/context_extension/context_extension.dart';

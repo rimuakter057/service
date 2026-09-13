@@ -18,6 +18,13 @@ class ProfileMenuTile extends StatelessWidget {
   final Color? tileBgColor;
   final Color? titleColor;
   final bool showChevron;
+  final double? radius;
+  final EdgeInsetsGeometry? contentPadding;
+  final double? iconBoxSize;
+
+  /// Corner radius of the icon box. Defaults to a full circle when null.
+  final double? iconBoxRadius;
+  final double? chevronSize;
 
   const ProfileMenuTile({
     super.key,
@@ -31,28 +38,42 @@ class ProfileMenuTile extends StatelessWidget {
     this.tileBgColor,
     this.titleColor,
     this.showChevron = true,
+    this.radius,
+    this.contentPadding,
+    this.iconBoxSize,
+    this.iconBoxRadius,
+    this.chevronSize,
   });
 
   @override
   Widget build(BuildContext context) {
+    final resolvedIconBoxSize = iconBoxSize ?? ResponsiveHelper.width(36);
+
     return GestureDetector(
       onTap: onTap,
       child: AppContainerBg(
         color: tileBgColor ?? AppColors.bgCard,
-        radius: ResponsiveHelper.borderRadius(16),
-        padding: EdgeInsets.symmetric(
-          horizontal: ResponsiveHelper.padding(16),
-          vertical: ResponsiveHelper.padding(14),
-        ),
+        radius: radius ?? ResponsiveHelper.borderRadius(16),
+        padding:
+            contentPadding ??
+            EdgeInsets.symmetric(
+              horizontal: ResponsiveHelper.padding(16),
+              vertical: ResponsiveHelper.padding(14),
+            ),
         child: Row(
           children: [
             icon ??
                 Container(
-                  width: ResponsiveHelper.width(36),
-                  height: ResponsiveHelper.width(36),
+                  width: resolvedIconBoxSize,
+                  height: resolvedIconBoxSize,
                   decoration: BoxDecoration(
                     color: iconBgColor ?? AppColors.brandSoft,
-                    shape: BoxShape.circle,
+                    shape: iconBoxRadius == null
+                        ? BoxShape.circle
+                        : BoxShape.rectangle,
+                    borderRadius: iconBoxRadius != null
+                        ? BorderRadius.circular(iconBoxRadius!)
+                        : null,
                   ),
                   alignment: Alignment.center,
                   child: assetPath != null
@@ -80,7 +101,7 @@ class ProfileMenuTile extends StatelessWidget {
             if (showChevron)
               Icon(
                 Icons.chevron_right_rounded,
-                size: ResponsiveHelper.iconSize(20),
+                size: chevronSize ?? ResponsiveHelper.iconSize(20),
                 color: AppColors.textBlackPrimary,
               ),
           ],

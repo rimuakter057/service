@@ -3,14 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:nchito/core/common_widgets/app_container_bg/app_container_bg.dart';
 import 'package:nchito/core/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/core/common_widgets/auth_header/auth_header.dart';
+import 'package:nchito/core/constants/user_role.dart';
 import 'package:nchito/core/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/features/user/auth/presentation/screens/signup/signup_screen.dart';
-
-enum _ServiceRole { find, offer }
 
 class RoleSelectionScreen extends StatefulWidget {
   static const String routeName = '/role-selection';
@@ -22,10 +21,11 @@ class RoleSelectionScreen extends StatefulWidget {
 }
 
 class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
-  _ServiceRole? _selectedRole;
+  UserRole? _selectedRole;
 
   void _onContinuePressed() {
-    if (_selectedRole == null) {
+    final role = _selectedRole;
+    if (role == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Please choose how you'd like to use Nchito"),
@@ -33,7 +33,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
       );
       return;
     }
-    context.push(SignUpScreen.routeName);
+    context.push(SignUpScreen.routeName, extra: role);
   }
 
   @override
@@ -68,9 +68,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                               illustration: AssetsPath
                                   .splashScreenIllustrationFindService,
                               label: AppText.findAService,
-                              selected: _selectedRole == _ServiceRole.find,
+                              selected: _selectedRole == UserRole.user,
                               onTap: () => setState(
-                                () => _selectedRole = _ServiceRole.find,
+                                () => _selectedRole = UserRole.user,
                               ),
                             ),
                           ),
@@ -80,9 +80,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                               illustration: AssetsPath
                                   .splashScreenIllustrationOfferService,
                               label: AppText.offerAService,
-                              selected: _selectedRole == _ServiceRole.offer,
+                              selected: _selectedRole == UserRole.provider,
                               onTap: () => setState(
-                                () => _selectedRole = _ServiceRole.offer,
+                                () => _selectedRole = UserRole.provider,
                               ),
                             ),
                           ),

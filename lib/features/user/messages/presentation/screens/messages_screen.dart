@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nchito/core/common_widgets/app_bottom_nav_bar/app_bottom_nav_bar.dart';
 import 'package:nchito/core/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/core/common_widgets/app_top_bar/app_top_bar.dart';
@@ -7,6 +8,7 @@ import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
+import 'package:nchito/features/user/messages/presentation/screens/chat_screen.dart';
 import 'package:nchito/features/user/messages/presentation/widgets/message_list_tile.dart';
 import 'package:nchito/features/user/messages/presentation/widgets/message_sample_data.dart';
 
@@ -14,8 +16,11 @@ import 'package:nchito/features/user/messages/presentation/widgets/message_sampl
 /// from the bottom nav's "Messages" tab.
 class MessagesScreen extends StatefulWidget {
   static const String routeName = '/messages';
+  static const String providerRouteName = '/provider/messages';
 
-  const MessagesScreen({super.key});
+  final bool isProvider;
+
+  const MessagesScreen({super.key, this.isProvider = false});
 
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
@@ -80,7 +85,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     timeLabel: conversation.timeLabel,
                     unreadCount: conversation.unreadCount,
                     isSelected: conversation.isSelected,
-                    onTap: () {},
+                    onTap: () => context.push(
+                      ChatScreen.routeName,
+                      extra: conversation,
+                    ),
                   );
                 },
               ),
@@ -88,7 +96,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const UserBottomNavBar(currentIndex: 3),
+      bottomNavigationBar: widget.isProvider
+          ? const ProviderBottomNavBar(currentIndex: 3)
+          : const UserBottomNavBar(currentIndex: 3),
     );
   }
 }

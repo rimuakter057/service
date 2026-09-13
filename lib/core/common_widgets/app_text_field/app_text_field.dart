@@ -13,6 +13,8 @@ class AppTextField extends StatelessWidget {
   final bool obscureText;
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
+  final int maxLines;
+  final int? minLines;
 
   const AppTextField({
     super.key,
@@ -23,6 +25,8 @@ class AppTextField extends StatelessWidget {
     this.obscureText = false,
     this.suffixIcon,
     this.validator,
+    this.maxLines = 1,
+    this.minLines,
   });
 
   @override
@@ -36,6 +40,8 @@ class AppTextField extends StatelessWidget {
           controller: controller,
           keyboardType: keyboardType,
           obscureText: obscureText,
+          maxLines: maxLines,
+          minLines: minLines,
           style: context.bodyMedium,
           validator: validator,
           autovalidateMode: AutovalidateMode.onUserInteraction,

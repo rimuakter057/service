@@ -95,6 +95,12 @@ flutter:
     - assets/images/user/messages_section/messages/
     - assets/icons/user/bookings_section/my_bookings/
     - assets/icons/user/bookings_section/booking_details/
+    - assets/icons/user/profile_section/update_profile/
+    - assets/icons/user/profile_section/account_settings/
+    - assets/icons/user/notifications_section/notifications/
+    - assets/icons/provider/auth_section/connect_payments/
+    - assets/images/provider/auth_section/connect_payments/
+    - assets/icons/provider/home_section/home/
     - assets/icons/spash/
 
   # An image asset can refer to one or more resolution-specific "variants", see

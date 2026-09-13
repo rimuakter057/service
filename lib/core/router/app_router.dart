@@ -1,5 +1,16 @@
 import 'package:go_router/go_router.dart';
+import 'package:nchito/core/constants/user_role.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/connect_payments/connect_payments_screen.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/link_payment_account/link_payment_account_screen.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/verify_identity/verify_identity_screen.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/booking_details/provider_booking_details_screen.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/customer_details/customer_details_screen.dart';
+import 'package:nchito/features/provider/bookings/presentation/widgets/provider_booking_sample_data.dart';
+import 'package:nchito/features/provider/home/presentation/screens/home_screen/provider_home_screen.dart';
+import 'package:nchito/features/provider/messages/presentation/screens/provider_messages_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/profile_screen/provider_profile_screen.dart';
+import 'package:nchito/features/provider/services/presentation/screens/my_services/my_services_screen.dart';
 import 'package:nchito/features/splash/presentation/screens/splash_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/age_confirmation/age_confirmation_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/forgot_password/forgot_password_screen.dart';
@@ -23,8 +34,18 @@ import 'package:nchito/features/user/home/presentation/screens/provider_availabi
 import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/service_categories/service_categories_screen.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_sample_data.dart';
+import 'package:nchito/features/user/messages/presentation/screens/chat_screen.dart';
 import 'package:nchito/features/user/messages/presentation/screens/messages_screen.dart';
+import 'package:nchito/features/user/messages/presentation/widgets/message_sample_data.dart';
+import 'package:nchito/features/user/notifications/presentation/screens/notifications_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/account_settings/account_settings_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/favorite_providers/favorite_providers_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/help_support/help_support_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/legal_company_info/legal_company_info_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/change_password/change_password_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/my_profile/my_profile_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/profile_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/update_profile/update_profile_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -46,7 +67,8 @@ class AppRouter {
       ),
       GoRoute(
         path: SignUpScreen.routeName,
-        builder: (context, state) => const SignUpScreen(),
+        builder: (context, state) =>
+            SignUpScreen(role: state.extra as UserRole? ?? UserRole.user),
       ),
       GoRoute(
         path: VerifyOtpScreen.routeName,
@@ -73,6 +95,51 @@ class AppRouter {
         builder: (context, state) => const RoleSelectionScreen(),
       ),
       GoRoute(
+        path: VerifyIdentityScreen.routeName,
+        builder: (context, state) => const VerifyIdentityScreen(),
+      ),
+      GoRoute(
+        path: ConnectPaymentsScreen.routeName,
+        builder: (context, state) => const ConnectPaymentsScreen(),
+      ),
+      GoRoute(
+        path: LinkPaymentAccountScreen.routeName,
+        builder: (context, state) => const LinkPaymentAccountScreen(),
+      ),
+      GoRoute(
+        path: ProviderHomeScreen.routeName,
+        builder: (context, state) => const ProviderHomeScreen(),
+      ),
+      GoRoute(
+        path: MyServicesScreen.routeName,
+        builder: (context, state) => const MyServicesScreen(),
+      ),
+      GoRoute(
+        path: ProviderMessagesScreen.routeName,
+        builder: (context, state) => const ProviderMessagesScreen(),
+      ),
+      GoRoute(
+        path: ProviderProfileScreen.routeName,
+        builder: (context, state) => const ProviderProfileScreen(),
+      ),
+      GoRoute(
+        path: ProviderBookingDetailsScreen.routeName,
+        builder: (context, state) => ProviderBookingDetailsScreen(
+          booking: state.extra as ProviderBookingData,
+        ),
+      ),
+      GoRoute(
+        path: CustomerDetailsScreen.routeName,
+        builder: (context, state) {
+          final booking = state.extra as ProviderBookingData;
+          return CustomerDetailsScreen(
+            customerName: booking.customerName,
+            customerEmailOrPhone: booking.customerEmailOrPhone,
+            customerPhoto: booking.customerPhoto,
+          );
+        },
+      ),
+      GoRoute(
         path: AgeConfirmationScreen.routeName,
         builder: (context, state) => const AgeConfirmationScreen(),
       ),
@@ -81,13 +148,25 @@ class AppRouter {
         builder: (context, state) => const HomeScreen(),
       ),
       GoRoute(
+        path: NotificationsScreen.routeName,
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
         path: ServiceCategoriesScreen.routeName,
         builder: (context, state) => const ServiceCategoriesScreen(),
       ),
       GoRoute(
         path: ProviderDetailsScreen.routeName,
-        builder: (context, state) =>
-            ProviderDetailsScreen(provider: state.extra as HomeProviderData),
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is Map<String, dynamic>) {
+            return ProviderDetailsScreen(
+              provider: extra['provider'] as HomeProviderData,
+              initialFavorite: extra['isFavorite'] as bool? ?? false,
+            );
+          }
+          return ProviderDetailsScreen(provider: extra as HomeProviderData);
+        },
       ),
       GoRoute(
         path: AllReviewsScreen.routeName,
@@ -133,8 +212,41 @@ class AppRouter {
         builder: (context, state) => const ProfileScreen(),
       ),
       GoRoute(
+        path: MyProfileScreen.routeName,
+        builder: (context, state) => const MyProfileScreen(),
+      ),
+      GoRoute(
+        path: AccountSettingsScreen.routeName,
+        builder: (context, state) => const AccountSettingsScreen(),
+      ),
+      GoRoute(
+        path: ChangePasswordScreen.routeName,
+        builder: (context, state) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: FavoriteProvidersScreen.routeName,
+        builder: (context, state) => const FavoriteProvidersScreen(),
+      ),
+      GoRoute(
+        path: LegalCompanyInfoScreen.routeName,
+        builder: (context, state) => const LegalCompanyInfoScreen(),
+      ),
+      GoRoute(
+        path: HelpSupportScreen.routeName,
+        builder: (context, state) => const HelpSupportScreen(),
+      ),
+      GoRoute(
+        path: UpdateProfileScreen.routeName,
+        builder: (context, state) => const UpdateProfileScreen(),
+      ),
+      GoRoute(
         path: MessagesScreen.routeName,
         builder: (context, state) => const MessagesScreen(),
+      ),
+      GoRoute(
+        path: ChatScreen.routeName,
+        builder: (context, state) =>
+            ChatScreen(conversation: state.extra as MessageData),
       ),
       GoRoute(
         path: BookingsScreen.routeName,

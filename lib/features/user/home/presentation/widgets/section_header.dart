@@ -8,8 +8,14 @@ import 'package:nchito/core/utils/app_text/app_text.dart';
 class SectionHeader extends StatelessWidget {
   final String title;
   final VoidCallback? onViewAllTap;
+  final String? actionLabel;
 
-  const SectionHeader({super.key, required this.title, this.onViewAllTap});
+  const SectionHeader({
+    super.key,
+    required this.title,
+    this.onViewAllTap,
+    this.actionLabel,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +27,7 @@ class SectionHeader extends StatelessWidget {
           GestureDetector(
             onTap: onViewAllTap,
             child: Text(
-              AppText.viewAll,
+              actionLabel ?? AppText.viewAll,
               style: context.bodyMedium.copyWith(
                 color: AppColors.blueStatusInfo,
               ),

@@ -336,6 +336,14 @@ class AssetsPath {
       '$_messagesIconBase/icon_search.svg';
   static const String messagesIconOnlineBadge =
       '$_messagesIconBase/icon_online_badge.svg';
+  static const String messagesIconBlock = '$_messagesIconBase/icon_block.svg';
+  static const String messagesIconUnblock =
+      '$_messagesIconBase/icon_unblock.svg';
+  static const String messagesIconDelete =
+      '$_messagesIconBase/icon_delete.svg';
+  static const String messagesIconSend = '$_messagesIconBase/icon_send.svg';
+  static const String messagesIconBlockedChat =
+      '$_messagesIconBase/icon_blocked_chat.svg';
 
   static const String messagesAvatarRobertsJunior =
       '$_messagesImageBase/avatar_roberts_junior.png';
@@ -393,6 +401,102 @@ class AssetsPath {
       '$_bookingsBookingDetailsIconBase/icon_proceed_to_payment.svg';
   static const String bookingsBookingDetailsIconReschedule =
       '$_bookingsBookingDetailsIconBase/icon_reschedule.svg';
+
+  // ==========================================================
+  // PROFILE_SECTION (bookings_section is done — new screens go here)
+  // ==========================================================
+
+  // UPDATE PROFILE SCREEN — assets/icons/user/profile_section/update_profile
+  // (reuses providerDetailsIconBack from HOME_SECTION for the header back
+  // button — identical asset)
+  static const String _updateProfileIconBase =
+      'assets/icons/user/profile_section/update_profile';
+
+  static const String updateProfileIconCamera =
+      '$_updateProfileIconBase/icon_camera.svg';
+  static const String updateProfileIconEmailLocked =
+      '$_updateProfileIconBase/icon_email_locked.svg';
+  static const String updateProfileIconInformation =
+      '$_updateProfileIconBase/icon_information.svg';
+
+  // ACCOUNT SETTINGS SCREEN — assets/icons/user/profile_section/account_settings
+  // (reuses providerDetailsIconBack for the header back button and
+  // Icons.chevron_right_rounded for the row chevrons — identical/equivalent)
+  static const String _accountSettingsIconBase =
+      'assets/icons/user/profile_section/account_settings';
+
+  static const String accountSettingsIconChangePassword =
+      '$_accountSettingsIconBase/icon_change_password.svg';
+  static const String accountSettingsIconDeleteAccount =
+      '$_accountSettingsIconBase/icon_delete_account.svg';
+  static const String accountSettingsIconClose =
+      '$_accountSettingsIconBase/icon_close.svg';
+
+  // ==========================================================
+  // NOTIFICATIONS_SECTION (profile_section is done — new screens go here)
+  // ==========================================================
+
+  // NOTIFICATIONS SCREEN — assets/icons/user/notifications_section/notifications
+  // (reached from the bell icon on Home; reuses providerDetailsIconBack for
+  // the header back button and logInIconEyeToggle for the "mark read"
+  // trailing action — identical/equivalent assets)
+  static const String _notificationsIconBase =
+      'assets/icons/user/notifications_section/notifications';
+
+  static const String notificationsIconMark =
+      '$_notificationsIconBase/icon_notification_mark.svg';
+
+  // ==========================================================
+  // PROVIDER app — assets/icons/provider/<screen>, assets/images/provider/<screen>
+  // (separate top-level tree from the user app's assets/icons/user/... above)
+  // ==========================================================
+
+  // PROVIDER_AUTH_SECTION (notifications_section is done — new screens go here)
+
+  // VERIFY IDENTITY SCREEN — no new asset files; reuses
+  // filterIconDropdownChevron from EXPLORE_PROVIDER_SECTION for the
+  // Identification Type field and Icons.upload_file_outlined /
+  // Icons.insert_drive_file_outlined / Icons.delete_outline for the
+  // upload box (identical/equivalent to the Report an Issue upload UI)
+
+  // CONNECT PAYMENTS SCREEN — assets/icons/provider/auth_section/connect_payments,
+  // assets/images/provider/auth_section/connect_payments
+  // (reuses Icons.info_outline_rounded for the "About Nchito Payments" card icon)
+  static const String _connectPaymentsIconBase =
+      'assets/icons/provider/auth_section/connect_payments';
+  static const String _connectPaymentsImageBase =
+      'assets/images/provider/auth_section/connect_payments';
+
+  static const String connectPaymentsIconBank =
+      '$_connectPaymentsIconBase/icon_bank.svg';
+  static const String connectPaymentsIconLink =
+      '$_connectPaymentsIconBase/icon_link.svg';
+  static const String connectPaymentsIconConnected =
+      '$_connectPaymentsIconBase/icon_connected.svg';
+  static const String connectPaymentsIconConnect =
+      '$_connectPaymentsIconBase/icon_connect.svg';
+  static const String connectPaymentsIconSkipArrow =
+      '$_connectPaymentsIconBase/icon_skip_arrow.svg';
+
+  static const String connectPaymentsLogoAirtelMoney =
+      '$_connectPaymentsImageBase/logo_airtel_money.png';
+  static const String connectPaymentsLogoMtnMoney =
+      '$_connectPaymentsImageBase/logo_mtn_money.png';
+  static const String connectPaymentsLogoZamtelMoney =
+      '$_connectPaymentsImageBase/logo_zamtel_money.png';
+
+  // PROVIDER_HOME_SECTION (provider_auth_section is done — new screens go here)
+
+  // PROVIDER HOME SCREEN — assets/icons/provider/home_section/home
+  // (reuses navHome, navBookings, navMessages, navProfile from the user
+  // app's HOME SCREEN for the bottom nav bar — identical assets — and
+  // categoryCleaning/categoryMoving/categoryElectrical for the booking
+  // request tiles' service badges)
+  static const String _providerHomeIconBase =
+      'assets/icons/provider/home_section/home';
+
+  static const String providerHomeIconServices =
+      '$_providerHomeIconBase/icon_services.svg';
 
   // ==========================================================
   // APP SPLASH SCREEN — assets/icons/spash

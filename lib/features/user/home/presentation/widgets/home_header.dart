@@ -8,7 +8,9 @@ import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
 
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({super.key});
+  final VoidCallback? onNotificationTap;
+
+  const HomeHeader({super.key, this.onNotificationTap});
 
   @override
   Widget build(BuildContext context) {
@@ -74,12 +76,15 @@ class HomeHeader extends StatelessWidget {
                   ],
                 ),
               ),
-              BgIcon(
-                assetPath: AssetsPath.iconNotification,
-                bgColor: AppColors.brandSoft,
-                iconColor: AppColors.brandPrimary,
-                bgSize: ResponsiveHelper.width(44),
-                radius: ResponsiveHelper.width(22),
+              GestureDetector(
+                onTap: onNotificationTap,
+                child: BgIcon(
+                  assetPath: AssetsPath.iconNotification,
+                  bgColor: AppColors.brandSoft,
+                  iconColor: AppColors.brandPrimary,
+                  bgSize: ResponsiveHelper.width(44),
+                  radius: ResponsiveHelper.width(22),
+                ),
               ),
             ],
           ),

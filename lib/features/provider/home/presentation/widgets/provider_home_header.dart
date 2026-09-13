@@ -1,0 +1,100 @@
+import 'package:flutter/material.dart';
+import 'package:nchito/core/common_widgets/app_icon/app_icon.dart';
+import 'package:nchito/core/common_widgets/app_icon/bg_icon.dart';
+import 'package:nchito/core/extensions/context_extension/context_extension.dart';
+import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/core/utils/app_colors/app_colors.dart';
+import 'package:nchito/core/utils/app_text/app_text.dart';
+import 'package:nchito/core/utils/assets_path/assets_path.dart';
+
+/// Provider Home header — avatar, greeting, location, and a notification
+/// bell. Distinct from the user app's [HomeHeader] (no search bar/action
+/// box here, and the avatar/name pair is left-aligned with a bordered
+/// square photo rather than a circular one).
+class ProviderHomeHeader extends StatelessWidget {
+  final VoidCallback? onNotificationTap;
+
+  const ProviderHomeHeader({super.key, this.onNotificationTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: MediaQuery.paddingOf(context).top + ResponsiveHelper.padding(12),
+        left: ResponsiveHelper.padding(20),
+        right: ResponsiveHelper.padding(20),
+        bottom: ResponsiveHelper.padding(12),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(10)),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.borderDefault),
+                borderRadius: BorderRadius.circular(
+                  ResponsiveHelper.borderRadius(10),
+                ),
+              ),
+              child: AppIcon(
+                assetPath: AssetsPath.messagesAvatarRobertsJunior,
+                size: ResponsiveHelper.width(36),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SizedBox(width: ResponsiveHelper.spacing(9)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Hello ${AppText.robertsJuniorProviderName}',
+                  overflow: TextOverflow.ellipsis,
+                  style: context.titleMedium.copyWith(
+                    fontWeight: FontWeight.w600,
+                    fontSize: ResponsiveHelper.fontSize(17),
+                    color: AppColors.textBlackPrimary,
+                  ),
+                ),
+                SizedBox(height: ResponsiveHelper.spacing(4)),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppIcon(
+                      assetPath: AssetsPath.iconLocation,
+                      size: ResponsiveHelper.iconSize(14),
+                    ),
+                    SizedBox(width: ResponsiveHelper.spacing(4)),
+                    Text(
+                      'Lusaka, Zambia',
+                      style: context.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: ResponsiveHelper.spacing(2)),
+                    AppIcon(
+                      assetPath: AssetsPath.dropDown,
+                      size: ResponsiveHelper.iconSize(14),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: onNotificationTap,
+            child: BgIcon(
+              assetPath: AssetsPath.iconNotification,
+              bgColor: AppColors.brandSoft,
+              iconColor: AppColors.brandPrimary,
+              bgSize: ResponsiveHelper.width(43),
+              radius: ResponsiveHelper.width(22),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

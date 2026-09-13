@@ -70,4 +70,22 @@ class AppColors {
   // BOOKINGS — BOOKING DETAILS SCREEN tokens (accepted/quote variant)
   // ==========================================================
   static const Color textDisabled = Color(0xFFB5BCB8);
+
+  // ==========================================================
+  // UPDATE PROFILE SCREEN tokens ("Brand Gradient" Figma style — the
+  // photo-edit badge on the avatar)
+  // ==========================================================
+  static const Color brandGradientStart = Color(0xFF51FF00);
+  static const Color brandGradientEnd = Color(0xFF0A321E);
+
+  // ==========================================================
+  // CONNECT PAYMENTS SCREEN tokens (PROVIDER_AUTH_SECTION)
+  // ==========================================================
+  static const Color statusSuccess = Color(0xFF22A06B);
+
+  // ==========================================================
+  // PROVIDER HOME SCREEN tokens (PROVIDER_HOME_SECTION)
+  // ==========================================================
+  static const Color orange100 = Color(0xFFFFEDD5);
+  static const Color emerald100 = Color(0xFFD1FAE5);
 }

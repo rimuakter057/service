@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nchito/core/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
@@ -10,6 +11,7 @@ import 'package:nchito/features/user/home/presentation/widgets/home_category_gri
 import 'package:nchito/features/user/home/presentation/widgets/home_header.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_popular_providers.dart';
 import 'package:nchito/features/user/home/presentation/widgets/section_header.dart';
+import 'package:nchito/features/user/notifications/presentation/screens/notifications_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String routeName = '/home';
@@ -24,7 +26,10 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: AppColors.bgApp,
         body: Column(
           children: [
-            const HomeHeader(),
+            HomeHeader(
+              onNotificationTap: () =>
+                  context.push(NotificationsScreen.routeName),
+            ),
             Expanded(
               child: SafeArea(
                 top: false,

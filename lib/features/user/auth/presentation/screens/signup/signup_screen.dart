@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nchito/core/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/core/common_widgets/auth_header/auth_header.dart';
+import 'package:nchito/core/constants/user_role.dart';
 import 'package:nchito/core/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
@@ -10,14 +11,21 @@ import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/app_theme/app_theme.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/verify_identity/verify_identity_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/verify_otp/verify_otp_screen.dart';
+import 'package:nchito/features/user/home/presentation/screens/home_screen/home_screen.dart';
 import 'package:nchito/core/common_widgets/app_text_field/app_text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
   static const String routeName = '/signup';
 
-  const SignUpScreen({super.key});
+  /// Which side of the marketplace this account is for — set by
+  /// [RoleSelectionScreen] and forwarded to [VerifyOtpScreen] so it knows
+  /// whether to land on Home (user) or Verify Identity (provider) next.
+  final UserRole role;
+
+  const SignUpScreen({super.key, this.role = UserRole.user});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -67,7 +75,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
 
     // TODO: wire up signup usecase
-    context.push(VerifyOtpScreen.routeName);
+    final nextRouteName = widget.role == UserRole.provider
+        ? VerifyIdentityScreen.routeName
+        : HomeScreen.routeName;
+    context.push(VerifyOtpScreen.routeName, extra: {
+      'nextRouteName': nextRouteName,
+    });
   }
 
   @override

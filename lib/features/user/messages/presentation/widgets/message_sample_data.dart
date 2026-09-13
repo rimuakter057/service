@@ -10,6 +10,16 @@ class MessageData {
   final int unreadCount;
   final bool isSelected;
 
+  /// Provider rating shown on the Chat screen's header, e.g. "4.8". Null
+  /// when the conversation isn't with a rated provider.
+  final String? rating;
+
+  /// True when the other party has closed off messaging (e.g. their
+  /// account is no longer active) — the Chat screen shows a permanent
+  /// "Messaging is unavailable" card instead of the thread, with only a
+  /// "Delete Conversation" action.
+  final bool isMessagingUnavailable;
+
   const MessageData({
     required this.avatarAsset,
     required this.name,
@@ -17,6 +27,8 @@ class MessageData {
     required this.timeLabel,
     this.unreadCount = 0,
     this.isSelected = false,
+    this.rating,
+    this.isMessagingUnavailable = false,
   });
 }
 
@@ -28,6 +40,7 @@ const List<MessageData> messageConversations = [
     lastMessage: AppText.robertsJuniorLastMessage,
     timeLabel: '25 ${AppText.minAgo}',
     isSelected: true,
+    rating: '4.8',
   ),
   MessageData(
     avatarAsset: AssetsPath.messagesAvatarOliviaMartinez,
@@ -41,6 +54,7 @@ const List<MessageData> messageConversations = [
     name: AppText.michaelSmith,
     lastMessage: AppText.michaelSmithLastMessage,
     timeLabel: '04:45 PM',
+    isMessagingUnavailable: true,
   ),
   MessageData(
     avatarAsset: AssetsPath.messagesAvatarDavidKim,
