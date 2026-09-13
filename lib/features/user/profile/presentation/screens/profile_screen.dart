@@ -7,7 +7,7 @@ import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
-import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
+import 'package:nchito/features/demo/presentation/screens/demo_role_selection_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/account_settings/account_settings_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/help_support/help_support_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/legal_company_info/legal_company_info_screen.dart';
@@ -32,9 +32,8 @@ class ProfileScreen extends StatelessWidget {
       barrierColor: Colors.black.withValues(alpha: 0.1),
       builder: (_) => LogOutBottomSheet(
         onConfirm: () {
-          // TODO(backend): clear the session/tokens here once the backend
-          // is available.
-          context.go(LoginScreen.routeName);
+          // Navigates back to the demo role selection screen
+          context.go(DemoRoleSelectionScreen.routeName);
         },
       ),
     );

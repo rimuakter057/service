@@ -103,9 +103,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (context.canPop()) ...[
+                          GestureDetector(
+                            onTap: () => context.pop(),
+                            child: Container(
+                              width: ResponsiveHelper.width(36),
+                              height: ResponsiveHelper.height(36),
+                              decoration: const BoxDecoration(
+                                color: AppColors.brandSoft,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back_rounded,
+                                color: AppColors.brandPrimary,
+                                size: 18,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: ResponsiveHelper.spacing(16)),
+                        ],
                         AuthHeader(
-                          title: AppText.createYourAccount,
-                          subtitle: AppText.signUpToGetStartedWithNchito,
+                          title: widget.role == UserRole.provider
+                              ? 'Provider Sign Up'
+                              : AppText.createYourAccount,
+                          subtitle: widget.role == UserRole.provider
+                              ? 'Create your account to offer services on Nchito'
+                              : AppText.signUpToGetStartedWithNchito,
                         ),
                         SizedBox(height: ResponsiveHelper.spacing(32)),
 
@@ -248,8 +271,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                               SizedBox(width: ResponsiveHelper.spacing(4)),
                               GestureDetector(
-                                onTap: () =>
-                                    context.push(LoginScreen.routeName),
+                                onTap: () => context.push(
+                                  LoginScreen.routeName,
+                                  extra: widget.role,
+                                ),
                                 child: Text(
                                   AppText.logInQuestion,
                                   style: context.displaySmall.copyWith(

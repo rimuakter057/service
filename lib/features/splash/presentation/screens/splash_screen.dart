@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/assets_path/assets_path.dart';
-import '../../../user/auth/presentation/screens/onboarding/onboarding_screen.dart';
+import 'package:nchito/features/demo/presentation/screens/demo_role_selection_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   static const String routeName = '/splash';
@@ -19,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) context.go(OnboardingScreen.routeName);
+      if (mounted) context.go(DemoRoleSelectionScreen.routeName);
     });
   }
 

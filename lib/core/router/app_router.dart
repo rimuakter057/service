@@ -11,6 +11,7 @@ import 'package:nchito/features/provider/home/presentation/screens/home_screen/p
 import 'package:nchito/features/provider/messages/presentation/screens/provider_messages_screen.dart';
 import 'package:nchito/features/provider/profile/presentation/screens/profile_screen/provider_profile_screen.dart';
 import 'package:nchito/features/provider/services/presentation/screens/my_services/my_services_screen.dart';
+import 'package:nchito/features/demo/presentation/screens/demo_role_selection_screen.dart';
 import 'package:nchito/features/splash/presentation/screens/splash_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/age_confirmation/age_confirmation_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/forgot_password/forgot_password_screen.dart';
@@ -51,11 +52,15 @@ class AppRouter {
   AppRouter._();
 
   static final GoRouter router = GoRouter(
-    initialLocation: BookingsScreen.routeName, // TEMP: preview only
+    initialLocation: SplashScreen.routeName,
     routes: [
       GoRoute(
         path: SplashScreen.routeName,
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: DemoRoleSelectionScreen.routeName,
+        builder: (context, state) => const DemoRoleSelectionScreen(),
       ),
       GoRoute(
         path: OnboardingScreen.routeName,
@@ -63,7 +68,12 @@ class AppRouter {
       ),
       GoRoute(
         path: LoginScreen.routeName,
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) {
+          final role = state.extra is UserRole
+              ? state.extra as UserRole
+              : UserRole.user;
+          return LoginScreen(role: role);
+        },
       ),
       GoRoute(
         path: SignUpScreen.routeName,
