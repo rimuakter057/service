@@ -729,6 +729,26 @@ class AppText {
   areYouSureYouWantToRejectThisBookingRequestTheCustomerWillBeNotifiedThatYouReUnableToAcceptTheBooking =
       "Are you sure you want to reject this booking request! The customer will "
       "be notified that you're unable to accept the booking.";
+  static const String markAsCompleted = "Mark as Completed";
+  static const String markAsCompletedExclaim = "Mark as Completed!";
+  static const String confirmServiceCompletion = "Confirm Service Completion";
+  static const String
+  askTheCustomerToEnterTheOtpToConfirmThatTheServiceHasBeenCompleted =
+      "Ask The Customer To Enter The OTP To Confirm That The Service Has Been Completed.";
+  static const String customerOtp = "Customer OTP";
+  static const String verifyOtp = "Verify OTP";
+  static const String
+  areYouSureYouWantToMarkThisServiceAsCompletedThisWillUpdateTheBookingStatusToCompleted =
+      "Are you sure you want to mark this service as completed! This will update the booking status to Completed.";
+  static const String
+  theProviderCanOnlyCompleteTheBookingAfterEnteringTheCustomerProvidedOtp =
+      "The provider can only complete the booking after entering the customer-provided OTP, ensuring the customer has confirmed the service completion.";
+  static const String platformFee5Percent = "Platform Fee (5%)";
+  static const String youCanceledThisBooking = "You Canceled This Booking";
+  static const String customerCanceledThisBooking =
+      "Customer Canceled This Booking";
+  static const String on27Aug2026 = "On 27 Aug 2026 – 06:20 AM";
+  static const String noReviewYet = "No Review Yet";
 
   // ==========================================================
   // MY SERVICES SCREEN (PROVIDER_SERVICES_SECTION)

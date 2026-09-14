@@ -6,7 +6,6 @@ import 'package:nchito/features/provider/auth/presentation/screens/link_payment_
 import 'package:nchito/features/provider/auth/presentation/screens/verify_identity/verify_identity_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/booking_confirmed/provider_booking_confirmed_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/booking_details/provider_booking_details_screen.dart';
-import 'package:nchito/features/provider/bookings/presentation/screens/bookings_details/provider_bookings_details_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/customer_details/customer_details_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/dpo_checkout/provider_dpo_checkout_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/booking_details/provider_bookings_screen.dart';
@@ -139,7 +138,7 @@ class AppRouter {
       GoRoute(
         path: ProviderBookingDetailsScreen.routeName,
         builder: (context, state) => ProviderBookingDetailsScreen(
-          booking: state.extra as ProviderBookingData,
+          booking: state.extra,
         ),
       ),
       GoRoute(
@@ -156,12 +155,6 @@ class AppRouter {
       GoRoute(
         path: ProviderBookingsScreen.routeName,
         builder: (context, state) => const ProviderBookingsScreen(),
-      ),
-      GoRoute(
-        path: ProviderBookingsDetailsScreen.routeName,
-        builder: (context, state) => ProviderBookingsDetailsScreen(
-          booking: state.extra as BookingHistoryData,
-        ),
       ),
       GoRoute(
         path: ProviderDpoCheckoutScreen.routeName,

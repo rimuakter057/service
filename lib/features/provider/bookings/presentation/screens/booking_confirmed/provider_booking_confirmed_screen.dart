@@ -9,7 +9,7 @@ import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_sample_data.dart';
-import '../bookings_details/provider_bookings_details_screen.dart';
+import '../booking_details/provider_booking_details_screen.dart';
 
 class ProviderBookingConfirmedScreen extends StatelessWidget {
   static const String routeName = '/provider/bookings/booking-confirmed';
@@ -226,7 +226,7 @@ class ProviderBookingConfirmedScreen extends StatelessWidget {
                                 provider: robertJuniorProvider,
                               );
                         context.push(
-                          ProviderBookingsDetailsScreen.routeName,
+                          ProviderBookingDetailsScreen.routeName,
                           extra: scheduledBooking,
                         );
                       },

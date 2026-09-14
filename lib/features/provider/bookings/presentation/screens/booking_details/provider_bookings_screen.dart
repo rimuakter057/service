@@ -11,7 +11,7 @@ import 'package:nchito/features/provider/home/presentation/screens/home_screen/p
 import 'package:nchito/features/user/bookings/presentation/widgets/booking_history_tile.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/bookings_filter_bottom_sheet.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
-import '../bookings_details/provider_bookings_details_screen.dart';
+import 'provider_booking_details_screen.dart';
 
 class ProviderBookingsScreen extends StatefulWidget {
   static const String routeName = '/provider/bookings';
@@ -119,7 +119,7 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> {
                     month: booking.month,
                     time: booking.time,
                     onTap: () => context.push(
-                      ProviderBookingsDetailsScreen.routeName,
+                      ProviderBookingDetailsScreen.routeName,
                       extra: booking,
                     ),
                   );
