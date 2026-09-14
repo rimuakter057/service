@@ -714,6 +714,21 @@ class AppText {
   static const String accept = "Accept";
   static const String messageCustomer = "Message Customer";
   static const String customerDetails = "Customer Details";
+  static const String sendQuote = "Send Quote";
+  static const String finalServicePrice = "Final Service Price";
+  static const String enterFinalPrice = "Enter final price";
+  static const String acceptAndSendPricingQuoteExclaim =
+      "Accept & Send Pricing Quote!";
+  static const String
+  areYouSureYouWantToAcceptThisBookingRequestAndSendAPricingQuoteToTheCustomer =
+      "Are you sure you want to accept this booking request and send a Pricing "
+      "Quote to the customer! The booking will proceed once the customer "
+      "reviews and accepts your quote.";
+  static const String rejectBookingExclaim = "Reject Booking!";
+  static const String
+  areYouSureYouWantToRejectThisBookingRequestTheCustomerWillBeNotifiedThatYouReUnableToAcceptTheBooking =
+      "Are you sure you want to reject this booking request! The customer will "
+      "be notified that you're unable to accept the booking.";
 
   // ==========================================================
   // MY SERVICES SCREEN (PROVIDER_SERVICES_SECTION)

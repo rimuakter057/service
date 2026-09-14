@@ -15,13 +15,35 @@ import 'package:nchito/features/provider/bookings/presentation/widgets/provider_
 import 'package:nchito/features/user/bookings/presentation/widgets/cancel_booking_bottom_sheet.dart';
 import 'package:nchito/features/user/messages/presentation/screens/chat_screen.dart';
 import 'package:nchito/features/user/messages/presentation/widgets/message_sample_data.dart';
+import '../../widgets/accept_quote_confirm_bottom_sheet.dart';
+import '../../widgets/reject_booking_bottom_sheet.dart';
+import '../../widgets/send_quote_bottom_sheet.dart';
 
-class ProviderBookingDetailsScreen extends StatelessWidget {
+class ProviderBookingDetailsScreen extends StatefulWidget {
   static const String routeName = '/provider/booking-details';
 
   final ProviderBookingData booking;
 
   const ProviderBookingDetailsScreen({super.key, required this.booking});
+
+  @override
+  State<ProviderBookingDetailsScreen> createState() =>
+      _ProviderBookingDetailsScreenState();
+}
+
+class _ProviderBookingDetailsScreenState
+    extends State<ProviderBookingDetailsScreen> {
+  late String _currentStatus;
+  late String _currentPrice;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentStatus = widget.booking.status;
+    _currentPrice = widget.booking.price;
+  }
+
+  ProviderBookingData get booking => widget.booking;
 
   static final _fieldColor = AppColors.bgOverlay.withValues(alpha: 0.04);
   static final _fieldRadius = ResponsiveHelper.borderRadius(10);
@@ -29,7 +51,7 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
   static final _fieldGap = ResponsiveHelper.spacing(8);
 
   Color get _statusColor {
-    switch (booking.status) {
+    switch (_currentStatus) {
       case 'Accepted':
       case 'Confirmed':
         return AppColors.emerald400;
@@ -44,15 +66,62 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
   }
 
   void _onReject(BuildContext context) {
-    // TODO(backend): reject this booking request once the backend is
-    // available.
-    context.pop();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.25),
+      builder: (_) => RejectBookingBottomSheet(
+        onConfirm: () {
+          setState(() {
+            _currentStatus = AppText.rejected;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Booking request rejected'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void _onAccept(BuildContext context) {
-    // TODO(backend): accept this booking request once the backend is
-    // available.
-    context.pop();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.25),
+      builder: (_) => SendQuoteBottomSheet(
+        onSendQuote: (price) {
+          _showAcceptConfirm(context, price);
+        },
+      ),
+    );
+  }
+
+  void _showAcceptConfirm(BuildContext context, String price) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.25),
+      builder: (_) => AcceptQuoteConfirmBottomSheet(
+        onConfirm: () {
+          setState(() {
+            _currentStatus = AppText.accepted;
+            _currentPrice = price.startsWith('ZMW') ? price : 'ZMW $price';
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Pricing quote sent: $_currentPrice'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void _onCancelBooking(BuildContext context) {
@@ -63,8 +132,9 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
       barrierColor: Colors.black.withValues(alpha: 0.1),
       builder: (_) => CancelBookingBottomSheet(
         onConfirm: () {
-          // TODO(backend): cancel this booking here once the backend is
-
+          setState(() {
+            _currentStatus = AppText.cancelled;
+          });
         },
       ),
     );
@@ -91,7 +161,6 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
     required String label,
     required String value,
   }) {
-
     return Padding(
       padding: EdgeInsets.only(bottom: ResponsiveHelper.spacing(10)),
       child: AppContainerBg(
@@ -126,7 +195,7 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPending = booking.status == AppText.pending;
+    final isPending = _currentStatus == AppText.pending;
 
     return Scaffold(
       backgroundColor: AppColors.bgApp,
@@ -178,7 +247,7 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
                                   ),
                                   SizedBox(width: ResponsiveHelper.spacing(4)),
                                   Text(
-                                    booking.status,
+                                    _currentStatus,
                                     style: context.bodySmall.copyWith(
                                       fontSize: ResponsiveHelper.fontSize(10),
                                       color: _statusColor,
@@ -194,7 +263,8 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(20)),
-///location========================================
+
+                    ///location========================================
                     _buildDetailRow(
                       context,
                       label: AppText.location,
@@ -215,13 +285,21 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
                       value: booking.fullTime,
                     ),
 
+                    /// price/quote=============================
+                    _buildDetailRow(
+                      context,
+                      label: AppText.serviceCost,
+                      value: _currentPrice,
+                    ),
+
                     ///details======================================
                     _buildDetailRow(
                       context,
                       label: AppText.details,
                       value: booking.details,
                     ),
-///photo=========================================
+
+                    ///photo=========================================
                     AppContainerBg(
                       width: double.infinity,
                       color: _fieldColor,
@@ -258,6 +336,7 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
+
                                   AppText.requestedBy,
                                   style: context.bodySmall.copyWith(
                                     fontWeight: FontWeight.w500,
@@ -310,37 +389,21 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
                 horizontal: ResponsiveHelper.padding(24),
                 vertical: ResponsiveHelper.padding(16),
               ),
-              child: isPending ?
-    ///Reject==========================
-              Row(
-                      children: [
-                        Expanded(
-                          child: AppButton(
-                            text: AppText.reject,
-                            onPressed: () => _onReject(context),
-                            backgroundColor: AppColors.red,
-                            textColor: AppColors.white,
-                          ),
-                        ),
-                        SizedBox(width: ResponsiveHelper.spacing(10)),
-                        Expanded(
-                          child: AppButton(
-                            text: AppText.accept,
-                            onPressed: () => _onAccept(context),
-                            backgroundColor: AppColors.brandPrimary,
-                            textColor: AppColors.white,
-                          ),
-                        ),
-                      ],
+              child: _currentStatus == AppText.rejected
+                  ? AppButton(
+                      text: AppText.messageCustomer,
+                      onPressed: () => _onMessageCustomer(context),
+                      width: double.infinity,
+                      backgroundColor: AppColors.brandPrimary,
+                      textColor: AppColors.white,
                     )
-                  : Column(
-                      children: [
-                        Row(
+                  : isPending
+                      ? Row(
                           children: [
                             Expanded(
                               child: AppButton(
-                                text: AppText.cancelBooking,
-                                onPressed: () => _onCancelBooking(context),
+                                text: AppText.reject,
+                                onPressed: () => _onReject(context),
                                 backgroundColor: AppColors.red,
                                 textColor: AppColors.white,
                               ),
@@ -348,24 +411,47 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
                             SizedBox(width: ResponsiveHelper.spacing(10)),
                             Expanded(
                               child: AppButton(
-                                text: AppText.reschedule,
-                                onPressed: _onReschedule,
+                                text: AppText.accept,
+                                onPressed: () => _onAccept(context),
                                 backgroundColor: AppColors.brandPrimary,
                                 textColor: AppColors.white,
                               ),
                             ),
                           ],
+                        )
+                      : Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: AppButton(
+                                    text: AppText.cancelBooking,
+                                    onPressed: () => _onCancelBooking(context),
+                                    backgroundColor: AppColors.red,
+                                    textColor: AppColors.white,
+                                  ),
+                                ),
+                                SizedBox(width: ResponsiveHelper.spacing(10)),
+                                Expanded(
+                                  child: AppButton(
+                                    text: AppText.reschedule,
+                                    onPressed: _onReschedule,
+                                    backgroundColor: AppColors.brandPrimary,
+                                    textColor: AppColors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: ResponsiveHelper.spacing(10)),
+                            AppButton(
+                              text: AppText.messageCustomer,
+                              onPressed: () => _onMessageCustomer(context),
+                              width: double.infinity,
+                              backgroundColor: AppColors.brandPrimary,
+                              textColor: AppColors.white,
+                            ),
+                          ],
                         ),
-                        SizedBox(height: ResponsiveHelper.spacing(10)),
-                        AppButton(
-                          text: AppText.messageCustomer,
-                          onPressed: () => _onMessageCustomer(context),
-                          width: double.infinity,
-                          backgroundColor: AppColors.brandPrimary,
-                          textColor: AppColors.white,
-                        ),
-                      ],
-                    ),
             ),
           ],
         ),

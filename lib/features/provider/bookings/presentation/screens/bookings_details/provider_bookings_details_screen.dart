@@ -11,17 +11,18 @@ import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/customer_details/customer_details_screen.dart';
+import 'package:nchito/features/provider/bookings/presentation/widgets/provider_booking_sample_data.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_availability/provider_availability_screen.dart';
-import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
 import 'package:nchito/features/user/home/presentation/widgets/detail_field.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/cancel_booking_bottom_sheet.dart';
-import 'package:nchito/features/user/bookings/presentation/widgets/decline_quote_bottom_sheet.dart';
-import 'package:nchito/features/user/bookings/presentation/widgets/leave_review_bottom_sheet.dart';
-import 'package:nchito/features/user/bookings/presentation/widgets/proceed_to_payment_bottom_sheet.dart';
-import 'package:nchito/features/user/bookings/presentation/widgets/report_issue_bottom_sheet.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/reschedule_booking_bottom_sheet.dart';
-import '../dpo_checkout/provider_dpo_checkout_screen.dart';
+import 'package:nchito/features/user/messages/presentation/screens/chat_screen.dart';
+import 'package:nchito/features/user/messages/presentation/widgets/message_sample_data.dart';
+import '../../widgets/accept_quote_confirm_bottom_sheet.dart';
+import '../../widgets/reject_booking_bottom_sheet.dart';
+import '../../widgets/send_quote_bottom_sheet.dart';
 
 class ProviderBookingsDetailsScreen extends StatefulWidget {
   static const String routeName = '/provider/bookings/booking-details';
@@ -37,16 +38,28 @@ class ProviderBookingsDetailsScreen extends StatefulWidget {
 
 class _ProviderBookingsDetailsScreenState
     extends State<ProviderBookingsDetailsScreen> {
-  bool _isReviewed = false;
-  int _rating = 5;
-  String _reviewComment = '';
+  late String _currentStatus;
+  late String? _currentServiceCost;
+  final bool _isReviewed = true;
+  final int _rating = 5;
+  final String _reviewComment = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // For provider role, default sample to pending so provider can reject or accept
+    _currentStatus = widget.booking.status == AppText.completed
+        ? AppText.pending
+        : widget.booking.status;
+    _currentServiceCost = widget.booking.serviceCost;
+  }
 
   BookingHistoryData get booking => widget.booking;
 
-  bool get _hasQuote => booking.serviceCost != null;
+  bool get _hasQuote => _currentServiceCost != null;
 
   Color get _statusColor {
-    switch (booking.status) {
+    switch (_currentStatus) {
       case AppText.accepted:
         return AppColors.blueStatusInfo;
       case AppText.scheduled:
@@ -71,33 +84,60 @@ class _ProviderBookingsDetailsScreenState
   static final _fieldPadding = EdgeInsets.all(ResponsiveHelper.padding(14));
   static final _fieldGap = ResponsiveHelper.spacing(8);
 
-  void _onDeclineQuote(BuildContext context) {
+  void _onReject(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.1),
-      builder: (_) => DeclineQuoteBottomSheet(
+      barrierColor: Colors.black.withValues(alpha: 0.25),
+      builder: (_) => RejectBookingBottomSheet(
         onConfirm: () {
-          // Decline quote
+          setState(() {
+            _currentStatus = AppText.rejected;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Booking request rejected'),
+              duration: Duration(seconds: 2),
+            ),
+          );
         },
       ),
     );
   }
 
-  void _onProceedToPay(BuildContext context) {
+  void _onAccept(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.1),
-      builder: (_) => ProceedToPaymentBottomSheet(
-        serviceCost: booking.serviceCost!,
+      barrierColor: Colors.black.withValues(alpha: 0.25),
+      builder: (_) => SendQuoteBottomSheet(
+        onSendQuote: (price) {
+          _showAcceptConfirm(context, price);
+        },
+      ),
+    );
+  }
+
+  void _showAcceptConfirm(BuildContext context, String price) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.25),
+      builder: (_) => AcceptQuoteConfirmBottomSheet(
         onConfirm: () {
-          context.pop();
-          context.push(
-            ProviderDpoCheckoutScreen.routeName,
-            extra: booking,
+          setState(() {
+            _currentStatus = AppText.accepted;
+            _currentServiceCost =
+                price.startsWith('ZMW') ? price : 'ZMW $price';
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Pricing quote sent: $_currentServiceCost'),
+              duration: const Duration(seconds: 2),
+            ),
           );
         },
       ),
@@ -112,7 +152,9 @@ class _ProviderBookingsDetailsScreenState
       barrierColor: Colors.black.withValues(alpha: 0.1),
       builder: (_) => CancelBookingBottomSheet(
         onConfirm: () {
-          // Cancel booking
+          setState(() {
+            _currentStatus = AppText.cancelled;
+          });
         },
       ),
     );
@@ -135,48 +177,14 @@ class _ProviderBookingsDetailsScreenState
     );
   }
 
-  void _onLeaveReview(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.2),
-      builder: (_) => LeaveReviewBottomSheet(
-        providerName: booking.providerName,
-        onSubmit: (rating, comment) {
-          setState(() {
-            _isReviewed = true;
-            _rating = rating;
-            _reviewComment = comment;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Thank you for rating $rating stars!'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _onReportIssue(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.25),
-      builder: (_) => ReportIssueBottomSheet(
-        onSubmit: (issueType, description, images) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Issue submitted successfully! Our team will review it.',
-              ),
-              duration: Duration(seconds: 3),
-            ),
-          );
-        },
+  void _onMessageCustomer(BuildContext context) {
+    context.push(
+      ChatScreen.routeName,
+      extra: MessageData(
+        name: booking.provider.name,
+        avatarAsset: booking.provider.photo,
+        lastMessage: 'Hi, regarding your booking for ${booking.service}.',
+        timeLabel: 'Now',
       ),
     );
   }
@@ -236,7 +244,7 @@ class _ProviderBookingsDetailsScreenState
                                   ),
                                   SizedBox(width: ResponsiveHelper.spacing(4)),
                                   Text(
-                                    booking.status,
+                                    _currentStatus,
                                     style: context.bodySmall.copyWith(
                                       fontSize: ResponsiveHelper.fontSize(10),
                                       color: _statusColor,
@@ -349,7 +357,7 @@ class _ProviderBookingsDetailsScreenState
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  AppText.provider,
+                                  AppText.requestedBy,
                                   style: context.bodySmall.copyWith(
                                     fontWeight: FontWeight.w500,
                                     fontStyle: FontStyle.italic,
@@ -370,8 +378,24 @@ class _ProviderBookingsDetailsScreenState
                           SizedBox(width: ResponsiveHelper.spacing(10)),
                           GestureDetector(
                             onTap: () => context.push(
-                              ProviderDetailsScreen.routeName,
-                              extra: booking.provider,
+                              CustomerDetailsScreen.routeName,
+                              extra: ProviderBookingData(
+                                customerName: booking.provider.name,
+                                service: booking.service,
+                                price: booking.price,
+                                iconAsset: booking.iconAsset,
+                                iconBgColor: booking.iconBgColor,
+                                day: booking.day,
+                                month: booking.month,
+                                time: booking.time,
+                                status: _currentStatus,
+                                location: booking.location,
+                                fullDate: booking.date,
+                                fullTime: booking.time,
+                                details: booking.details,
+                                customerPhoto: booking.provider.photo,
+                                customerEmailOrPhone: 'customer@nchito.com',
+                              ),
                             ),
                             child: BgIcon(
                               assetPath: AssetsPath.bookingDetailsIconViewProvider,
@@ -447,7 +471,7 @@ class _ProviderBookingsDetailsScreenState
                                   ),
                                 ),
                                 Text(
-                                  booking.serviceCost!,
+                                  _currentServiceCost ?? booking.price,
                                   style: context.labelMedium.copyWith(
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -737,56 +761,34 @@ class _ProviderBookingsDetailsScreenState
                 horizontal: ResponsiveHelper.padding(24),
                 vertical: ResponsiveHelper.padding(16),
               ),
-              child: booking.status == AppText.inProgress
-                  ? Row(
-                      children: [
-                        Expanded(
-                          child: AppButton(
-                            text: AppText.cancelBooking,
-                            onPressed: () => _onCancelBooking(context),
-                            backgroundColor: const Color(0xFFFEE2E2),
-                            textColor: const Color(0xFFEF4444),
-                          ),
-                        ),
-                        SizedBox(width: ResponsiveHelper.spacing(10)),
-                        Expanded(
-                          child: AppButton(
-                            text: AppText.messageProvider,
-                            onPressed: () => context.push('/provider/messages'),
-                            backgroundColor: AppColors.brandPrimary,
-                            textColor: AppColors.white,
-                          ),
-                        ),
-                      ],
+              child: _currentStatus == AppText.rejected
+                  ? AppButton(
+                      text: AppText.messageCustomer,
+                      onPressed: () => _onMessageCustomer(context),
+                      width: double.infinity,
+                      backgroundColor: AppColors.brandPrimary,
+                      textColor: AppColors.white,
                     )
-                  : booking.status == AppText.completed
+                  : (_currentStatus == AppText.accepted ||
+                          _currentStatus == AppText.scheduled)
                       ? Column(
                           children: [
                             Row(
                               children: [
                                 Expanded(
-                                  child: _isReviewed
-                                      ? AppButton(
-                                          text: AppText.reviewed,
-                                          onPressed: null,
-                                          backgroundColor: const Color(0xFFF1F5F9),
-                                          textColor: const Color(0xFF94A3B8),
-                                        )
-                                      : AppButton(
-                                          text: AppText.rateAndReview,
-                                          onPressed: () => _onLeaveReview(context),
-                                          backgroundColor: AppColors.brandPrimary,
-                                          textColor: AppColors.white,
-                                        ),
+                                  child: AppButton(
+                                    text: AppText.cancelBooking,
+                                    onPressed: () => _onCancelBooking(context),
+                                    backgroundColor: AppColors.red,
+                                    textColor: AppColors.white,
+                                  ),
                                 ),
                                 SizedBox(width: ResponsiveHelper.spacing(10)),
                                 Expanded(
                                   child: AppButton(
-                                    text: AppText.bookAgain,
-                                    onPressed: () => context.push(
-                                      ProviderAvailabilityScreen.routeName,
-                                      extra: booking,
-                                    ),
+                                    text: AppText.reschedule,
+                                    onPressed: () =>
+                                        _onRescheduleBooking(context),
                                     backgroundColor: AppColors.brandPrimary,
                                     textColor: AppColors.white,
                                   ),
@@ -795,113 +797,58 @@ class _ProviderBookingsDetailsScreenState
                             ),
                             SizedBox(height: ResponsiveHelper.spacing(10)),
                             AppButton(
-                              text: AppText.reportAnIssue,
-                              onPressed: () => _onReportIssue(context),
+                              text: AppText.messageCustomer,
+                              onPressed: () => _onMessageCustomer(context),
                               width: double.infinity,
-                              backgroundColor: AppColors.red,
+                              backgroundColor: AppColors.brandPrimary,
                               textColor: AppColors.white,
                             ),
                           ],
                         )
-                      : booking.status == AppText.scheduled
-                          ? Column(
+                      : _currentStatus == AppText.inProgress
+                          ? Row(
                               children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: AppButton(
-                                        text: AppText.cancelBooking,
-                                        onPressed: () => _onCancelBooking(context),
-                                        backgroundColor: AppColors.red,
-                                        textColor: AppColors.white,
-                                      ),
-                                    ),
-                                    SizedBox(width: ResponsiveHelper.spacing(10)),
-                                    Expanded(
-                                      child: AppButton(
-                                        text: AppText.reschedule,
-                                        onPressed: () => _onRescheduleBooking(context),
-                                        backgroundColor: AppColors.brandPrimary,
-                                        textColor: AppColors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: ResponsiveHelper.spacing(10)),
-                                AppButton(
-                                  text: AppText.messageProvider,
-                                  onPressed: () => context.push('/provider/messages'),
-                                  width: double.infinity,
-                                  backgroundColor: AppColors.brandPrimary,
-                                  textColor: AppColors.white,
-                                ),
-                                SizedBox(height: ResponsiveHelper.spacing(12)),
-                                Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: ResponsiveHelper.padding(14),
-                                    vertical: ResponsiveHelper.padding(10),
+                                Expanded(
+                                  child: AppButton(
+                                    text: AppText.cancelBooking,
+                                    onPressed: () => _onCancelBooking(context),
+                                    backgroundColor: const Color(0xFFFEE2E2),
+                                    textColor: const Color(0xFFEF4444),
                                   ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFDBEAFE).withValues(alpha: 0.6),
-                                    borderRadius: BorderRadius.circular(
-                                      ResponsiveHelper.borderRadius(8),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    AppText.youCanCancelOrRequestToReschedule,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: ResponsiveHelper.fontSize(11),
-                                      color: const Color(0xFF1D4ED8),
-                                      fontWeight: FontWeight.w500,
-                                      height: 1.35,
-                                    ),
+                                ),
+                                SizedBox(width: ResponsiveHelper.spacing(10)),
+                                Expanded(
+                                  child: AppButton(
+                                    text: AppText.messageCustomer,
+                                    onPressed: () =>
+                                        _onMessageCustomer(context),
+                                    backgroundColor: AppColors.brandPrimary,
+                                    textColor: AppColors.white,
                                   ),
                                 ),
                               ],
                             )
-                          : _hasQuote
-                              ? Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: AppButton(
-                                            text: AppText.declineQuote,
-                                            onPressed: () => _onDeclineQuote(context),
-                                            backgroundColor: AppColors.red,
-                                            textColor: AppColors.white,
-                                          ),
-                                        ),
-                                        SizedBox(width: ResponsiveHelper.spacing(10)),
-                                        Expanded(
-                                          child: AppButton(
-                                            text: AppText.proceedToPay,
-                                            onPressed: () => _onProceedToPay(context),
-                                            backgroundColor: AppColors.brandPrimary,
-                                            textColor: AppColors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: ResponsiveHelper.spacing(10)),
-                                    AppButton(
-                                      text: AppText.messageProvider,
-                                      onPressed: () => context.push('/provider/messages'),
-                                      width: double.infinity,
-                                      backgroundColor: AppColors.brandPrimary,
-                                      textColor: AppColors.white,
-                                    ),
-                                  ],
-                                )
-                              : AppButton(
-                                  text: AppText.cancelBooking,
-                                  onPressed: () => _onCancelBooking(context),
-                                  width: double.infinity,
-                                  backgroundColor: AppColors.red,
-                                  textColor: AppColors.white,
+                          : Row(
+                              children: [
+                                Expanded(
+                                  child: AppButton(
+                                    text: AppText.reject,
+                                    onPressed: () => _onReject(context),
+                                    backgroundColor: AppColors.red,
+                                    textColor: AppColors.white,
+                                  ),
                                 ),
+                                SizedBox(width: ResponsiveHelper.spacing(10)),
+                                Expanded(
+                                  child: AppButton(
+                                    text: AppText.accept,
+                                    onPressed: () => _onAccept(context),
+                                    backgroundColor: AppColors.brandPrimary,
+                                    textColor: AppColors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
             ),
           ],
         ),
