@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../features/provider/bookings/presentation/screens/booking_details/provider_bookings_screen.dart';
 import '../../../features/provider/home/presentation/screens/home_screen/provider_home_screen.dart';
 import '../../../features/provider/messages/presentation/screens/provider_messages_screen.dart';
 import '../../../features/provider/profile/presentation/screens/profile_screen/provider_profile_screen.dart';
@@ -59,6 +60,9 @@ class ProviderBottomNavBar extends StatelessWidget {
     switch (index) {
       case 0:
         context.go(ProviderHomeScreen.routeName);
+        break;
+      case 1:
+        context.go(ProviderBookingsScreen.routeName);
         break;
       case 2:
         context.go(MyServicesScreen.routeName);

@@ -4,8 +4,12 @@ import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/connect_payments/connect_payments_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/link_payment_account/link_payment_account_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/verify_identity/verify_identity_screen.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/booking_confirmed/provider_booking_confirmed_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/booking_details/provider_booking_details_screen.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/bookings_details/provider_bookings_details_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/customer_details/customer_details_screen.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/dpo_checkout/provider_dpo_checkout_screen.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/booking_details/provider_bookings_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/provider_booking_sample_data.dart';
 import 'package:nchito/features/provider/home/presentation/screens/home_screen/provider_home_screen.dart';
 import 'package:nchito/features/provider/messages/presentation/screens/provider_messages_screen.dart';
@@ -148,6 +152,28 @@ class AppRouter {
             customerPhoto: booking.customerPhoto,
           );
         },
+      ),
+      GoRoute(
+        path: ProviderBookingsScreen.routeName,
+        builder: (context, state) => const ProviderBookingsScreen(),
+      ),
+      GoRoute(
+        path: ProviderBookingsDetailsScreen.routeName,
+        builder: (context, state) => ProviderBookingsDetailsScreen(
+          booking: state.extra as BookingHistoryData,
+        ),
+      ),
+      GoRoute(
+        path: ProviderDpoCheckoutScreen.routeName,
+        builder: (context, state) => ProviderDpoCheckoutScreen(
+          booking: state.extra as BookingHistoryData,
+        ),
+      ),
+      GoRoute(
+        path: ProviderBookingConfirmedScreen.routeName,
+        builder: (context, state) => ProviderBookingConfirmedScreen(
+          booking: state.extra as BookingHistoryData?,
+        ),
       ),
       GoRoute(
         path: AgeConfirmationScreen.routeName,

@@ -16,12 +16,6 @@ import 'package:nchito/features/user/bookings/presentation/widgets/cancel_bookin
 import 'package:nchito/features/user/messages/presentation/screens/chat_screen.dart';
 import 'package:nchito/features/user/messages/presentation/widgets/message_sample_data.dart';
 
-/// Full details of one customer booking, from the provider's side —
-/// reached by tapping a request/booking tile on the Provider Home
-/// screen. Reuses the same [TopAppbar]/[DetailField]-style building
-/// blocks as the user app's Booking Details screen since the layout is
-/// otherwise identical, just for "Requested By" instead of "Provider"
-/// and with Accept/Reject actions for pending requests.
 class ProviderBookingDetailsScreen extends StatelessWidget {
   static const String routeName = '/provider/booking-details';
 
@@ -29,7 +23,6 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
 
   const ProviderBookingDetailsScreen({super.key, required this.booking});
 
-  // Figma: rgba(0,0,0,0.04) bg, 10px radius, 14px padding, 8px label/value gap
   static final _fieldColor = AppColors.bgOverlay.withValues(alpha: 0.04);
   static final _fieldRadius = ResponsiveHelper.borderRadius(10);
   static final _fieldPadding = EdgeInsets.all(ResponsiveHelper.padding(14));
@@ -71,7 +64,7 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
       builder: (_) => CancelBookingBottomSheet(
         onConfirm: () {
           // TODO(backend): cancel this booking here once the backend is
-          // available.
+
         },
       ),
     );
@@ -98,6 +91,7 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
     required String label,
     required String value,
   }) {
+
     return Padding(
       padding: EdgeInsets.only(bottom: ResponsiveHelper.spacing(10)),
       child: AppContainerBg(
@@ -200,28 +194,34 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(20)),
-
+///location========================================
                     _buildDetailRow(
                       context,
                       label: AppText.location,
                       value: booking.location,
                     ),
+
+                    /// date================================
                     _buildDetailRow(
                       context,
                       label: AppText.date,
                       value: booking.fullDate,
                     ),
+
+                    /// time====================================
                     _buildDetailRow(
                       context,
                       label: AppText.time,
                       value: booking.fullTime,
                     ),
+
+                    ///details======================================
                     _buildDetailRow(
                       context,
                       label: AppText.details,
                       value: booking.details,
                     ),
-
+///photo=========================================
                     AppContainerBg(
                       width: double.infinity,
                       color: _fieldColor,
@@ -303,13 +303,16 @@ class ProviderBookingDetailsScreen extends StatelessWidget {
                 ),
               ),
             ),
+
+            /// depend of status==================================================
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: ResponsiveHelper.padding(24),
                 vertical: ResponsiveHelper.padding(16),
               ),
-              child: isPending
-                  ? Row(
+              child: isPending ?
+    ///Reject==========================
+              Row(
                       children: [
                         Expanded(
                           child: AppButton(
