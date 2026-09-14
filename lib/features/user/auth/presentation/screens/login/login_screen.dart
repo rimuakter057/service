@@ -13,6 +13,7 @@ import 'package:nchito/core/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/core/common_widgets/auth_header/auth_header.dart';
 import 'package:nchito/core/constants/user_role.dart';
 import 'package:nchito/features/provider/home/presentation/screens/home_screen/provider_home_screen.dart';
+import 'package:nchito/features/user/auth/presentation/screens/age_confirmation/age_confirmation_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/forgot_password/forgot_password_screen.dart';
 import 'package:nchito/core/common_widgets/app_text_field/app_text_field.dart';
 import 'package:nchito/features/user/auth/presentation/screens/signup/signup_screen.dart';
@@ -234,10 +235,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               SizedBox(width: ResponsiveHelper.spacing(4)),
                               GestureDetector(
-                                onTap: () => context.push(
-                                  SignUpScreen.routeName,
-                                  extra: widget.role,
-                                ),
+                                onTap: () {
+                                  if (widget.role == UserRole.provider) {
+                                    context.push(
+                                      AgeConfirmationScreen.routeName,
+                                      extra: widget.role,
+                                    );
+                                  } else {
+                                    context.push(
+                                      SignUpScreen.routeName,
+                                      extra: widget.role,
+                                    );
+                                  }
+                                },
                                 child: Text(
                                   AppText.createAnAccount,
                                   style: context.displaySmall.copyWith(

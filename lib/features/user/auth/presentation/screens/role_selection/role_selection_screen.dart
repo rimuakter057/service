@@ -9,6 +9,7 @@ import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/age_confirmation/provider_age_confirmation_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/signup/signup_screen.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
@@ -33,7 +34,11 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
       );
       return;
     }
-    context.push(SignUpScreen.routeName, extra: role);
+    if (role == UserRole.provider) {
+      context.push(ProviderAgeConfirmationScreen.routeName);
+    } else {
+      context.push(SignUpScreen.routeName);
+    }
   }
 
   @override

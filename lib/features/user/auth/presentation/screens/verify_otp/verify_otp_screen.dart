@@ -38,7 +38,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
   final List<TextEditingController> _controllers = List.generate(
     _otpLength,
-    (_) => TextEditingController(),
+    (index) => TextEditingController(text: '${index + 1}'),
   );
   final List<FocusNode> _focusNodes = List.generate(
     _otpLength,
@@ -85,14 +85,6 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
   }
 
   void _onVerifyPressed() {
-    final code = _controllers.map((c) => c.text).join();
-    if (code.length < _otpLength) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter the full 6-digit code')),
-      );
-      return;
-    }
-    // TODO: wire up OTP verification usecase
     final nextRoute = widget.nextRouteName;
     if (nextRoute != null) {
       context.push(nextRoute);

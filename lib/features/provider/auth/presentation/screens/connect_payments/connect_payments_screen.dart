@@ -55,8 +55,6 @@ class _ConnectPaymentsScreenState extends State<ConnectPaymentsScreen> {
   }
 
   void _onSaveAndContinue() {
-    if (!_hasConnectedMethod) return;
-    // TODO: wire up payment-connection usecase
     context.go(ProviderHomeScreen.routeName);
   }
 

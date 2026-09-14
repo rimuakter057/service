@@ -1,9 +1,15 @@
 import 'package:go_router/go_router.dart';
 import 'package:nchito/core/constants/user_role.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/age_confirmation/provider_age_confirmation_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/connect_payments/connect_payments_screen.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/forgot_password/provider_forgot_password_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/link_payment_account/link_payment_account_screen.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/login/provider_login_screen.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/set_new_password/provider_set_new_password_screen.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/signup/provider_signup_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/verify_identity/verify_identity_screen.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/verify_otp/provider_verify_otp_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/booking_confirmed/provider_booking_confirmed_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/booking_details/provider_booking_details_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/customer_details/customer_details_screen.dart';
@@ -107,6 +113,42 @@ class AppRouter {
         path: RoleSelectionScreen.routeName,
         builder: (context, state) => const RoleSelectionScreen(),
       ),
+
+      // ==========================================================
+      // PROVIDER AUTHENTICATION ROUTES
+      // ==========================================================
+      GoRoute(
+        path: ProviderLoginScreen.routeName,
+        builder: (context, state) => const ProviderLoginScreen(),
+      ),
+      GoRoute(
+        path: ProviderAgeConfirmationScreen.routeName,
+        builder: (context, state) => const ProviderAgeConfirmationScreen(),
+      ),
+      GoRoute(
+        path: ProviderSignUpScreen.routeName,
+        builder: (context, state) => const ProviderSignUpScreen(),
+      ),
+      GoRoute(
+        path: ProviderForgotPasswordScreen.routeName,
+        builder: (context, state) => const ProviderForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: ProviderVerifyOtpScreen.routeName,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return ProviderVerifyOtpScreen(
+            subtitle:
+                extra?['subtitle'] as String? ??
+                AppText.enterThe6DigitVerificationCodeSentToYourEmailAddress,
+            nextRouteName: extra?['nextRouteName'] as String?,
+          );
+        },
+      ),
+      GoRoute(
+        path: ProviderSetNewPasswordScreen.routeName,
+        builder: (context, state) => const ProviderSetNewPasswordScreen(),
+      ),
       GoRoute(
         path: VerifyIdentityScreen.routeName,
         builder: (context, state) => const VerifyIdentityScreen(),
@@ -170,7 +212,12 @@ class AppRouter {
       ),
       GoRoute(
         path: AgeConfirmationScreen.routeName,
-        builder: (context, state) => const AgeConfirmationScreen(),
+        builder: (context, state) {
+          final role = state.extra is UserRole
+              ? state.extra as UserRole
+              : UserRole.provider;
+          return AgeConfirmationScreen(role: role);
+        },
       ),
       GoRoute(
         path: HomeScreen.routeName,

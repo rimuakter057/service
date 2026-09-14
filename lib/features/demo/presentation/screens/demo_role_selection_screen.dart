@@ -3,11 +3,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nchito/core/common_widgets/app_button/app_button.dart';
 import 'package:nchito/core/common_widgets/app_container_bg/app_container_bg.dart';
-import 'package:nchito/core/constants/user_role.dart';
 import 'package:nchito/core/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/age_confirmation/provider_age_confirmation_screen.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/login/provider_login_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/role_selection/role_selection_screen.dart';
@@ -33,17 +34,19 @@ class _DemoRoleSelectionScreenState extends State<DemoRoleSelectionScreen> {
   DemoRole _selectedRole = DemoRole.user;
 
   void _onContinueToLogin() {
-    final role = _selectedRole == DemoRole.user
-        ? UserRole.user
-        : UserRole.provider;
-    context.push(LoginScreen.routeName, extra: role);
+    if (_selectedRole == DemoRole.provider) {
+      context.push(ProviderLoginScreen.routeName);
+    } else {
+      context.push(LoginScreen.routeName);
+    }
   }
 
   void _onContinueToSignUp() {
-    final role = _selectedRole == DemoRole.user
-        ? UserRole.user
-        : UserRole.provider;
-    context.push(SignUpScreen.routeName, extra: role);
+    if (_selectedRole == DemoRole.provider) {
+      context.push(ProviderAgeConfirmationScreen.routeName);
+    } else {
+      context.push(SignUpScreen.routeName);
+    }
   }
 
   @override
@@ -138,16 +141,10 @@ class _DemoRoleSelectionScreenState extends State<DemoRoleSelectionScreen> {
                           setState(() => _selectedRole = DemoRole.user);
                         },
                         onLoginTap: () {
-                          context.push(
-                            LoginScreen.routeName,
-                            extra: UserRole.user,
-                          );
+                          context.push(LoginScreen.routeName);
                         },
                         onSignUpTap: () {
-                          context.push(
-                            SignUpScreen.routeName,
-                            extra: UserRole.user,
-                          );
+                          context.push(SignUpScreen.routeName);
                         },
                       ),
 
@@ -165,16 +162,10 @@ class _DemoRoleSelectionScreenState extends State<DemoRoleSelectionScreen> {
                           setState(() => _selectedRole = DemoRole.provider);
                         },
                         onLoginTap: () {
-                          context.push(
-                            LoginScreen.routeName,
-                            extra: UserRole.provider,
-                          );
+                          context.push(ProviderLoginScreen.routeName);
                         },
                         onSignUpTap: () {
-                          context.push(
-                            SignUpScreen.routeName,
-                            extra: UserRole.provider,
-                          );
+                          context.push(ProviderAgeConfirmationScreen.routeName);
                         },
                       ),
 

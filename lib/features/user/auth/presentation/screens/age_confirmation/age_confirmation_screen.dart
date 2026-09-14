@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nchito/core/common_widgets/app_button/app_button.dart';
 import 'package:nchito/core/common_widgets/app_container_bg/app_container_bg.dart';
 import 'package:nchito/core/common_widgets/app_icon/bg_icon.dart';
+import 'package:nchito/core/constants/user_role.dart';
 import 'package:nchito/core/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
-import 'package:nchito/features/user/auth/presentation/screens/role_selection/role_selection_screen.dart';
+import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
+import 'package:nchito/features/user/auth/presentation/screens/signup/signup_screen.dart';
 
 class AgeConfirmationScreen extends StatelessWidget {
   static const String routeName = '/age-confirmation';
 
-  const AgeConfirmationScreen({super.key});
+  final UserRole role;
+
+  const AgeConfirmationScreen({super.key, this.role = UserRole.provider});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -27,6 +31,10 @@ class AgeConfirmationScreen extends StatelessWidget {
             ),
             child: AppContainerBg(
               radius: ResponsiveHelper.borderRadius(24),
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveHelper.padding(20),
+                vertical: ResponsiveHelper.padding(24),
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -41,6 +49,7 @@ class AgeConfirmationScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: context.titleLarge.copyWith(
                       fontSize: ResponsiveHelper.fontSize(20),
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   SizedBox(height: ResponsiveHelper.spacing(8)),
@@ -54,18 +63,27 @@ class AgeConfirmationScreen extends StatelessWidget {
                       Expanded(
                         child: AppButton(
                           text: AppText.exit,
-                          onPressed: () => SystemNavigator.pop(),
-                          borderColor: Colors.red,
-                          textColor: Colors.red,
+                          onPressed: () {
+                            if (context.canPop()) {
+                              context.pop();
+                            } else {
+                              context.go(LoginScreen.routeName, extra: role);
+                            }
+                          },
+                          backgroundColor: const Color(0xFFFDE8E8),
+                          borderColor: const Color(0xFFF05252),
+                          textColor: const Color(0xFFE02424),
                           radius: ResponsiveHelper.borderRadius(8),
                         ),
                       ),
                       SizedBox(width: ResponsiveHelper.spacing(12)),
                       Expanded(
                         child: AppButton(
-                          text: AppText.enter21Plus,
-                          onPressed: () =>
-                              context.push(RoleSelectionScreen.routeName),
+                          text: AppText.enter18Plus,
+                          onPressed: () => context.push(
+                            SignUpScreen.routeName,
+                            extra: role,
+                          ),
                           backgroundColor: AppColors.brandPrimary,
                           textColor: AppColors.textOnPrimary,
                           radius: ResponsiveHelper.borderRadius(8),
@@ -83,12 +101,14 @@ class AgeConfirmationScreen extends StatelessWidget {
   }
 
   TextSpan _buildBodyTextSpan(BuildContext context) {
-    const highlight = '21+';
+    const highlight = '18+';
     final body = AppText
         .youMustBe18YearsOrOlderToCreateAnAccountAndUseNchitoServicesPleaseConfirmYourAgeToContinue;
     final parts = body.split(highlight);
     final baseStyle = context.bodyMedium.copyWith(
       color: AppColors.textSecondary,
+      fontSize: ResponsiveHelper.fontSize(14),
+      height: 1.4,
     );
 
     if (parts.length != 2) {

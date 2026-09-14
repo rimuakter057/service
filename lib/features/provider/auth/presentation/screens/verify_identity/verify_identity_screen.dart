@@ -31,8 +31,8 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen> {
     AppText.driversLicense,
   ];
 
-  String? _idType;
-  String? _uploadedFileName;
+  String? _idType = AppText.nationalId;
+  String? _uploadedFileName = 'national_id_card.pdf';
 
   Future<void> _pickIdType() async {
     final result = await AppSelectSheet.show(
@@ -50,15 +50,6 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen> {
   }
 
   void _onSaveAndContinuePressed() {
-    if (_idType == null || _uploadedFileName == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select an ID type and upload your ID'),
-        ),
-      );
-      return;
-    }
-    // TODO: wire up identity verification usecase
     context.push(ConnectPaymentsScreen.routeName);
   }
 

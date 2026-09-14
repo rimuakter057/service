@@ -141,8 +141,9 @@ class AppText {
   static const String ageConfirmation = "Age Confirmation !";
   static const String
   youMustBe18YearsOrOlderToCreateAnAccountAndUseNchitoServicesPleaseConfirmYourAgeToContinue =
-      "You must be 21+ years or older to create an account and use Nchito services. Please confirm your age to continue.";
+      "You must be 18+ years or older to create an account and use Nchito services. Please confirm your age to continue.";
   static const String exit = "Exit";
+  static const String enter18Plus = "18+ Enter";
   static const String enter21Plus = "21+ Enter";
 
   // ==========================================================
