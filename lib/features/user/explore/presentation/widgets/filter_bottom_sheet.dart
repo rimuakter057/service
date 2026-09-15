@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:nchito/features/common/common_widgets/app_button/app_button.dart';
-import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
-import 'package:nchito/features/common/common_widgets/app_select_sheet/app_select_sheet.dart';
-import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
-import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
-import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
-import 'package:nchito/core/utils/assets_path/assets_path.dart';
+import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
+import 'package:nchito/features/common/common_widgets/app_box_text_field/app_box_text_field.dart';
+import 'package:nchito/features/common/common_widgets/app_dropdown_field/app_dropdown_field.dart';
+import 'package:nchito/features/common/common_widgets/app_select_sheet/app_select_sheet.dart';
 
 const List<String> _serviceTypeOptions = [
   AppText.categoryCleaning,
@@ -38,9 +35,6 @@ const List<String> _ratingOptions = [
   AppText.only1,
 ];
 
-const double _priceMin = 0;
-const double _priceMax = 1000;
-
 /// Filter modal opened from Explore Provider's filter button — Service
 /// Type / Sort By pickers, Service Location, Price Range slider and
 /// Minimum Rating chips.
@@ -55,51 +49,14 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   String? _serviceType;
   String? _sortBy;
   String _rating = AppText.anyRating;
-  RangeValues _priceRange = const RangeValues(0, 500);
+  double _priceValue = 100;
 
   final TextEditingController _locationController = TextEditingController();
-  late final TextEditingController _minPriceController;
-  late final TextEditingController _maxPriceController;
-
-  @override
-  void initState() {
-    super.initState();
-    _minPriceController = TextEditingController(
-      text: _priceRange.start.round().toString(),
-    );
-    _maxPriceController = TextEditingController(
-      text: _priceRange.end.round().toString(),
-    );
-  }
 
   @override
   void dispose() {
     _locationController.dispose();
-    _minPriceController.dispose();
-    _maxPriceController.dispose();
     super.dispose();
-  }
-
-  void _onRangeChanged(RangeValues values) {
-    setState(() {
-      _priceRange = values;
-      _minPriceController.text = values.start.round().toString();
-      _maxPriceController.text = values.end.round().toString();
-    });
-  }
-
-  void _onMinPriceChanged(String value) {
-    final parsed = double.tryParse(value);
-    if (parsed == null) return;
-    final clamped = parsed.clamp(_priceMin, _priceRange.end);
-    setState(() => _priceRange = RangeValues(clamped, _priceRange.end));
-  }
-
-  void _onMaxPriceChanged(String value) {
-    final parsed = double.tryParse(value);
-    if (parsed == null) return;
-    final clamped = parsed.clamp(_priceRange.start, _priceMax);
-    setState(() => _priceRange = RangeValues(_priceRange.start, clamped));
   }
 
   Future<void> _pickServiceType() async {
@@ -127,37 +84,50 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       _serviceType = null;
       _sortBy = null;
       _rating = AppText.anyRating;
-      _priceRange = const RangeValues(0, 500);
+      _priceValue = 100;
       _locationController.clear();
-      _minPriceController.text = '0';
-      _maxPriceController.text = '500';
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        padding: EdgeInsets.all(ResponsiveHelper.padding(24)),
-        decoration: BoxDecoration(
-          color: AppColors.bgApp,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(ResponsiveHelper.borderRadius(24)),
-          ),
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        ResponsiveHelper.padding(20),
+        ResponsiveHelper.padding(20),
+        ResponsiveHelper.padding(20),
+        ResponsiveHelper.padding(24),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(ResponsiveHelper.borderRadius(24)),
         ),
+      ),
+      child: SafeArea(
+        top: false,
         child: SingleChildScrollView(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(AppText.filter, style: context.labelMedium),
+                  Text(
+                    AppText.filter,
+                    style: context.titleLarge.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textBlackPrimary,
+                    ),
+                  ),
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
-                    child: AppIcon(
-                      assetPath: AssetsPath.filterIconClose,
-                      size: ResponsiveHelper.iconSize(20),
+                    child: Icon(
+                      Icons.close,
+                      size: ResponsiveHelper.iconSize(22),
+                      color: AppColors.textBlackPrimary,
                     ),
                   ),
                 ],
@@ -165,78 +135,132 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               SizedBox(height: ResponsiveHelper.spacing(4)),
               Text(
                 AppText.refineServicesAndProvidersToFindTheRightMatch,
-                style: context.bodyMedium,
+                style: context.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.3,
+                ),
               ),
               SizedBox(height: ResponsiveHelper.spacing(20)),
 
-              _DropdownField(
+              // Service Type
+              AppDropdownField(
                 label: AppText.serviceType,
                 hint: AppText.selectServiceType,
                 value: _serviceType,
                 onTap: _pickServiceType,
               ),
-              SizedBox(height: ResponsiveHelper.spacing(20)),
+              SizedBox(height: ResponsiveHelper.spacing(16)),
 
-              AppTextField(
+              // Service Location
+              AppBoxTextField(
                 label: AppText.serviceLocation,
                 hint: AppText.enterYourLocation,
                 controller: _locationController,
               ),
-              SizedBox(height: ResponsiveHelper.spacing(20)),
+              SizedBox(height: ResponsiveHelper.spacing(16)),
 
-              _DropdownField(
+              // Sort By
+              AppDropdownField(
                 label: AppText.sortBy,
                 hint: AppText.selectSortingPreference,
                 value: _sortBy,
                 onTap: _pickSortBy,
               ),
-              SizedBox(height: ResponsiveHelper.spacing(20)),
+              SizedBox(height: ResponsiveHelper.spacing(16)),
 
-              Text(AppText.priceRange, style: context.labelLarge),
+              // Price Range
+              Text(
+                AppText.priceRange,
+                style: context.labelLarge.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textBlackPrimary,
+                ),
+              ),
               SizedBox(height: ResponsiveHelper.spacing(8)),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: _PriceBox(
-                      controller: _minPriceController,
-                      onChanged: _onMinPriceChanged,
+                  Container(
+                    width: ResponsiveHelper.width(76),
+                    height: ResponsiveHelper.height(42),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF6F4F1),
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveHelper.borderRadius(8),
+                      ),
+                      border: Border.all(color: const Color(0xFFE2E7E3)),
+                    ),
+                    child: Text(
+                      '0',
+                      style: context.bodyMedium.copyWith(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textBlackPrimary,
+                      ),
                     ),
                   ),
-                  SizedBox(width: ResponsiveHelper.spacing(8)),
-                  AppIcon(
-                    assetPath: AssetsPath.filterIconPriceRangeDash,
-                    size: ResponsiveHelper.iconSize(12),
+                  Text(
+                    '»',
+                    style: TextStyle(
+                      color: AppColors.brandPrimary,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  SizedBox(width: ResponsiveHelper.spacing(8)),
-                  Expanded(
-                    child: _PriceBox(
-                      controller: _maxPriceController,
-                      onChanged: _onMaxPriceChanged,
+                  Container(
+                    width: ResponsiveHelper.width(76),
+                    height: ResponsiveHelper.height(42),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF6F4F1),
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveHelper.borderRadius(8),
+                      ),
+                      border: Border.all(color: const Color(0xFFE2E7E3)),
+                    ),
+                    child: Text(
+                      _priceValue.round().toString(),
+                      style: context.bodyMedium.copyWith(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textBlackPrimary,
+                      ),
                     ),
                   ),
                 ],
               ),
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
-                  activeTrackColor: AppColors.brandPrimary,
-                  inactiveTrackColor: AppColors.borderDefault,
+                  trackHeight: ResponsiveHelper.height(8),
+                  activeTrackColor: const Color(0xFF5A7E6B),
+                  inactiveTrackColor: const Color(0xFFE5EEE8),
                   thumbColor: AppColors.brandPrimary,
                   overlayColor: AppColors.brandPrimary.withValues(alpha: 0.1),
-                  rangeThumbShape: const RoundRangeSliderThumbShape(
-                    enabledThumbRadius: 9,
+                  thumbShape: const RoundSliderThumbShape(
+                    enabledThumbRadius: 10,
+                    elevation: 0,
                   ),
+                  trackShape: const RoundedRectSliderTrackShape(),
                 ),
-                child: RangeSlider(
-                  min: _priceMin,
-                  max: _priceMax,
-                  values: _priceRange,
-                  onChanged: _onRangeChanged,
+                child: Slider(
+                  min: 0,
+                  max: 100,
+                  value: _priceValue,
+                  onChanged: (val) => setState(() => _priceValue = val),
                 ),
               ),
               SizedBox(height: ResponsiveHelper.spacing(12)),
 
-              Text(AppText.minimumRating, style: context.labelLarge),
-              SizedBox(height: ResponsiveHelper.spacing(8)),
+              // Minimum Rating
+              Text(
+                AppText.minimumRating,
+                style: context.labelLarge.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textBlackPrimary,
+                ),
+              ),
+              SizedBox(height: ResponsiveHelper.spacing(10)),
               Wrap(
                 spacing: ResponsiveHelper.spacing(8),
                 runSpacing: ResponsiveHelper.spacing(8),
@@ -252,23 +276,56 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               ),
               SizedBox(height: ResponsiveHelper.spacing(24)),
 
+              // Action Buttons
               Row(
                 children: [
                   Expanded(
-                    child: AppButton(
-                      text: AppText.resetFilter,
-                      onPressed: _onReset,
-                      borderColor: AppColors.red400,
-                      textColor: AppColors.red400,
+                    child: GestureDetector(
+                      onTap: _onReset,
+                      child: Container(
+                        height: ResponsiveHelper.height(50),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFDE8E8),
+                          borderRadius: BorderRadius.circular(
+                            ResponsiveHelper.borderRadius(12),
+                          ),
+                          border: Border.all(
+                            color: const Color(0xFFE05252),
+                            width: 1.2,
+                          ),
+                        ),
+                        child: Text(
+                          AppText.resetFilter,
+                          style: context.labelLarge.copyWith(
+                            color: const Color(0xFFD64545),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(width: ResponsiveHelper.spacing(12)),
                   Expanded(
-                    child: AppButton(
-                      text: AppText.applyFilter,
-                      onPressed: () => Navigator.of(context).pop(),
-                      backgroundColor: AppColors.brandPrimary,
-                      textColor: AppColors.textOnPrimary,
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        height: ResponsiveHelper.height(50),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.brandPrimary,
+                          borderRadius: BorderRadius.circular(
+                            ResponsiveHelper.borderRadius(12),
+                          ),
+                        ),
+                        child: Text(
+                          AppText.applyFilter,
+                          style: context.labelLarge.copyWith(
+                            color: AppColors.textOnPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -281,82 +338,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   }
 }
 
-class _DropdownField extends StatelessWidget {
-  final String label;
-  final String hint;
-  final String? value;
-  final VoidCallback onTap;
-
-  const _DropdownField({
-    required this.label,
-    required this.hint,
-    required this.value,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: context.labelLarge),
-        SizedBox(height: ResponsiveHelper.spacing(8)),
-        GestureDetector(
-          onTap: onTap,
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveHelper.padding(16),
-              vertical: ResponsiveHelper.padding(16),
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.borderDefault.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(
-                ResponsiveHelper.borderRadius(12),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  value ?? hint,
-                  style: context.bodyMedium.copyWith(
-                    color: value != null
-                        ? AppColors.textBlackPrimary
-                        : AppColors.textGrey,
-                  ),
-                ),
-                AppIcon(
-                  assetPath: AssetsPath.filterIconDropdownChevron,
-                  size: ResponsiveHelper.iconSize(16),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PriceBox extends StatelessWidget {
-  final TextEditingController controller;
-  final ValueChanged<String> onChanged;
-
-  const _PriceBox({required this.controller, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      onChanged: onChanged,
-      style: context.bodyMedium.copyWith(color: AppColors.textBlackPrimary),
-      textAlign: TextAlign.center,
-    );
-  }
-}
 
 class _RatingChip extends StatelessWidget {
   final String label;
@@ -376,26 +357,28 @@ class _RatingChip extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: ResponsiveHelper.padding(14),
-          vertical: ResponsiveHelper.padding(10),
+          vertical: ResponsiveHelper.padding(8),
         ),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.brandPrimary : AppColors.bgCard,
+          color: isSelected ? AppColors.brandSoft : Colors.transparent,
           borderRadius: BorderRadius.circular(
-            ResponsiveHelper.borderRadius(20),
+            ResponsiveHelper.borderRadius(10),
           ),
           border: Border.all(
             color: isSelected
                 ? AppColors.brandPrimary
-                : AppColors.borderDefault,
+                : const Color(0xFFB0B7B3),
+            width: isSelected ? 1.5 : 1.0,
           ),
         ),
         child: Text(
           label,
           style: context.bodySmall.copyWith(
             color: isSelected
-                ? AppColors.textOnPrimary
-                : AppColors.textBlackPrimary,
-            fontWeight: FontWeight.w500,
+                ? AppColors.brandPrimary
+                : const Color(0xFF7D8782),
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+            fontStyle: FontStyle.italic,
           ),
         ),
       ),

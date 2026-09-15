@@ -11,6 +11,7 @@ import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
 import 'package:nchito/features/user/bookings/presentation/screens/booking_details/booking_details_screen.dart'
     as bookings;
+import 'package:nchito/features/user/explore/presentation/screens/book_a_service/book_a_service_screen.dart';
 
 class _TimeSlot {
   final String label;
@@ -176,7 +177,7 @@ class _ProviderAvailabilityScreenState
                       context.pop();
                     }
                   } else {
-                    context.push('/booking-confirmed');
+                    context.push(BookAServiceScreen.routeName);
                   }
                 },
                 width: double.infinity,

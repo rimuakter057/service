@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nchito/features/common/common_widgets/app_button/app_button.dart';
+import 'package:nchito/features/common/common_widgets/app_confirm_bottom_sheet/app_confirm_bottom_sheet.dart';
 import 'package:nchito/features/common/common_widgets/app_container_bg/app_container_bg.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/bg_icon.dart';
@@ -21,6 +22,8 @@ import 'package:nchito/features/user/bookings/presentation/widgets/leave_review_
 import 'package:nchito/features/user/bookings/presentation/widgets/proceed_to_payment_bottom_sheet.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/report_issue_bottom_sheet.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/reschedule_booking_bottom_sheet.dart';
+import 'package:nchito/features/user/bookings/presentation/widgets/dispute_status_card.dart';
+import '../dispute_details/dispute_details_screen.dart';
 import '../dpo_checkout/dpo_checkout_screen.dart';
 
 /// Single booking — reached by tapping an item on the My Bookings screen.
@@ -44,6 +47,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   bool _isReviewed = false;
   int _rating = 5;
   String _reviewComment = '';
+  bool _isDisputeCancelled = false;
 
   BookingHistoryData get booking => widget.booking;
 
@@ -183,6 +187,38 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
               duration: Duration(seconds: 3),
             ),
           );
+        },
+      ),
+    );
+  }
+
+  void _onCancelDispute(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => AppConfirmBottomSheet(
+        icon: AppIcon(
+          assetPath: AssetsPath.bookServiceIconInformationLarge,
+          size: ResponsiveHelper.iconSize(60),
+        ),
+        title: AppText.cancelDisputeExclaim,
+        description: Text(
+          AppText
+              .areYouSureYouWantToCancelThisDisputeYouWillNoLongerBeAbleToContinueWithThisIssue,
+          textAlign: TextAlign.center,
+          style: context.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+            height: 1.4,
+          ),
+        ),
+        cancelLabel: AppText.cancel,
+        confirmLabel: AppText.confirm,
+        confirmColor: AppColors.brandPrimary,
+        onConfirm: () {
+          setState(() {
+            _isDisputeCancelled = true;
+          });
         },
       ),
     );
@@ -574,8 +610,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                       ),
                     ],
 
-                    /// Completed On Card (Completed status only - Screenshot 2)
-                    if (booking.status == AppText.completed) ...[
+                    /// Completed On Card (Completed and Disputed status - matching Image 2)
+                    if (booking.status == AppText.completed ||
+                        booking.status == AppText.disputed ||
+                        booking.status.toLowerCase().contains('disput')) ...[
                       SizedBox(height: ResponsiveHelper.spacing(10)),
                       AppContainerBg(
                         width: double.infinity,
@@ -614,7 +652,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                 ),
                                 SizedBox(height: ResponsiveHelper.spacing(2)),
                                 Text(
-                                  '27 Aug 2026 – 06:20 AM',
+                                  '27 Aug 2026 - 06:20 AM',
                                   style: TextStyle(
                                     fontSize: ResponsiveHelper.fontSize(11),
                                     color: const Color(0xFF64748B),
@@ -625,8 +663,25 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                           ],
                         ),
                       ),
+                    ],
 
-                      /// Review Card (shown when review is submitted - matching Figma design)
+                    /// Dispute Status Card (Disputed status - matching Figma design)
+                    if (booking.status == AppText.disputed ||
+                        booking.status.toLowerCase().contains('disput')) ...[
+                      SizedBox(height: ResponsiveHelper.spacing(10)),
+                      DisputeStatusCard(
+                        status: _isDisputeCancelled
+                            ? AppText.resolved
+                            : AppText.inReview,
+                        onViewTap: () => context.push(
+                          DisputeDetailsScreen.routeName,
+                          extra: booking,
+                        ),
+                      ),
+                    ],
+
+                    /// Review Card (shown when review is submitted - matching Figma design)
+                    if (booking.status == AppText.completed) ...[
                       if (_isReviewed) ...[
                         SizedBox(height: ResponsiveHelper.spacing(10)),
                         AppContainerBg(
@@ -744,7 +799,20 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 horizontal: ResponsiveHelper.padding(24),
                 vertical: ResponsiveHelper.padding(16),
               ),
-              child: booking.status == AppText.inProgress
+              child: (booking.status == AppText.disputed ||
+                      booking.status.toLowerCase().contains('disput'))
+                  ? AppButton(
+                      text: AppText.cancelDispute,
+                      onPressed: _isDisputeCancelled
+                          ? null
+                          : () => _onCancelDispute(context),
+                      width: double.infinity,
+                      backgroundColor: _isDisputeCancelled
+                          ? AppColors.disputeCancelledBtn
+                          : AppColors.red,
+                      textColor: AppColors.white,
+                    )
+                  : booking.status == AppText.inProgress
                   ? Row(
                       children: [
                         Expanded(

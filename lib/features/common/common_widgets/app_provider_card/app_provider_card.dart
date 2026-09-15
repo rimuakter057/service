@@ -26,6 +26,7 @@ class AppProviderCard extends StatelessWidget {
   final Color? badgeIconColor;
 
   final VoidCallback? onTap;
+  final VoidCallback? onBookNow;
 
   const AppProviderCard({
     super.key,
@@ -38,6 +39,7 @@ class AppProviderCard extends StatelessWidget {
     this.badgeBgColor,
     this.badgeIconColor,
     this.onTap,
+    this.onBookNow,
   });
 
   bool get _hasBadge =>
@@ -168,6 +170,33 @@ class AppProviderCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  if (onBookNow != null) ...[
+                    SizedBox(height: ResponsiveHelper.spacing(8)),
+                    GestureDetector(
+                      onTap: onBookNow,
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(
+                          vertical: ResponsiveHelper.padding(6),
+                        ),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.brandPrimary,
+                          borderRadius: BorderRadius.circular(
+                            ResponsiveHelper.borderRadius(8),
+                          ),
+                        ),
+                        child: Text(
+                          AppText.bookNow,
+                          style: context.bodySmall.copyWith(
+                            fontSize: ResponsiveHelper.fontSize(11),
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textOnPrimary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

@@ -10,11 +10,13 @@ import 'explore_sample_data.dart';
 class ExploreProviderGrid extends StatelessWidget {
   final List<ExploreProviderEntry> entries;
   final ValueChanged<HomeProviderData>? onProviderTap;
+  final ValueChanged<HomeProviderData>? onBookNowTap;
 
   const ExploreProviderGrid({
     super.key,
     required this.entries,
     this.onProviderTap,
+    this.onBookNowTap,
   });
 
   @override
@@ -28,7 +30,7 @@ class ExploreProviderGrid extends StatelessWidget {
         crossAxisCount: 2,
         mainAxisSpacing: ResponsiveHelper.spacing(10),
         crossAxisSpacing: ResponsiveHelper.spacing(10),
-        childAspectRatio: 170 / 226,
+        childAspectRatio: onBookNowTap != null ? 170 / 262 : 170 / 226,
       ),
       itemBuilder: (context, index) {
         final entry = entries[index];
@@ -43,6 +45,9 @@ class ExploreProviderGrid extends StatelessWidget {
           badgeBgColor: entry.badge.bgColor,
           badgeIconColor: entry.badge.iconColor,
           onTap: onProviderTap == null ? null : () => onProviderTap!(provider),
+          onBookNow: onBookNowTap == null
+              ? null
+              : () => onBookNowTap!(provider),
         );
       },
     );

@@ -500,6 +500,24 @@ class AppText {
   static const String cancelled = "Cancelled";
   static const String rejected = "Rejected";
   static const String disputed = "Disputed";
+  static const String disputeStatus = "Dispute Status";
+  static const String inReview = "In Review";
+  static const String cancelDispute = "Cancel Dispute";
+  static const String cancelDisputeExclaim = "Cancel Dispute!";
+  static const String
+  areYouSureYouWantToCancelThisDisputeYouWillNoLongerBeAbleToContinueWithThisIssue =
+      "Are you sure you want to cancel this dispute? You will no longer be able to continue with this issue.";
+  static const String resolved = "Resolved";
+  static const String disputeDetails = "Dispute Details";
+  static const String serviceQuality = "Service Quality";
+  static const String submittedOn = "Submitted On";
+  static const String evidence = "Evidence";
+  static const String message = "Message";
+  static const String ourTeamIsReviewingYourIssueWeWillUpdateYouOnceADecisionIsMade =
+      "Our team is reviewing your issue. We'll update you once a decision is made.";
+  static const String
+  theServiceWasCompletedButINoticeAnIssueWithTheWorkAfterward =
+      "The service was completed, but I noticed an issue with the work afterward. I would like to report the problem and request assistance in resolving it.";
 
   // ==========================================================
   // BOOKING DETAILS SCREEN (BOOKINGS_SECTION — accepted/quote variant)

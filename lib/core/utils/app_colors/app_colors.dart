@@ -88,4 +88,21 @@ class AppColors {
   // ==========================================================
   static const Color orange100 = Color(0xFFFFEDD5);
   static const Color emerald100 = Color(0xFFD1FAE5);
+
+  // ==========================================================
+  // DISPUTE STATUS & DETAILS tokens
+  // ==========================================================
+  static const Color disputeShieldBg = Color(0xFFFEF3C7);
+  static const Color disputeShieldIcon = Color(0xFFD97706);
+  static const Color disputeResolvedBg = Color(0xFFDCFCE7);
+  static const Color disputeResolvedBorder = Color(0xFF86EFAC);
+  static const Color disputeResolvedText = Color(0xFF16A34A);
+  static const Color disputeInReviewBg = Color(0xFFFFF7ED);
+  static const Color disputeInReviewBorder = Color(0xFFFDBA74);
+  static const Color disputeInReviewText = Color(0xFFEA580C);
+  static const Color disputeEyeBg = Color(0xFFDBEAFE);
+  static const Color disputeEyeIcon = Color(0xFF4C7CE5);
+  static const Color disputeBannerBg = Color(0xFFFEF3C7);
+  static const Color disputeBannerText = Color(0xFFFFA403);
+  static const Color disputeCancelledBtn = Color(0xFFFDE8E8);
 }

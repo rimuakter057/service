@@ -12,6 +12,7 @@ import 'package:nchito/features/user/explore/presentation/widgets/explore_empty_
 import 'package:nchito/features/user/explore/presentation/widgets/explore_provider_grid.dart';
 import 'package:nchito/features/user/explore/presentation/widgets/explore_sample_data.dart';
 import 'package:nchito/features/user/explore/presentation/widgets/filter_bottom_sheet.dart';
+import 'package:nchito/features/user/explore/presentation/screens/book_a_service/book_a_service_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
 
 /// Search + filter screen for browsing providers — reached from the bottom
@@ -111,6 +112,10 @@ class _ExploreProviderScreenState extends State<ExploreProviderScreen> {
                             entries: _filteredResults,
                             onProviderTap: (provider) => context.push(
                               ProviderDetailsScreen.routeName,
+                              extra: provider,
+                            ),
+                            onBookNowTap: (provider) => context.push(
+                              BookAServiceScreen.routeName,
                               extra: provider,
                             ),
                           ),

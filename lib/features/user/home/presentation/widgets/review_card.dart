@@ -18,50 +18,78 @@ class ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppContainerBg(
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: ResponsiveHelper.width(20),
-            backgroundColor: review.avatarColor,
-            child: Text(
-              review.initials,
-              style: context.labelMedium.copyWith(
-                color: AppColors.textOnPrimary,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: ResponsiveHelper.width(40),
+                height: ResponsiveHelper.width(40),
+                decoration: BoxDecoration(
+                  color: AppColors.brandSoft,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.brandPrimary,
+                    width: 1.5,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  review.initials,
+                  style: context.labelMedium.copyWith(
+                    color: AppColors.brandPrimary,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
               ),
-            ),
-          ),
-          SizedBox(width: ResponsiveHelper.spacing(12)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+              SizedBox(width: ResponsiveHelper.spacing(12)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        review.name,
-                        style: context.labelMedium,
-                        overflow: TextOverflow.ellipsis,
+                    Text(
+                      review.name,
+                      style: context.labelMedium.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    AppIcon(
-                      assetPath: AssetsPath.providerDetailsIconStar,
-                      size: ResponsiveHelper.iconSize(12),
+                    SizedBox(height: ResponsiveHelper.spacing(4)),
+                    Row(
+                      children: [
+                        AppIcon(
+                          assetPath: AssetsPath.providerDetailsIconStar,
+                          size: ResponsiveHelper.iconSize(12),
+                        ),
+                        SizedBox(width: ResponsiveHelper.spacing(3)),
+                        Text(
+                          review.rating.contains('/5.0')
+                              ? review.rating
+                              : '${review.rating}/5.0',
+                          style: context.bodySmall.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: ResponsiveHelper.spacing(2)),
-                    Text(review.rating, style: context.bodySmall),
                   ],
                 ),
-                SizedBox(height: ResponsiveHelper.spacing(2)),
-                Text(
-                  review.date,
-                  style: context.bodySmall.copyWith(color: AppColors.textGrey),
+              ),
+              Text(
+                review.date,
+                style: context.bodySmall.copyWith(
+                  color: AppColors.textGrey,
                 ),
-                SizedBox(height: ResponsiveHelper.spacing(6)),
-                Text(review.comment, style: context.bodyMedium),
-              ],
-            ),
+              ),
+            ],
+          ),
+          SizedBox(height: ResponsiveHelper.spacing(12)),
+          Text(
+            review.comment,
+            style: context.bodyMedium,
           ),
         ],
       ),

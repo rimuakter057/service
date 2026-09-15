@@ -383,7 +383,7 @@ const List<ReviewData> homeReviews = [
     avatarColor: AppColors.blue400,
     name: 'Liam Thompson',
     rating: '4.8',
-    date: '15 Mar 2025',
+    date: '15 Mar 2026',
     comment:
         'The electrical service provided by this company was exceptional! They arrived on time and handled the installation with great professionalism.',
   ),

@@ -118,13 +118,32 @@ const List<BookingHistoryData> myBookingsHistory = [
   BookingHistoryData(
     iconAsset: AssetsPath.myBookingsServiceIconElectrical,
     iconBgColor: AppColors.orange50,
-    providerName: 'Robert Junior',
+    providerName: 'Roberts Junior',
     service: AppText.categoryElectrical,
     price: 'ZMW 100',
     day: '23',
     month: 'Feb',
     time: '6:00 PM',
-    status: AppText.accepted,
+    status: AppText.disputed,
+    location: 'Lusaka, Zambia',
+    date: '23 February 2026',
+    details:
+        'Join us for an evening of networking, live music, and curated '
+        'drinks. Connect with professionals, entrepreneurs, and creatives '
+        'in a relaxed rooftop setting.',
+    provider: robertJuniorProvider,
+    serviceCost: 'ZMW 525.00',
+  ),
+  BookingHistoryData(
+    iconAsset: AssetsPath.myBookingsServiceIconElectrical,
+    iconBgColor: AppColors.orange50,
+    providerName: 'Roberts Junior',
+    service: AppText.categoryElectrical,
+    price: 'ZMW 100',
+    day: '23',
+    month: 'Feb',
+    time: '6:00 PM',
+    status: AppText.disputed,
     location: 'Lusaka, Zambia',
     date: '23 February 2026',
     details:

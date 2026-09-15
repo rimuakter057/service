@@ -35,8 +35,10 @@ import 'package:nchito/features/user/bookings/presentation/screens/booking_confi
 import 'package:nchito/features/user/bookings/presentation/screens/booking_details/booking_details_screen.dart'
     as bookings;
 import 'package:nchito/features/user/bookings/presentation/screens/bookings_screen.dart';
+import 'package:nchito/features/user/bookings/presentation/screens/dispute_details/dispute_details_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/screens/dpo_checkout/dpo_checkout_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
+import 'package:nchito/features/user/explore/presentation/screens/book_a_service/book_a_service_screen.dart';
 import 'package:nchito/features/user/explore/presentation/screens/explore_provider/explore_provider_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/all_reviews/all_reviews_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/booking_details/booking_details_screen.dart';
@@ -287,6 +289,12 @@ class AppRouter {
         builder: (context, state) => const ExploreProviderScreen(),
       ),
       GoRoute(
+        path: BookAServiceScreen.routeName,
+        builder: (context, state) => BookAServiceScreen(
+          provider: state.extra as HomeProviderData?,
+        ),
+      ),
+      GoRoute(
         path: ProfileScreen.routeName,
         builder: (context, state) => const ProfileScreen(),
       ),
@@ -346,6 +354,12 @@ class AppRouter {
       GoRoute(
         path: BookingConfirmedScreen.routeName,
         builder: (context, state) => BookingConfirmedScreen(
+          booking: state.extra as BookingHistoryData?,
+        ),
+      ),
+      GoRoute(
+        path: DisputeDetailsScreen.routeName,
+        builder: (context, state) => DisputeDetailsScreen(
           booking: state.extra as BookingHistoryData?,
         ),
       ),

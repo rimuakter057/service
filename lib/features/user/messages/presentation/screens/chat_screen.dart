@@ -275,21 +275,22 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Opacity(
                 opacity: _isDisabled ? 0.2 : 1,
                 child: Container(
-                  padding: EdgeInsets.all(ResponsiveHelper.padding(16)),
-                  decoration: BoxDecoration(
-                    color: AppColors.bgOverlay.withValues(alpha: 0.04),
-                    border: Border(
-                      top: BorderSide(color: AppColors.brandPrimary),
-                    ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveHelper.padding(20),
+                    vertical: ResponsiveHelper.padding(12),
+                  ),
+                  decoration: const BoxDecoration(
+                    color: AppColors.bgApp,
                   ),
                   child: Row(
                     children: [
                       Expanded(
                         child: Container(
-                          height: ResponsiveHelper.height(44),
+                          height: ResponsiveHelper.height(48),
                           padding: EdgeInsets.symmetric(
                             horizontal: ResponsiveHelper.padding(16),
                           ),
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: AppColors.white,
                             borderRadius: BorderRadius.circular(
@@ -298,37 +299,40 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                           child: TextField(
                             controller: _messageController,
-                            style: context.bodyMedium.copyWith(
+                            style: TextStyle(
+                              fontSize: ResponsiveHelper.fontSize(14),
+                              fontWeight: FontWeight.w500,
                               color: AppColors.textBlackPrimary,
                             ),
                             decoration: InputDecoration(
                               isCollapsed: true,
                               border: InputBorder.none,
                               hintText: AppText.enterMessage,
-                              hintStyle: context.bodyMedium.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textSecondary,
+                              hintStyle: TextStyle(
+                                fontSize: ResponsiveHelper.fontSize(14),
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textGreyPrimary,
                               ),
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(width: ResponsiveHelper.spacing(6)),
+                      SizedBox(width: ResponsiveHelper.spacing(10)),
                       GestureDetector(
                         onTap: _onSend,
                         child: Container(
-                          width: ResponsiveHelper.width(44),
-                          height: ResponsiveHelper.width(44),
+                          width: ResponsiveHelper.width(48),
+                          height: ResponsiveHelper.height(48),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: AppColors.brandPrimary,
                             borderRadius: BorderRadius.circular(
-                              ResponsiveHelper.borderRadius(8),
+                              ResponsiveHelper.borderRadius(10),
                             ),
                           ),
                           child: AppIcon(
                             assetPath: AssetsPath.messagesIconSend,
-                            size: ResponsiveHelper.iconSize(22),
+                            size: ResponsiveHelper.iconSize(20),
                           ),
                         ),
                       ),
