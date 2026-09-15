@@ -16,9 +16,20 @@ class RejectBookingBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppConfirmBottomSheet(
-      icon: AppIcon(
-        assetPath: AssetsPath.bookingsBookingDetailsIconCancelBooking,
-        size: ResponsiveHelper.iconSize(72),
+      icon: Container(
+        width: ResponsiveHelper.width(64),
+        height: ResponsiveHelper.width(64),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.red.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(
+            ResponsiveHelper.borderRadius(16),
+          ),
+        ),
+        child: AppIcon(
+          assetPath: AssetsPath.bookingsBookingDetailsIconCancelBooking,
+          size: ResponsiveHelper.iconSize(38),
+        ),
       ),
       title: AppText.rejectBookingExclaim,
       description: Text(

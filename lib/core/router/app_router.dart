@@ -272,6 +272,11 @@ class AppRouter {
               isRescheduling: true,
               booking: extra,
             );
+          } else if (extra is ProviderBookingData) {
+            return ProviderAvailabilityScreen(
+              isRescheduling: true,
+              booking: extra,
+            );
           } else if (extra is Map<String, dynamic>) {
             return ProviderAvailabilityScreen(
               isRescheduling: extra['isRescheduling'] as bool? ?? false,

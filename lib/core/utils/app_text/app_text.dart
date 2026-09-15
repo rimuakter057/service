@@ -608,6 +608,8 @@ class AppText {
   static const String rescheduleBookingExclaim = "Reschedule Booking!";
   static const String youReAboutToRequestANewDateAndTimeForThisBooking =
       "You're about to request a new date and time for this booking. The change will be sent to the provider for confirmation.";
+  static const String youReAboutToProposeANewDateAndTimeForThisBooking =
+      "You're about to propose a new date and time for this booking. The change will be sent to the customer for confirmation.";
   static const String youCanCancelOrRequestToReschedule =
       "You can cancel or request to reschedule this booking up to 24 hours before the scheduled service time.";
   static const String rescheduleNow = "Reschedule Now";

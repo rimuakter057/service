@@ -15,6 +15,7 @@ import 'package:nchito/features/provider/bookings/presentation/widgets/accept_qu
 import 'package:nchito/features/provider/bookings/presentation/widgets/confirm_service_completion_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/mark_completed_confirm_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/provider_booking_sample_data.dart';
+import 'package:nchito/features/provider/bookings/presentation/widgets/provider_reschedule_booking_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/reject_booking_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/send_quote_bottom_sheet.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
@@ -269,9 +270,19 @@ class _ProviderBookingDetailsScreenState
   }
 
   void _onRescheduleBooking(BuildContext context) {
-    context.push(
-      ProviderAvailabilityScreen.routeName,
-      extra: booking,
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.1),
+      builder: (_) => ProviderRescheduleBookingBottomSheet(
+        onConfirm: () {
+          context.push(
+            ProviderAvailabilityScreen.routeName,
+            extra: _bookingData,
+          );
+        },
+      ),
     );
   }
 

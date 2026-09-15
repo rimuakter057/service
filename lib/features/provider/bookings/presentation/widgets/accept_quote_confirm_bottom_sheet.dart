@@ -17,7 +17,7 @@ class AcceptQuoteConfirmBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppConfirmBottomSheet(
       icon: AppIcon(
-        assetPath: AssetsPath.bookingsBookingDetailsIconDeclineWarning,
+        assetPath: AssetsPath.bookServiceIconInformationLarge,
         size: ResponsiveHelper.iconSize(72),
       ),
       title: AppText.acceptAndSendPricingQuoteExclaim,
