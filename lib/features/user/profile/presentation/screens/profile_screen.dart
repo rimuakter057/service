@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nchito/core/common_widgets/app_bottom_nav_bar/app_bottom_nav_bar.dart';
-import 'package:nchito/core/common_widgets/app_top_bar/app_top_bar.dart';
-import 'package:nchito/core/extensions/context_extension/context_extension.dart';
-import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/features/common/common_widgets/app_bottom_nav_bar/app_bottom_nav_bar.dart';
+import 'package:nchito/features/common/common_widgets/app_top_bar/app_top_bar.dart';
+import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
-import 'package:nchito/features/demo/presentation/screens/demo_role_selection_screen.dart';
+import 'package:nchito/features/common/role_selection/role_selection_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/account_settings/account_settings_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/help_support/help_support_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/legal_company_info/legal_company_info_screen.dart';
@@ -32,8 +32,8 @@ class ProfileScreen extends StatelessWidget {
       barrierColor: Colors.black.withValues(alpha: 0.1),
       builder: (_) => LogOutBottomSheet(
         onConfirm: () {
-          // Navigates back to the demo role selection screen
-          context.go(DemoRoleSelectionScreen.routeName);
+          // Navigates back to the role selection screen
+          context.go(RoleSelectionScreen.routeName);
         },
       ),
     );

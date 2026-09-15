@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:nchito/core/common_widgets/app_top_bar/app_top_bar.dart';
-import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/features/common/common_widgets/app_top_bar/app_top_bar.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/features/user/home/presentation/widgets/detail_field.dart';

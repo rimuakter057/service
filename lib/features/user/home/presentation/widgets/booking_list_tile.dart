@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nchito/core/common_widgets/app_container_bg/app_container_bg.dart';
-import 'package:nchito/core/common_widgets/app_icon/bg_icon.dart';
-import 'package:nchito/core/extensions/context_extension/context_extension.dart';
-import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/features/common/common_widgets/app_container_bg/app_container_bg.dart';
+import 'package:nchito/features/common/common_widgets/app_icon/bg_icon.dart';
+import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 
 /// One row in an "Active Booking" list — service icon, provider/service

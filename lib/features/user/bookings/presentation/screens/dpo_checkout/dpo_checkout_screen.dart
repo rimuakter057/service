@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../../core/common_widgets/app_icon/app_icon.dart';
-import '../../../../../../core/common_widgets/app_top_bar/app_top_bar.dart';
-import '../../../../../../core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
+import 'package:nchito/features/common/common_widgets/app_top_bar/app_top_bar.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import '../../../../../../core/utils/app_colors/app_colors.dart';
 import '../../../../../../core/utils/app_text/app_text.dart';
 import '../../../../../../core/utils/assets_path/assets_path.dart';

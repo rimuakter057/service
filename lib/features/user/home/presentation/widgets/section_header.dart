@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nchito/core/extensions/context_extension/context_extension.dart';
+import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 

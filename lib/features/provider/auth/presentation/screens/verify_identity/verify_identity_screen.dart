@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nchito/core/common_widgets/app_icon/app_icon.dart';
-import 'package:nchito/core/common_widgets/app_select_sheet/app_select_sheet.dart';
-import 'package:nchito/core/common_widgets/auth_header/auth_header.dart';
-import 'package:nchito/core/extensions/context_extension/context_extension.dart';
-import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
+import 'package:nchito/features/common/common_widgets/app_select_sheet/app_select_sheet.dart';
+import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
+import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';

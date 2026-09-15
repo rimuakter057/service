@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nchito/core/common_widgets/app_icon/app_icon.dart';
-import 'package:nchito/core/common_widgets/auth_header/auth_header.dart';
+import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
+import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
 import 'package:nchito/core/constants/user_role.dart';
-import 'package:nchito/core/extensions/context_extension/context_extension.dart';
-import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/app_theme/app_theme.dart';
@@ -14,8 +14,8 @@ import 'package:nchito/core/utils/validators/validators.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/verify_identity/verify_identity_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/verify_otp/verify_otp_screen.dart';
-import 'package:nchito/features/user/home/presentation/screens/home_screen/home_screen.dart';
-import 'package:nchito/core/common_widgets/app_text_field/app_text_field.dart';
+import 'package:nchito/features/user/auth/presentation/screens/onboarding/onboarding_screen.dart';
+import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
   static const String routeName = '/signup';
@@ -77,7 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // TODO: wire up signup usecase
     final nextRouteName = widget.role == UserRole.provider
         ? VerifyIdentityScreen.routeName
-        : HomeScreen.routeName;
+        : OnboardingScreen.routeName;
     context.push(VerifyOtpScreen.routeName, extra: {
       'nextRouteName': nextRouteName,
     });
@@ -103,25 +103,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (context.canPop()) ...[
-                          GestureDetector(
-                            onTap: () => context.pop(),
-                            child: Container(
-                              width: ResponsiveHelper.width(36),
-                              height: ResponsiveHelper.height(36),
-                              decoration: const BoxDecoration(
-                                color: AppColors.brandSoft,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.arrow_back_rounded,
-                                color: AppColors.brandPrimary,
-                                size: 18,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: ResponsiveHelper.spacing(16)),
-                        ],
                         AuthHeader(
                           title: widget.role == UserRole.provider
                               ? 'Provider Sign Up'

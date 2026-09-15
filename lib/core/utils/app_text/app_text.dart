@@ -665,6 +665,22 @@ class AppText {
   static const String skipForNow = "Skip for now";
 
   // ==========================================================
+  // PROVIDER ONBOARDING SCREEN (PROVIDER_AUTH_SECTION)
+  // (reuses skip, next, continueButton from above)
+  // ==========================================================
+  static const String putYourSkillsToWork = "Put Your Skills To Work.";
+  static const String
+  offerYourSkillsOnNchitoAndConnectWithPeopleLookingForYourServices =
+      "Offer Your Skills On Nchito And Connect With People Looking For Your Services.";
+  static const String growYourWork = "Grow Your Work";
+  static const String reachNewCustomersAndManageYourServiceRequestsInOnePlace =
+      "Reach New Customers And Manage Your Service Requests In One Place.";
+  static const String workEarnGrow = "Work. Earn. Grow.";
+  static const String
+  completeJobsBuildYourReputationAndGrowYourEarningsWithNchito =
+      "Complete Jobs, Build Your Reputation And Grow Your Earnings With Nchito.";
+
+  // ==========================================================
   // LINK PAYMENT ACCOUNT SCREEN (DPO-branded, standalone — not yet wired
   // into a flow; reuses dpoGroup, thinkPayments from DPO CHECKOUT SCREEN)
   // ==========================================================

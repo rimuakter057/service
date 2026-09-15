@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/common_widgets/app_button/app_button.dart';
-import '../../../../../core/extensions/context_extension/context_extension.dart';
-import '../../../../../core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/features/common/common_widgets/app_button/app_button.dart';
+import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import '../../../../../core/utils/app_colors/app_colors.dart';
 import '../../../../../core/utils/app_text/app_text.dart';
 

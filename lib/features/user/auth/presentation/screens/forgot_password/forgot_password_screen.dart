@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nchito/core/common_widgets/auth_header/auth_header.dart';
-import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
-import 'package:nchito/features/user/auth/presentation/screens/set_new_password/set_new_password_screen.dart';
-import 'package:nchito/features/user/auth/presentation/screens/verify_otp/verify_otp_screen.dart';
-import 'package:nchito/core/common_widgets/app_text_field/app_text_field.dart';
+import 'package:nchito/features/user/auth/presentation/screens/forgot_password_verify_otp/forgot_password_verify_otp_screen.dart';
+import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   static const String routeName = '/forgot-password';
@@ -25,14 +24,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     // TODO: wire up "send verification code" usecase
-    context.push(
-      VerifyOtpScreen.routeName,
-      extra: {
-        'subtitle':
-            AppText.enterThe6DigitVerificationCodeSentToYourMobileNumber,
-        'nextRouteName': SetNewPasswordScreen.routeName,
-      },
-    );
+    context.push(ForgotPasswordVerifyOtpScreen.routeName);
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import '../app_colors/app_colors.dart';
 
 class AppTheme {

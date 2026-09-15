@@ -485,6 +485,18 @@ class AssetsPath {
   static const String connectPaymentsLogoZamtelMoney =
       '$_connectPaymentsImageBase/logo_zamtel_money.png';
 
+  // PROVIDER ONBOARDING SCREEN — assets/images/provider/onboard
+  // (reuses onboarding01IconBack and onboarding01IconArrowNext — identical assets)
+  static const String _providerOnboardingImageBase =
+      'assets/images/provider/onboard';
+
+  static const String providerOnboarding1 =
+      '$_providerOnboardingImageBase/board1.png';
+  static const String providerOnboarding2 =
+      '$_providerOnboardingImageBase/board2.png';
+  static const String providerOnboarding3 =
+      '$_providerOnboardingImageBase/board3.png';
+
   // PROVIDER_HOME_SECTION (provider_auth_section is done — new screens go here)
 
   // PROVIDER HOME SCREEN — assets/icons/provider/home_section/home

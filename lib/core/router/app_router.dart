@@ -1,11 +1,14 @@
 import 'package:go_router/go_router.dart';
 import 'package:nchito/core/constants/user_role.dart';
-import 'package:nchito/core/utils/app_text/app_text.dart';
+import 'package:nchito/features/common/role_selection/role_selection_screen.dart';
+import 'package:nchito/features/common/splash/presentation/screens/splash_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/age_confirmation/provider_age_confirmation_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/connect_payments/connect_payments_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/forgot_password/provider_forgot_password_screen.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/forgot_password_verify_otp/provider_forgot_password_verify_otp_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/link_payment_account/link_payment_account_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/login/provider_login_screen.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/onboarding/provider_onboarding_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/set_new_password/provider_set_new_password_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/signup/provider_signup_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/verify_identity/verify_identity_screen.dart';
@@ -20,13 +23,11 @@ import 'package:nchito/features/provider/home/presentation/screens/home_screen/p
 import 'package:nchito/features/provider/messages/presentation/screens/provider_messages_screen.dart';
 import 'package:nchito/features/provider/profile/presentation/screens/profile_screen/provider_profile_screen.dart';
 import 'package:nchito/features/provider/services/presentation/screens/my_services/my_services_screen.dart';
-import 'package:nchito/features/demo/presentation/screens/demo_role_selection_screen.dart';
-import 'package:nchito/features/splash/presentation/screens/splash_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/age_confirmation/age_confirmation_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/forgot_password/forgot_password_screen.dart';
+import 'package:nchito/features/user/auth/presentation/screens/forgot_password_verify_otp/forgot_password_verify_otp_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/onboarding/onboarding_screen.dart';
-import 'package:nchito/features/user/auth/presentation/screens/role_selection/role_selection_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/set_new_password/set_new_password_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/signup/signup_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/verify_otp/verify_otp_screen.dart';
@@ -68,10 +69,6 @@ class AppRouter {
         builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
-        path: DemoRoleSelectionScreen.routeName,
-        builder: (context, state) => const DemoRoleSelectionScreen(),
-      ),
-      GoRoute(
         path: OnboardingScreen.routeName,
         builder: (context, state) => const OnboardingScreen(),
       ),
@@ -85,25 +82,30 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: AgeConfirmationScreen.routeName,
+        builder: (context, state) {
+          final role = state.extra is UserRole
+              ? state.extra as UserRole
+              : UserRole.user;
+          return AgeConfirmationScreen(role: role);
+        },
+      ),
+      GoRoute(
         path: SignUpScreen.routeName,
         builder: (context, state) =>
             SignUpScreen(role: state.extra as UserRole? ?? UserRole.user),
       ),
       GoRoute(
         path: VerifyOtpScreen.routeName,
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          return VerifyOtpScreen(
-            subtitle:
-                extra?['subtitle'] as String? ??
-                AppText.enterThe6DigitVerificationCodeSentToYourEmailAddress,
-            nextRouteName: extra?['nextRouteName'] as String?,
-          );
-        },
+        builder: (context, state) => const VerifyOtpScreen(),
       ),
       GoRoute(
         path: ForgotPasswordScreen.routeName,
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: ForgotPasswordVerifyOtpScreen.routeName,
+        builder: (context, state) => const ForgotPasswordVerifyOtpScreen(),
       ),
       GoRoute(
         path: SetNewPasswordScreen.routeName,
@@ -134,16 +136,13 @@ class AppRouter {
         builder: (context, state) => const ProviderForgotPasswordScreen(),
       ),
       GoRoute(
+        path: ProviderForgotPasswordVerifyOtpScreen.routeName,
+        builder: (context, state) =>
+            const ProviderForgotPasswordVerifyOtpScreen(),
+      ),
+      GoRoute(
         path: ProviderVerifyOtpScreen.routeName,
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          return ProviderVerifyOtpScreen(
-            subtitle:
-                extra?['subtitle'] as String? ??
-                AppText.enterThe6DigitVerificationCodeSentToYourEmailAddress,
-            nextRouteName: extra?['nextRouteName'] as String?,
-          );
-        },
+        builder: (context, state) => const ProviderVerifyOtpScreen(),
       ),
       GoRoute(
         path: ProviderSetNewPasswordScreen.routeName,
@@ -156,6 +155,10 @@ class AppRouter {
       GoRoute(
         path: ConnectPaymentsScreen.routeName,
         builder: (context, state) => const ConnectPaymentsScreen(),
+      ),
+      GoRoute(
+        path: ProviderOnboardingScreen.routeName,
+        builder: (context, state) => const ProviderOnboardingScreen(),
       ),
       GoRoute(
         path: LinkPaymentAccountScreen.routeName,

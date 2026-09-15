@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'core/helper/responsive_helper/responsive_helper.dart';
+import 'core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'core/router/app_router.dart';
 import 'core/utils/app_theme/app_theme.dart';
 

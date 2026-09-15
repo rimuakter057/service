@@ -3,29 +3,23 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nchito/core/common_widgets/auth_header/auth_header.dart';
-import 'package:nchito/core/extensions/context_extension/context_extension.dart';
-import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
+import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
+import 'package:nchito/features/user/auth/presentation/screens/onboarding/onboarding_screen.dart';
 
+/// Signup OTP verification screen for User role
 class VerifyOtpScreen extends StatefulWidget {
   static const String routeName = '/verify-otp';
 
-  /// Shown under the title — defaults to the email-verification copy
-  /// (signup flow); pass the mobile-number variant for the forgot-password
-  /// flow.
   final String subtitle;
-
-  /// Route to push once the code is verified. Null means "do nothing yet"
-  /// (e.g. signup, where verification isn't wired up).
-  final String? nextRouteName;
 
   const VerifyOtpScreen({
     super.key,
     this.subtitle =
         AppText.enterThe6DigitVerificationCodeSentToYourEmailAddress,
-    this.nextRouteName,
   });
 
   @override
@@ -85,10 +79,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
   }
 
   void _onVerifyPressed() {
-    final nextRoute = widget.nextRouteName;
-    if (nextRoute != null) {
-      context.push(nextRoute);
-    }
+    context.push(OnboardingScreen.routeName);
   }
 
   @override

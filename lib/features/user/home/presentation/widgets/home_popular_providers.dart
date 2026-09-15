@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nchito/core/common_widgets/app_provider_card/app_provider_card.dart';
-import 'package:nchito/core/helper/responsive_helper/responsive_helper.dart';
+import 'package:nchito/features/common/common_widgets/app_provider_card/app_provider_card.dart';
+import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/features/user/explore/presentation/widgets/explore_sample_data.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
 

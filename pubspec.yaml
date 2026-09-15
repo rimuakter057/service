@@ -101,6 +101,7 @@ flutter:
     - assets/icons/provider/auth_section/connect_payments/
     - assets/images/provider/auth_section/connect_payments/
     - assets/icons/provider/home_section/home/
+    - assets/images/provider/onboard/
     - assets/icons/spash/
 
   # An image asset can refer to one or more resolution-specific "variants", see
