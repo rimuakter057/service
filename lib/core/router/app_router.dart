@@ -57,7 +57,9 @@ import 'package:nchito/features/user/profile/presentation/screens/help_support/h
 import 'package:nchito/features/user/profile/presentation/screens/legal_company_info/legal_company_info_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/change_password/change_password_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/my_profile/my_profile_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/privacy_policy/privacy_policy_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/profile_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/update_profile/update_profile_screen.dart';
 
 class AppRouter {
@@ -362,6 +364,14 @@ class AppRouter {
         builder: (context, state) => DisputeDetailsScreen(
           booking: state.extra as BookingHistoryData?,
         ),
+      ),
+      GoRoute(
+        path: TermsAndConditionScreen.routeName,
+        builder: (context, state) => const TermsAndConditionScreen(),
+      ),
+      GoRoute(
+        path: PrivacyPolicyScreen.routeName,
+        builder: (context, state) => const PrivacyPolicyScreen(),
       ),
     ],
   );

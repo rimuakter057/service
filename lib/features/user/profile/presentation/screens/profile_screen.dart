@@ -9,9 +9,12 @@ import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/features/common/role_selection/role_selection_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/account_settings/account_settings_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/favorite_providers/favorite_providers_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/help_support/help_support_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/legal_company_info/legal_company_info_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/my_profile/my_profile_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/privacy_policy/privacy_policy_screen.dart';
+import 'package:nchito/features/user/profile/presentation/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:nchito/features/user/profile/presentation/widgets/log_out_bottom_sheet.dart';
 import 'package:nchito/features/user/profile/presentation/widgets/profile_menu_tile.dart';
 
@@ -134,6 +137,22 @@ class ProfileScreen extends StatelessWidget {
                       onTap: () =>
                           context.push(AccountSettingsScreen.routeName),
                     ),
+                    if (!isProvider) ...[
+                      SizedBox(height: ResponsiveHelper.spacing(10)),
+                      ProfileMenuTile(
+                        iconData: Icons.favorite_border_rounded,
+                        title: AppText.favoriteProviders,
+                        radius: tileRadius,
+                        contentPadding: tilePadding,
+                        tileBgColor: tileBgColor,
+                        iconBgColor: AppColors.brandSoft,
+                        iconBoxSize: iconBoxSize,
+                        iconBoxRadius: iconBoxRadius,
+                        chevronSize: chevronSize,
+                        onTap: () =>
+                            context.push(FavoriteProvidersScreen.routeName),
+                      ),
+                    ],
 
                     SizedBox(height: ResponsiveHelper.spacing(18)),
 
@@ -162,7 +181,8 @@ class ProfileScreen extends StatelessWidget {
                       iconBoxSize: iconBoxSize,
                       iconBoxRadius: iconBoxRadius,
                       chevronSize: chevronSize,
-                      onTap: () {},
+                      onTap: () =>
+                          context.push(TermsAndConditionScreen.routeName),
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(10)),
                     ProfileMenuTile(
@@ -175,7 +195,8 @@ class ProfileScreen extends StatelessWidget {
                       iconBoxSize: iconBoxSize,
                       iconBoxRadius: iconBoxRadius,
                       chevronSize: chevronSize,
-                      onTap: () {},
+                      onTap: () =>
+                          context.push(PrivacyPolicyScreen.routeName),
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(10)),
                     ProfileMenuTile(
