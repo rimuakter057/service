@@ -24,9 +24,24 @@ import 'package:nchito/features/provider/bookings/presentation/widgets/provider_
 import 'package:nchito/features/provider/home/presentation/screens/home_screen/provider_home_screen.dart';
 import 'package:nchito/features/provider/messages/presentation/screens/provider_chat_screen.dart';
 import 'package:nchito/features/provider/messages/presentation/screens/provider_messages_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/account_settings/provider_account_settings_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/availability/provider_profile_availability_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/change_password/provider_change_password_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/earnings/provider_earnings_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/help_support/provider_help_support_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/legal_company_info/provider_legal_company_info_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/linked_payment_account/provider_linked_payment_account_screen.dart';
 import 'package:nchito/features/provider/profile/presentation/screens/my_profile/provider_my_profile_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/privacy_policy/provider_privacy_policy_screen.dart';
 import 'package:nchito/features/provider/profile/presentation/screens/profile_screen/provider_profile_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/set_availability/provider_set_availability_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/terms_and_condition/provider_terms_and_condition_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/update_profile/provider_update_profile_screen.dart';
+import 'package:nchito/features/provider/services/presentation/screens/add_service/provider_add_service_screen.dart';
+import 'package:nchito/features/provider/services/presentation/screens/edit_service/provider_edit_service_screen.dart';
 import 'package:nchito/features/provider/services/presentation/screens/my_services/my_services_screen.dart';
+import 'package:nchito/features/provider/services/presentation/screens/service_details/provider_service_details_screen.dart';
+import 'package:nchito/features/provider/services/presentation/widgets/provider_services_sample_data.dart';
 import 'package:nchito/features/user/auth/presentation/screens/age_confirmation/age_confirmation_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/forgot_password/forgot_password_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/forgot_password_verify_otp/forgot_password_verify_otp_screen.dart';
@@ -154,6 +169,10 @@ class AppRouter {
         builder: (context, state) => const ConnectPaymentsScreen(),
       ),
       GoRoute(
+        path: LinkPaymentAccountScreen.routeName,
+        builder: (context, state) => const LinkPaymentAccountScreen(),
+      ),
+      GoRoute(
         path: ProviderOnboardingScreen.routeName,
         builder: (context, state) => const ProviderOnboardingScreen(),
       ),
@@ -164,10 +183,6 @@ class AppRouter {
       GoRoute(
         path: ProviderHomeScreen.routeName,
         builder: (context, state) => const ProviderHomeScreen(),
-      ),
-      GoRoute(
-        path: MyServicesScreen.routeName,
-        builder: (context, state) => const MyServicesScreen(),
       ),
       GoRoute(
         path: ProviderMessagesScreen.routeName,
@@ -186,6 +201,77 @@ class AppRouter {
       GoRoute(
         path: ProviderMyProfileScreen.routeName,
         builder: (context, state) => const ProviderMyProfileScreen(),
+      ),
+      GoRoute(
+        path: ProviderUpdateProfileScreen.routeName,
+        builder: (context, state) => const ProviderUpdateProfileScreen(),
+      ),
+      GoRoute(
+        path: ProviderAccountSettingsScreen.routeName,
+        builder: (context, state) => const ProviderAccountSettingsScreen(),
+      ),
+      GoRoute(
+        path: ProviderChangePasswordScreen.routeName,
+        builder: (context, state) => const ProviderChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: ProviderLegalCompanyInfoScreen.routeName,
+        builder: (context, state) => const ProviderLegalCompanyInfoScreen(),
+      ),
+      GoRoute(
+        path: ProviderHelpSupportScreen.routeName,
+        builder: (context, state) => const ProviderHelpSupportScreen(),
+      ),
+      GoRoute(
+        path: ProviderTermsAndConditionScreen.routeName,
+        builder: (context, state) => const ProviderTermsAndConditionScreen(),
+      ),
+      GoRoute(
+        path: ProviderPrivacyPolicyScreen.routeName,
+        builder: (context, state) => const ProviderPrivacyPolicyScreen(),
+      ),
+      GoRoute(
+        path: ProviderLinkedPaymentAccountScreen.routeName,
+        builder: (context, state) =>
+            const ProviderLinkedPaymentAccountScreen(),
+      ),
+      GoRoute(
+        path: ProviderProfileAvailabilityScreen.routeName,
+        builder: (context, state) =>
+            const ProviderProfileAvailabilityScreen(),
+      ),
+      GoRoute(
+        path: ProviderSetAvailabilityScreen.routeName,
+        builder: (context, state) =>
+            const ProviderSetAvailabilityScreen(),
+      ),
+      GoRoute(
+        path: ProviderEarningsScreen.routeName,
+        builder: (context, state) => const ProviderEarningsScreen(),
+      ),
+      GoRoute(
+        path: MyServicesScreen.routeName,
+        builder: (context, state) => const MyServicesScreen(),
+      ),
+      GoRoute(
+        path: ProviderServiceDetailsScreen.routeName,
+        builder: (context, state) {
+          final service = state.extra as ProviderServiceData? ??
+              sampleProviderServices.first;
+          return ProviderServiceDetailsScreen(service: service);
+        },
+      ),
+      GoRoute(
+        path: ProviderAddServiceScreen.routeName,
+        builder: (context, state) => const ProviderAddServiceScreen(),
+      ),
+      GoRoute(
+        path: ProviderEditServiceScreen.routeName,
+        builder: (context, state) {
+          final service = state.extra as ProviderServiceData? ??
+              sampleProviderServices.first;
+          return ProviderEditServiceScreen(service: service);
+        },
       ),
       GoRoute(
         path: ProviderBookingDetailsScreen.routeName,

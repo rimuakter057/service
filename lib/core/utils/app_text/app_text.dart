@@ -307,6 +307,11 @@ class AppText {
       "Your email address is linked to your Nchito account and is used for "
       "important account and security updates, so it cannot be changed at "
       "this time.";
+  static const String
+  yourEmailAddressOrPhoneNumberIsLinkedToYourNchitoAccount =
+      "Your Email Address / Phone Number is linked to your Nchito account "
+      "and is used for important account and security updates, so it cannot "
+      "be changed at this time.";
   static const String saveProfileChangesExclaim = "Save Profile Changes!";
   static const String
   areYouSureYouWantToSaveYourProfileChangesYourUpdatedInformationWillBeAppliedToYourAccount =
@@ -318,6 +323,7 @@ class AppText {
   // (reuses accountSetting from PROFILE SCREEN above)
   // ==========================================================
   static const String changePassword = "Change Password";
+  static const String linkedPaymentAccount = "Linked Payment Account";
   static const String deleteAccount = "Delete account";
 
   // ==========================================================
@@ -837,4 +843,68 @@ class AppText {
   static const String general = "General";
   static const String availability = "Availability";
   static const String earnings = "Earnings";
+  static const String robertJuniorEmail = "robert@junior.com";
+  static const String electrical = "Electrical";
+  static const String moving = "Moving";
+  static const String painting = "Painting";
+  static const String providerTotalJobsCount = "256";
+  static const String setUpYourAvailability = "Set Up Your Availability";
+  static const String
+  youHaventSetYourWorkingHoursYetSetYourAvailabilitySoCustomersCanSeeYourAvailableTimeSlotsAndBookYourServices =
+      "You haven't set your working hours yet. Set your availability so "
+      "customers can see your available time slots and book your services.";
+  static const String blockAllDay = "Block All Day";
+  static const String blockFullDayExclaim = "Block Full Day!";
+  static const String
+  areYouSureYouWantToBlockYourAvailabilityForEntireDay =
+      "Are you sure you want to block your availability for the entire day! Customers will not be able to book any services during this time.";
+  static const String blockThisSlotExclaim = "Block This Slot!";
+  static const String areYouSureYouWantToBlockThisTimeSlot =
+      "Are you sure you want to block this time slot! Customers will not be able to book this slot.";
+  static const String available = "Available";
+  static const String earningsForToday = "Earnings for Today";
+  static const String showingEarningsForToday = "Showing Earnings for Today";
+  static const String paymentHistory = "Payment history";
+  static const String all = "All";
+  static const String last24Hours = "Last 24 Hours";
+  static const String lastWeek = "Last Week";
+  static const String lastFortnight = "Last Fortnight";
+  static const String lastMonth = "Last Month";
+  static const String lastYear = "Last Year";
+  static const String workInterval = "Work Interval";
+  static const String enterBreakTimeBetweenBookings =
+      "Enter break time between bookings";
+  static const String from = "From";
+  static const String until = "Until";
+  static const String setAvailabilityCancellationNotice =
+      "Customers must cancel at least 24 hours before the appointment to be eligible for cancellation according to the Nchito cancellation policy.";
+  static const String saveAvailability = "Save Availability";
+  static const String saveAvailabilityExclaim = "Save Availability!";
+  static const String areYouSureYouWantToSaveYourAvailability =
+      "Are you sure you want to save your availability! Customers will be able to book your services during these available hours.";
+  static const String completeYourSetupFirst = "Complete Your Setup First";
+  static const String
+  beforeCreatingYourFirstServicePleaseCompleteAllRequiredProviderSetupSteps =
+      "Before creating your first service, please complete all required provider setup steps, including your profile Verification, availability, and payment details. This ensures customers can book your service and you can receive payments successfully.";
+  static const String servicePrice = "Service Price";
+  static const String lusakaZambia = "Lusaka, Zambia";
+  static const String deleteService = "Delete Service";
+  static const String editService = "Edit Service";
+  static const String updateService = "Update Service";
+  static const String deleteServiceExclaim = "Delete Service!";
+  static const String areYouSureYouWantToDeleteThisService =
+      "Are you sure you want to delete this service! This service will no longer be visible to customers and cannot be restored.";
+  static const String updateServiceExclaim = "Update Service!";
+  static const String areYouSureYouWantToSaveTheseChanges =
+      "Are you sure you want to save these changes! The updated service details will be reflected on your profile and used for future bookings.";
+  static const String enterYourStartingPrice = "Enter your starting price";
+  static const String enterEstimatedDuration = "Enter estimated duration";
+  static const String selectAnAvailableTime = "Select an available time";
+  static const String enterYourServiceArea = "Enter your service area";
+  static const String describeYourServiceAndWhatCustomersCanExpect =
+      "Describe your service and what customers can expect.";
+  static const String createService = "Create Service";
+  static const String addServiceExclaim = "Add Service!";
+  static const String areYouSureYouWantToAddThisService =
+      "Are you sure you want to add this service to your profile! Customers will be able to view and book this service once it is approved.";
 }

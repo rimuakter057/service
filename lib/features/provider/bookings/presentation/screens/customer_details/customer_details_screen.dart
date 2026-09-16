@@ -6,7 +6,7 @@ import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.da
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
-import 'package:nchito/features/user/home/presentation/widgets/detail_field.dart';
+import 'package:nchito/features/common/common_widgets/app_detail_field/app_detail_field.dart';
 
 /// Read-only customer info screen, from the provider's side — reached by
 /// tapping the "view" icon on the Provider Booking Details screen's

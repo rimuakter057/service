@@ -52,7 +52,14 @@ class TopAppbar extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: GestureDetector(
-                onTap: onBack ?? () => context.pop(),
+                onTap: onBack ??
+                    () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
+                    },
                 child: BgIcon(
                   assetPath: AssetsPath.providerDetailsIconBack,
                   bgColor: AppColors.brandSoft,

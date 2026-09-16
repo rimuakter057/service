@@ -24,7 +24,7 @@ import 'package:nchito/features/user/bookings/presentation/widgets/cancel_bookin
 import 'package:nchito/features/user/bookings/presentation/widgets/dispute_status_card.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/dispute_response_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/provider_availability/provider_availability_screen.dart';
-import 'package:nchito/features/user/home/presentation/widgets/detail_field.dart';
+import 'package:nchito/features/common/common_widgets/app_detail_field/app_detail_field.dart';
 import 'package:nchito/features/provider/messages/presentation/screens/provider_chat_screen.dart';
 import 'package:nchito/features/user/messages/presentation/widgets/message_sample_data.dart';
 
