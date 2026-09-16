@@ -7,18 +7,33 @@ import 'package:nchito/features/common/common_widgets/app_container_bg/app_conta
 /// Reusable Dispute Status Card used in Booking Details and Dispute Details screens.
 class DisputeStatusCard extends StatelessWidget {
   final String status;
+  final String? statusLabel;
   final String? bannerText;
+  final Color? bannerBgColor;
+  final Color? bannerTextColor;
   final VoidCallback? onViewTap;
+  final VoidCallback? onTap;
 
   const DisputeStatusCard({
     super.key,
     required this.status,
+    this.statusLabel,
     this.bannerText,
+    this.bannerBgColor,
+    this.bannerTextColor,
     this.onViewTap,
+    this.onTap,
   });
 
   bool get _isResolved =>
       status.trim().toLowerCase() == AppText.resolved.toLowerCase();
+
+  String get _displayStatusText {
+    if (statusLabel != null && statusLabel!.isNotEmpty) {
+      return statusLabel!;
+    }
+    return _isResolved ? AppText.resolved : AppText.inReview;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +125,7 @@ class DisputeStatusCard extends StatelessWidget {
                           ),
                           SizedBox(width: ResponsiveHelper.spacing(4)),
                           Text(
-                            _isResolved ? AppText.resolved : AppText.inReview,
+                            _displayStatusText,
                             style: TextStyle(
                               fontSize: ResponsiveHelper.fontSize(12),
                               fontWeight: FontWeight.w500,
@@ -156,7 +171,8 @@ class DisputeStatusCard extends StatelessWidget {
                 vertical: ResponsiveHelper.padding(12),
               ),
               decoration: BoxDecoration(
-                color: AppColors.disputeBannerBg.withValues(alpha: 0.6),
+                color: bannerBgColor ??
+                    AppColors.disputeBannerBg.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(
                   ResponsiveHelper.borderRadius(10),
                 ),
@@ -166,7 +182,7 @@ class DisputeStatusCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: ResponsiveHelper.fontSize(12),
-                  color: AppColors.disputeBannerText,
+                  color: bannerTextColor ?? AppColors.disputeBannerText,
                   fontWeight: FontWeight.w500,
                   height: 1.35,
                 ),
@@ -176,6 +192,14 @@ class DisputeStatusCard extends StatelessWidget {
         ],
       ),
     );
+
+    if (onTap != null) {
+      return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: cardWidget,
+      );
+    }
 
     if (onViewTap != null) {
       return GestureDetector(

@@ -54,7 +54,6 @@ class AccountSettingsScreen extends StatelessWidget {
     final chevronSize = ResponsiveHelper.iconSize(16);
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [

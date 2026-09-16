@@ -110,7 +110,6 @@ class _ChatScreenState extends State<ChatScreen> {
     final conversation = widget.conversation;
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [

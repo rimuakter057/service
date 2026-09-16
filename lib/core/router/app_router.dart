@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:nchito/core/constants/user_role.dart';
 import 'package:nchito/features/common/role_selection/role_selection_screen.dart';
 import 'package:nchito/features/common/splash/presentation/screens/splash_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/age_confirmation/provider_age_confirmation_screen.dart';
@@ -16,11 +15,16 @@ import 'package:nchito/features/provider/auth/presentation/screens/verify_otp/pr
 import 'package:nchito/features/provider/bookings/presentation/screens/booking_confirmed/provider_booking_confirmed_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/booking_details/provider_booking_details_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/customer_details/customer_details_screen.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/dispute_details/provider_dispute_details_screen.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/provider_availability/provider_availability_screen.dart'
+    as provider_availability;
 import 'package:nchito/features/provider/bookings/presentation/screens/dpo_checkout/provider_dpo_checkout_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/booking_details/provider_bookings_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/provider_booking_sample_data.dart';
 import 'package:nchito/features/provider/home/presentation/screens/home_screen/provider_home_screen.dart';
+import 'package:nchito/features/provider/messages/presentation/screens/provider_chat_screen.dart';
 import 'package:nchito/features/provider/messages/presentation/screens/provider_messages_screen.dart';
+import 'package:nchito/features/provider/profile/presentation/screens/my_profile/provider_my_profile_screen.dart';
 import 'package:nchito/features/provider/profile/presentation/screens/profile_screen/provider_profile_screen.dart';
 import 'package:nchito/features/provider/services/presentation/screens/my_services/my_services_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/age_confirmation/age_confirmation_screen.dart';
@@ -78,26 +82,15 @@ class AppRouter {
       ),
       GoRoute(
         path: LoginScreen.routeName,
-        builder: (context, state) {
-          final role = state.extra is UserRole
-              ? state.extra as UserRole
-              : UserRole.user;
-          return LoginScreen(role: role);
-        },
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: AgeConfirmationScreen.routeName,
-        builder: (context, state) {
-          final role = state.extra is UserRole
-              ? state.extra as UserRole
-              : UserRole.user;
-          return AgeConfirmationScreen(role: role);
-        },
+        builder: (context, state) => const AgeConfirmationScreen(),
       ),
       GoRoute(
         path: SignUpScreen.routeName,
-        builder: (context, state) =>
-            SignUpScreen(role: state.extra as UserRole? ?? UserRole.user),
+        builder: (context, state) => const SignUpScreen(),
       ),
       GoRoute(
         path: VerifyOtpScreen.routeName,
@@ -181,8 +174,18 @@ class AppRouter {
         builder: (context, state) => const ProviderMessagesScreen(),
       ),
       GoRoute(
+        path: ProviderChatScreen.routeName,
+        builder: (context, state) => ProviderChatScreen(
+          conversation: state.extra as MessageData,
+        ),
+      ),
+      GoRoute(
         path: ProviderProfileScreen.routeName,
         builder: (context, state) => const ProviderProfileScreen(),
+      ),
+      GoRoute(
+        path: ProviderMyProfileScreen.routeName,
+        builder: (context, state) => const ProviderMyProfileScreen(),
       ),
       GoRoute(
         path: ProviderBookingDetailsScreen.routeName,
@@ -217,15 +220,7 @@ class AppRouter {
           booking: state.extra as BookingHistoryData?,
         ),
       ),
-      GoRoute(
-        path: AgeConfirmationScreen.routeName,
-        builder: (context, state) {
-          final role = state.extra is UserRole
-              ? state.extra as UserRole
-              : UserRole.provider;
-          return AgeConfirmationScreen(role: role);
-        },
-      ),
+
       GoRoute(
         path: HomeScreen.routeName,
         builder: (context, state) => const HomeScreen(),
@@ -272,11 +267,6 @@ class AppRouter {
               isRescheduling: true,
               booking: extra,
             );
-          } else if (extra is ProviderBookingData) {
-            return ProviderAvailabilityScreen(
-              isRescheduling: true,
-              booking: extra,
-            );
           } else if (extra is Map<String, dynamic>) {
             return ProviderAvailabilityScreen(
               isRescheduling: extra['isRescheduling'] as bool? ?? false,
@@ -285,6 +275,13 @@ class AppRouter {
           }
           return const ProviderAvailabilityScreen();
         },
+      ),
+      GoRoute(
+        path: provider_availability.ProviderAvailabilityScreen.routeName,
+        builder: (context, state) =>
+            provider_availability.ProviderAvailabilityScreen(
+          booking: state.extra,
+        ),
       ),
       GoRoute(
         path: BookingDetailsScreen.routeName,
@@ -368,6 +365,12 @@ class AppRouter {
         path: DisputeDetailsScreen.routeName,
         builder: (context, state) => DisputeDetailsScreen(
           booking: state.extra as BookingHistoryData?,
+        ),
+      ),
+      GoRoute(
+        path: ProviderDisputeDetailsScreen.routeName,
+        builder: (context, state) => ProviderDisputeDetailsScreen(
+          booking: state.extra,
         ),
       ),
       GoRoute(

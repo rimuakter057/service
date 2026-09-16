@@ -35,7 +35,6 @@ class CustomerDetailsScreen extends StatelessWidget {
     final fieldGap = ResponsiveHelper.spacing(8);
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [

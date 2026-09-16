@@ -44,7 +44,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     final provider = widget.provider;
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [

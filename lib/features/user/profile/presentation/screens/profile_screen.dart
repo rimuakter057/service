@@ -21,11 +21,8 @@ import 'package:nchito/features/user/profile/presentation/widgets/profile_menu_t
 /// User profile screen displaying user avatar, name, and options list.
 class ProfileScreen extends StatelessWidget {
   static const String routeName = '/profile';
-  static const String providerRouteName = '/provider/profile';
 
-  final bool isProvider;
-
-  const ProfileScreen({super.key, this.isProvider = false});
+  const ProfileScreen({super.key});
 
   void _onLogOutTap(BuildContext context) {
     showModalBottomSheet(
@@ -52,7 +49,6 @@ class ProfileScreen extends StatelessWidget {
     final chevronSize = ResponsiveHelper.iconSize(16);
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [
@@ -85,9 +81,7 @@ class ProfileScreen extends StatelessWidget {
                                 ResponsiveHelper.borderRadius(22),
                               ),
                               child: Image.asset(
-                                isProvider
-                                    ? AssetsPath.messagesAvatarRobertsJunior
-                                    : AssetsPath.avatarUser,
+                                AssetsPath.avatarUser,
                                 width: ResponsiveHelper.width(96),
                                 height: ResponsiveHelper.width(96),
                                 fit: BoxFit.cover,
@@ -96,9 +90,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           SizedBox(height: ResponsiveHelper.spacing(12)),
                           Text(
-                            isProvider
-                                ? AppText.robertsJuniorProviderName
-                                : AppText.userNameVaughan,
+                            AppText.userNameVaughan,
                             style: context.titleMedium.copyWith(
                               fontWeight: FontWeight.w700,
                               fontStyle: FontStyle.italic,
@@ -137,22 +129,20 @@ class ProfileScreen extends StatelessWidget {
                       onTap: () =>
                           context.push(AccountSettingsScreen.routeName),
                     ),
-                    if (!isProvider) ...[
-                      SizedBox(height: ResponsiveHelper.spacing(10)),
-                      ProfileMenuTile(
-                        iconData: Icons.favorite_border_rounded,
-                        title: AppText.favoriteProviders,
-                        radius: tileRadius,
-                        contentPadding: tilePadding,
-                        tileBgColor: tileBgColor,
-                        iconBgColor: AppColors.brandSoft,
-                        iconBoxSize: iconBoxSize,
-                        iconBoxRadius: iconBoxRadius,
-                        chevronSize: chevronSize,
-                        onTap: () =>
-                            context.push(FavoriteProvidersScreen.routeName),
-                      ),
-                    ],
+                    SizedBox(height: ResponsiveHelper.spacing(10)),
+                    ProfileMenuTile(
+                      iconData: Icons.favorite_border_rounded,
+                      title: AppText.favoriteProviders,
+                      radius: tileRadius,
+                      contentPadding: tilePadding,
+                      tileBgColor: tileBgColor,
+                      iconBgColor: AppColors.brandSoft,
+                      iconBoxSize: iconBoxSize,
+                      iconBoxRadius: iconBoxRadius,
+                      chevronSize: chevronSize,
+                      onTap: () =>
+                          context.push(FavoriteProvidersScreen.routeName),
+                    ),
 
                     SizedBox(height: ResponsiveHelper.spacing(18)),
 
@@ -248,9 +238,7 @@ class ProfileScreen extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: isProvider
-          ? const ProviderBottomNavBar(currentIndex: 4)
-          : const UserBottomNavBar(currentIndex: 4),
+      bottomNavigationBar: const UserBottomNavBar(currentIndex: 4),
     );
   }
 }

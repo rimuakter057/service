@@ -485,6 +485,18 @@ class AppText {
   static const String youCanNoLongerSendMessagesInThisConversation =
       "You can no longer send messages in this conversation.";
   static const String deleteConversation = "Delete Conversation";
+  static const String blockThisUserExclaim = "Block This User!";
+  static const String
+  areYouSureYouWantToBlockThisUserYouWontBeAbleToSendOrReceiveMessagesWithEachOther =
+      "Are you sure you want to block this user! You won't be able to "
+      "send or receive messages with each other.";
+  static const String youHaveBlockedThisUser =
+      "You have blocked this User";
+  static const String unblockUser = "Unblock User";
+  static const String unblockThisUserExclaim = "Unblock This User!";
+  static const String
+  doYouWantToUnblockThisUserAndAllowMessagesAgain =
+      "Do you want to unblock this user and allow messages again!";
 
   // ==========================================================
   // MY BOOKINGS SCREEN (BOOKINGS_SECTION)
@@ -518,6 +530,21 @@ class AppText {
   static const String
   theServiceWasCompletedButINoticeAnIssueWithTheWorkAfterward =
       "The service was completed, but I noticed an issue with the work afterward. I would like to report the problem and request assistance in resolving it.";
+  static const String responseRequired = "Response Required";
+  static const String submitResponse = "Submit Response";
+  static const String disputeResponse = "Dispute Response";
+  static const String
+  pleaseExplainYourSideOfTheIssueAndProvideAnyRelevantInformationOrEvidence =
+      "Please explain your side of the issue and provide any relevant information or evidence.";
+  static const String yourResponse = "Your Response";
+  static const String explainWhatHappened = "Explain what happened..";
+  static const String bookingCompletedOn = "Booking Completed On";
+  static const String responseSubmittedSuccessfully =
+      "Response submitted successfully!";
+  static const String responded = "Responded";
+  static const String
+  yourDisputeResponseHasBeenSubmittedSuccessfullyOurTeamIsCurrentlyReviewingTheCase =
+      "Your Dispute Response has been submitted successfully. Our team is currently reviewing the case. Nchito will make the final decision on the dispute and notify you once it has been resolved.";
 
   // ==========================================================
   // BOOKING DETAILS SCREEN (BOOKINGS_SECTION — accepted/quote variant)

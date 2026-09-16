@@ -19,7 +19,6 @@ class ProviderAgeConfirmationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Center(
           child: Padding(

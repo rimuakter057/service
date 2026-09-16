@@ -62,7 +62,6 @@ class _ExploreProviderScreenState extends State<ExploreProviderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [

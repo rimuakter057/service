@@ -5,7 +5,6 @@ import 'package:nchito/features/common/common_widgets/app_calendar/app_calendar.
 import 'package:nchito/features/common/common_widgets/app_search_bar/app_search_bar.dart';
 import 'package:nchito/features/common/common_widgets/app_top_bar/app_top_bar.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
-import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/features/provider/home/presentation/screens/home_screen/provider_home_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/booking_history_tile.dart';
@@ -64,7 +63,6 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> {
     final bookings = _filteredBookings;
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [

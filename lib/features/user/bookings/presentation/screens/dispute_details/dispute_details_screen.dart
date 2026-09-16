@@ -26,7 +26,6 @@ class DisputeDetailsScreen extends StatelessWidget {
     final fieldColor = AppColors.bgOverlay.withValues(alpha: 0.04);
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [

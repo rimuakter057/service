@@ -21,7 +21,6 @@ class LegalCompanyInfoScreen extends StatelessWidget {
     final rowGap = SizedBox(height: ResponsiveHelper.spacing(8));
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [

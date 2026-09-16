@@ -4,7 +4,6 @@ import 'package:nchito/features/common/common_widgets/app_bottom_nav_bar/app_bot
 import 'package:nchito/features/common/common_widgets/app_search_bar/app_search_bar.dart';
 import 'package:nchito/features/common/common_widgets/app_top_bar/app_top_bar.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
-import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/features/user/bookings/presentation/screens/booking_details/booking_details_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/booking_history_tile.dart';
@@ -62,7 +61,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
     final bookings = _filteredBookings;
 
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [

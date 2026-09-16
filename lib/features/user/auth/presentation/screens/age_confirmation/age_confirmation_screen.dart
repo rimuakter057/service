@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:nchito/features/common/common_widgets/app_button/app_button.dart';
 import 'package:nchito/features/common/common_widgets/app_container_bg/app_container_bg.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/bg_icon.dart';
-import 'package:nchito/core/constants/user_role.dart';
 import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
@@ -15,14 +14,11 @@ import 'package:nchito/features/user/auth/presentation/screens/signup/signup_scr
 class AgeConfirmationScreen extends StatelessWidget {
   static const String routeName = '/age-confirmation';
 
-  final UserRole role;
-
-  const AgeConfirmationScreen({super.key, this.role = UserRole.user});
+  const AgeConfirmationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -67,7 +63,7 @@ class AgeConfirmationScreen extends StatelessWidget {
                             if (context.canPop()) {
                               context.pop();
                             } else {
-                              context.go(LoginScreen.routeName, extra: role);
+                              context.go(LoginScreen.routeName);
                             }
                           },
                           backgroundColor: const Color(0xFFFDE8E8),
@@ -82,7 +78,6 @@ class AgeConfirmationScreen extends StatelessWidget {
                           text: AppText.enter18Plus,
                           onPressed: () => context.push(
                             SignUpScreen.routeName,
-                            extra: role,
                           ),
                           backgroundColor: AppColors.brandPrimary,
                           textColor: AppColors.textOnPrimary,

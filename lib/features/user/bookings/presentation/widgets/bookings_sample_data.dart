@@ -124,7 +124,7 @@ const List<BookingHistoryData> myBookingsHistory = [
     day: '23',
     month: 'Feb',
     time: '6:00 PM',
-    status: AppText.disputed,
+    status: AppText.accepted,
     location: 'Lusaka, Zambia',
     date: '23 February 2026',
     details:

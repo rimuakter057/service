@@ -11,8 +11,6 @@ import 'package:nchito/core/utils/validators/validators.dart';
 import 'package:nchito/features/common/common_widgets/app_divider/app_divider.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
-import 'package:nchito/core/constants/user_role.dart';
-import 'package:nchito/features/provider/home/presentation/screens/home_screen/provider_home_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/age_confirmation/age_confirmation_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/forgot_password/forgot_password_screen.dart';
 import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
@@ -22,9 +20,7 @@ import 'package:nchito/features/user/auth/presentation/widgets/social_icon_butto
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/login';
 
-  final UserRole role;
-
-  const LoginScreen({super.key, this.role = UserRole.user});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -34,9 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   // TODO: remove test-only default values before release
   late final TextEditingController _emailController = TextEditingController(
-    text: widget.role == UserRole.provider
-        ? 'provider@nchito.com'
-        : 'test@nchito.com',
+    text: 'test@nchito.com',
   );
   final TextEditingController _passwordController = TextEditingController(
     text: 'test1234',
@@ -47,11 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onLoginPressed() {
     if (_formKey.currentState?.validate() ?? false) {
-      if (widget.role == UserRole.provider) {
-        context.go(ProviderHomeScreen.routeName);
-      } else {
-        context.go(HomeScreen.routeName);
-      }
+      context.go(HomeScreen.routeName);
     }
   }
 
@@ -82,13 +72,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AuthHeader(
-                          title: widget.role == UserRole.provider
-                              ? 'Provider Log In'
-                              : AppText.welcomeBack,
-                          subtitle: widget.role == UserRole.provider
-                              ? 'Log in to continue managing your provider account'
-                              : AppText.logInToContinueWithNchito,
+                        const AuthHeader(
+                          title: AppText.welcomeBack,
+                          subtitle: AppText.logInToContinueWithNchito,
                         ),
                         SizedBox(height: ResponsiveHelper.spacing(32)),
 
@@ -217,7 +203,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               GestureDetector(
                                 onTap: () => context.push(
                                   AgeConfirmationScreen.routeName,
-                                  extra: UserRole.user,
                                 ),
                                 child: Text(
                                   AppText.createAnAccount,

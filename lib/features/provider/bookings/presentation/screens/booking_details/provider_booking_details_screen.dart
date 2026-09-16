@@ -18,11 +18,14 @@ import 'package:nchito/features/provider/bookings/presentation/widgets/provider_
 import 'package:nchito/features/provider/bookings/presentation/widgets/provider_reschedule_booking_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/reject_booking_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/send_quote_bottom_sheet.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/dispute_details/provider_dispute_details_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/cancel_booking_bottom_sheet.dart';
-import 'package:nchito/features/user/home/presentation/screens/provider_availability/provider_availability_screen.dart';
+import 'package:nchito/features/user/bookings/presentation/widgets/dispute_status_card.dart';
+import 'package:nchito/features/provider/bookings/presentation/widgets/dispute_response_bottom_sheet.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/provider_availability/provider_availability_screen.dart';
 import 'package:nchito/features/user/home/presentation/widgets/detail_field.dart';
-import 'package:nchito/features/user/messages/presentation/screens/chat_screen.dart';
+import 'package:nchito/features/provider/messages/presentation/screens/provider_chat_screen.dart';
 import 'package:nchito/features/user/messages/presentation/widgets/message_sample_data.dart';
 
 class ProviderBookingDetailsScreen extends StatefulWidget {
@@ -44,6 +47,7 @@ class _ProviderBookingDetailsScreenState
   late String _currentPrice;
   bool _isCanceledByProvider = false;
   bool _hasReview = false;
+  bool _isResponseSubmitted = false;
 
   @override
   void initState() {
@@ -54,11 +58,15 @@ class _ProviderBookingDetailsScreenState
       final b = widget.booking as BookingHistoryData;
       final is25Aug = (b.day == '25' && b.month.toLowerCase().startsWith('aug'));
       final is23Feb = (b.day == '23' && b.month.toLowerCase().startsWith('feb'));
-      final mappedStatus = is25Aug
-          ? AppText.pending
-          : (is23Feb || b.status == AppText.accepted
-              ? AppText.inProgress
-              : b.status);
+      final isDisputed = b.status == AppText.disputed ||
+          b.status.toLowerCase().contains('disput');
+      final mappedStatus = isDisputed
+          ? AppText.disputed
+          : (is25Aug
+              ? AppText.pending
+              : (is23Feb || b.status == AppText.accepted
+                  ? AppText.inProgress
+                  : b.status));
 
       _bookingData = ProviderBookingData(
         customerName: is23Feb ? 'Vaughan Gething' : b.providerName,
@@ -110,6 +118,8 @@ class _ProviderBookingDetailsScreenState
         return const Color(0xFF8B5CF6);
       case AppText.completed:
         return AppColors.emerald400;
+      case AppText.disputed:
+        return AppColors.amber500;
       case AppText.rejected:
       case AppText.cancelled:
         return AppColors.red400;
@@ -236,12 +246,34 @@ class _ProviderBookingDetailsScreenState
 
   void _onMessageCustomer(BuildContext context) {
     context.push(
-      ChatScreen.routeName,
+      ProviderChatScreen.routeName,
       extra: MessageData(
         name: booking.customerName,
         avatarAsset: booking.customerPhoto,
         lastMessage: 'Hi, regarding your booking for ${booking.service}.',
         timeLabel: 'Now',
+      ),
+    );
+  }
+
+  void _openDisputeResponseBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.25),
+      builder: (_) => DisputeResponseBottomSheet(
+        onSubmit: (response, evidenceImages) {
+          setState(() {
+            _isResponseSubmitted = true;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(AppText.responseSubmittedSuccessfully),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        },
       ),
     );
   }
@@ -289,7 +321,6 @@ class _ProviderBookingDetailsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [
@@ -482,7 +513,8 @@ class _ProviderBookingDetailsScreenState
 
                     // Payment Info Card (Image 2)
                     if (_currentStatus == AppText.inProgress ||
-                        _currentStatus == AppText.completed) ...[
+                        _currentStatus == AppText.completed ||
+                        _currentStatus == AppText.disputed) ...[
                       AppContainerBg(
                         width: double.infinity,
                         color: _fieldColor,
@@ -650,7 +682,8 @@ class _ProviderBookingDetailsScreenState
                       ],
                     ],
                     // Completed On Card & Review Section (Image 1 & Image 2)
-                    if (_currentStatus == AppText.completed) ...[
+                    if (_currentStatus == AppText.completed ||
+                        _currentStatus == AppText.disputed) ...[
                       AppContainerBg(
                         width: double.infinity,
                         color: _fieldColor,
@@ -685,7 +718,7 @@ class _ProviderBookingDetailsScreenState
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    AppText.completedOn,
+                                    AppText.bookingCompletedOn,
                                     style: context.bodyMedium.copyWith(
                                       fontWeight: FontWeight.w700,
                                       fontStyle: FontStyle.italic,
@@ -694,7 +727,7 @@ class _ProviderBookingDetailsScreenState
                                   ),
                                   SizedBox(height: ResponsiveHelper.spacing(4)),
                                   Text(
-                                    '27 Aug 2026 – 06:20 AM',
+                                    '27 Aug 2026 - 06:20 AM',
                                     style: context.bodySmall.copyWith(
                                       fontWeight: FontWeight.w500,
                                       fontStyle: FontStyle.italic,
@@ -708,8 +741,28 @@ class _ProviderBookingDetailsScreenState
                         ),
                       ),
                       SizedBox(height: ResponsiveHelper.spacing(10)),
+                    ],
 
-                      // No Review Yet / Customer Review Card (Toggleable between Image 1 & Image 2)
+                    // Dispute Status Card (Disputed status - matching Image 1)
+                    if (_currentStatus == AppText.disputed) ...[
+                      DisputeStatusCard(
+                        status: _isResponseSubmitted
+                            ? AppText.inReview
+                            : AppText.disputed,
+                        statusLabel: _isResponseSubmitted
+                            ? AppText.inReview
+                            : AppText.responseRequired,
+                        onViewTap: () => context.push(
+                          ProviderDisputeDetailsScreen.routeName,
+                          extra: widget.booking,
+                        ),
+                        onTap: () => _openDisputeResponseBottomSheet(context),
+                      ),
+                      SizedBox(height: ResponsiveHelper.spacing(10)),
+                    ],
+
+                    // Review Section (Completed only)
+                    if (_currentStatus == AppText.completed) ...[
                       if (!_hasReview)
                         GestureDetector(
                           onTap: () => setState(() => _hasReview = true),
@@ -918,7 +971,23 @@ class _ProviderBookingDetailsScreenState
                   horizontal: ResponsiveHelper.padding(24),
                   vertical: ResponsiveHelper.padding(16),
                 ),
-                child: _currentStatus == AppText.inProgress
+                child: _currentStatus == AppText.disputed
+                    ? AppButton(
+                        text: _isResponseSubmitted
+                            ? AppText.inReview
+                            : AppText.submitResponse,
+                        onPressed: _isResponseSubmitted
+                            ? null
+                            : () => _openDisputeResponseBottomSheet(context),
+                        width: double.infinity,
+                        backgroundColor: _isResponseSubmitted
+                            ? AppColors.textDisabled.withValues(alpha: 0.3)
+                            : AppColors.brandPrimary,
+                        textColor: _isResponseSubmitted
+                            ? AppColors.textDisabled
+                            : AppColors.white,
+                      )
+                    : _currentStatus == AppText.inProgress
                     ? Row(
                         children: [
                           Expanded(

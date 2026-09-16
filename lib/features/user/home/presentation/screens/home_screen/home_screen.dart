@@ -23,7 +23,6 @@ class HomeScreen extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: AppColors.bgApp,
         body: Column(
           children: [
             HomeHeader(
