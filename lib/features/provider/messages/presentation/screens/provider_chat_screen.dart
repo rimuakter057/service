@@ -20,8 +20,13 @@ class ProviderChatScreen extends StatefulWidget {
   static const String routeName = '/provider/chat';
 
   final MessageData conversation;
+  final String? subtitle;
 
-  const ProviderChatScreen({super.key, required this.conversation});
+  const ProviderChatScreen({
+    super.key,
+    required this.conversation,
+    this.subtitle,
+  });
 
   @override
   State<ProviderChatScreen> createState() => _ProviderChatScreenState();
@@ -144,7 +149,13 @@ class _ProviderChatScreenState extends State<ProviderChatScreen> {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () => context.pop(),
+                    onTap: () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
+                    },
                     child: BgIcon(
                       assetPath: AssetsPath.providerDetailsIconBack,
                       bgColor: AppColors.brandSoft,
@@ -154,65 +165,51 @@ class _ProviderChatScreenState extends State<ProviderChatScreen> {
                     ),
                   ),
                   SizedBox(width: ResponsiveHelper.spacing(10)),
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                          ResponsiveHelper.borderRadius(11),
-                        ),
-                        child: Image.asset(
-                          conversation.avatarAsset,
-                          width: ResponsiveHelper.width(40),
-                          height: ResponsiveHelper.width(40),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: -3,
-                        right: -3,
-                        child: AppIcon(
-                          assetPath: AssetsPath.messagesIconOnlineBadge,
-                          size: ResponsiveHelper.iconSize(10),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveHelper.borderRadius(11),
+                    ),
+                    child: Image.asset(
+                      conversation.avatarAsset,
+                      width: ResponsiveHelper.width(40),
+                      height: ResponsiveHelper.width(40),
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        width: ResponsiveHelper.width(40),
+                        height: ResponsiveHelper.width(40),
+                        color: AppColors.brandSoft,
+                        child: Icon(
+                          Icons.person,
+                          color: AppColors.brandPrimary,
+                          size: ResponsiveHelper.iconSize(22),
                         ),
                       ),
-                    ],
+                    ),
                   ),
                   SizedBox(width: ResponsiveHelper.spacing(10)),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           conversation.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: context.bodyMedium.copyWith(
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                             color: AppColors.textBlackPrimary,
                           ),
                         ),
-                        if (conversation.rating != null) ...[
-                          SizedBox(height: ResponsiveHelper.spacing(6)),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AppIcon(
-                                assetPath: AssetsPath.iconStar,
-                                size: ResponsiveHelper.iconSize(9),
-                              ),
-                              SizedBox(width: ResponsiveHelper.spacing(2)),
-                              Text(
-                                conversation.rating!,
-                                style: context.labelSmall.copyWith(
-                                  fontSize: ResponsiveHelper.fontSize(10),
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.textBlackPrimary,
-                                ),
-                              ),
-                            ],
+                        SizedBox(height: ResponsiveHelper.spacing(2)),
+                        Text(
+                          widget.subtitle ?? AppText.twoOngoingBookings,
+                          style: TextStyle(
+                            fontSize: ResponsiveHelper.fontSize(11),
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textSecondary,
                           ),
-                        ],
+                        ),
                       ],
                     ),
                   ),

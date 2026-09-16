@@ -6,7 +6,8 @@ import 'package:nchito/features/common/common_widgets/messages_search_field/mess
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/features/provider/messages/presentation/screens/provider_chat_screen.dart';
-import 'package:nchito/features/user/messages/presentation/widgets/message_list_tile.dart';
+import 'package:nchito/features/provider/messages/presentation/widgets/provider_message_list_tile.dart';
+import 'package:nchito/features/provider/messages/presentation/widgets/provider_message_sample_data.dart';
 import 'package:nchito/features/user/messages/presentation/widgets/message_sample_data.dart';
 
 /// Provider Messages screen — search bar plus conversation list with
@@ -26,8 +27,8 @@ class _ProviderMessagesScreenState extends State<ProviderMessagesScreen> {
 
   List<MessageData> get _filteredConversations {
     final query = _query.trim().toLowerCase();
-    if (query.isEmpty) return messageConversations;
-    return messageConversations
+    if (query.isEmpty) return providerMessageConversations;
+    return providerMessageConversations
         .where(
           (conversation) => conversation.name.toLowerCase().contains(query),
         )
@@ -48,7 +49,7 @@ class _ProviderMessagesScreenState extends State<ProviderMessagesScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            TopAppbar(title: AppText.messages),
+            const TopAppbar(title: AppText.messages),
             Expanded(
               child: ListView.separated(
                 padding: EdgeInsets.symmetric(
@@ -71,7 +72,7 @@ class _ProviderMessagesScreenState extends State<ProviderMessagesScreen> {
                     );
                   }
                   final conversation = conversations[index - 1];
-                  return MessageListTile(
+                  return ProviderMessageListTile(
                     avatarAsset: conversation.avatarAsset,
                     name: conversation.name,
                     lastMessage: conversation.lastMessage,

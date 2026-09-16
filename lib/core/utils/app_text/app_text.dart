@@ -907,4 +907,5 @@ class AppText {
   static const String addServiceExclaim = "Add Service!";
   static const String areYouSureYouWantToAddThisService =
       "Are you sure you want to add this service to your profile! Customers will be able to view and book this service once it is approved.";
+  static const String twoOngoingBookings = "2 Ongoing Bookings";
 }
