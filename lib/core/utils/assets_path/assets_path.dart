@@ -511,6 +511,8 @@ class AssetsPath {
       '$_providerHomeIconBase/icon_services.svg';
   static const String providerHomeIconAdd =
       '$_providerHomeIconBase/add.svg';
+  static const String providerHomeIconVert =
+      '$_providerHomeIconBase/vert.svg';
 
   // ==========================================================
   // APP SPLASH SCREEN — assets/icons/spash
