@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Everything defaults to HTTPS-only (Android 9+ blocks cleartext by
+  default). The one exception is the local dev API server, which is
+  plain HTTP — remove this domain-config once the backend has a real
+  HTTPS URL in ApiConstants.baseUrl.
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.10.28.184</domain>
+    </domain-config>
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>

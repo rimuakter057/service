@@ -15,7 +15,7 @@ import 'package:nchito/features/user/profile/presentation/screens/legal_company_
 import 'package:nchito/features/user/profile/presentation/screens/my_profile/my_profile_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/privacy_policy/privacy_policy_screen.dart';
 import 'package:nchito/features/user/profile/presentation/screens/terms_and_condition/terms_and_condition_screen.dart';
-import 'package:nchito/features/user/profile/presentation/widgets/log_out_bottom_sheet.dart';
+import 'package:nchito/features/common/common_widgets/app_logout_bottom_sheet/app_logout_bottom_sheet.dart';
 import 'package:nchito/features/user/profile/presentation/widgets/profile_menu_tile.dart';
 
 /// User profile screen displaying user avatar, name, and options list.
@@ -30,7 +30,7 @@ class ProfileScreen extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.1),
-      builder: (_) => LogOutBottomSheet(
+      builder: (_) => AppLogOutBottomSheet(
         onConfirm: () {
           // Navigates back to the role selection screen
           context.go(RoleSelectionScreen.routeName);

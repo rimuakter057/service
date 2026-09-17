@@ -14,26 +14,29 @@ import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/cancel_booking_bottom_sheet.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/leave_review_bottom_sheet.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/report_issue_bottom_sheet.dart';
-import 'package:nchito/features/user/bookings/presentation/widgets/reschedule_booking_bottom_sheet.dart';
+import 'package:nchito/features/common/common_widgets/app_reschedule_booking_bottom_sheet/app_reschedule_booking_bottom_sheet.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_availability/provider_availability_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
 import 'package:nchito/features/user/home/presentation/widgets/detail_field.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_sample_data.dart';
 
 /// Single booking — reached by tapping an item in Home's "Active Booking"
-/// list.
-class BookingDetailsScreen extends StatefulWidget {
+/// list. Not to be confused with `bookings.BookingDetailsScreen`
+/// (features/user/bookings), which is the version reached from the
+/// Bookings tab and takes a `BookingHistoryData`.
+class HomeBookingDetailsScreen extends StatefulWidget {
   static const String routeName = '/booking-details';
 
   final HomeBookingData booking;
 
-  const BookingDetailsScreen({super.key, required this.booking});
+  const HomeBookingDetailsScreen({super.key, required this.booking});
 
   @override
-  State<BookingDetailsScreen> createState() => _BookingDetailsScreenState();
+  State<HomeBookingDetailsScreen> createState() =>
+      _HomeBookingDetailsScreenState();
 }
 
-class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
+class _HomeBookingDetailsScreenState extends State<HomeBookingDetailsScreen> {
   bool _isReviewed = false;
   int _rating = 5;
   String _reviewComment = '';
@@ -77,7 +80,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.1),
-      builder: (_) => RescheduleBookingBottomSheet(
+      builder: (_) => AppRescheduleBookingBottomSheet(
+        description: AppText.youReAboutToRequestANewDateAndTimeForThisBooking,
         onConfirm: () {
           context.push('/provider-availability');
         },

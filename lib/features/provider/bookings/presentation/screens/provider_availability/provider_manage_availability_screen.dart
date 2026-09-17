@@ -8,22 +8,25 @@ import 'package:nchito/features/common/common_widgets/app_calendar/app_calendar.
 import 'package:nchito/features/common/common_widgets/app_time_slot_picker/app_time_slot_picker.dart';
 import 'package:nchito/features/common/common_widgets/app_top_bar/app_top_bar.dart';
 
-/// Provider Availability Screen — separate screen for Provider to propose new
-/// reschedule dates/times or view/update working availability.
-class ProviderAvailabilityScreen extends StatefulWidget {
+/// Provider Manage Availability Screen — separate screen for the provider
+/// to propose new reschedule dates/times or view/update their own working
+/// availability. Not to be confused with the user-facing
+/// `ProviderAvailabilityScreen` (features/user/home), which is a user
+/// viewing a provider's availability to book a slot.
+class ProviderManageAvailabilityScreen extends StatefulWidget {
   static const String routeName = '/provider/availability';
 
   final dynamic booking;
 
-  const ProviderAvailabilityScreen({super.key, this.booking});
+  const ProviderManageAvailabilityScreen({super.key, this.booking});
 
   @override
-  State<ProviderAvailabilityScreen> createState() =>
-      _ProviderAvailabilityScreenState();
+  State<ProviderManageAvailabilityScreen> createState() =>
+      _ProviderManageAvailabilityScreenState();
 }
 
-class _ProviderAvailabilityScreenState
-    extends State<ProviderAvailabilityScreen> {
+class _ProviderManageAvailabilityScreenState
+    extends State<ProviderManageAvailabilityScreen> {
   final Set<int> _selectedSlots = {0, 3};
 
   void _onToggleSlot(int index) {

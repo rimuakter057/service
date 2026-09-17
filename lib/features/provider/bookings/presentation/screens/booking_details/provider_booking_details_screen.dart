@@ -15,7 +15,7 @@ import 'package:nchito/features/provider/bookings/presentation/widgets/accept_qu
 import 'package:nchito/features/provider/bookings/presentation/widgets/confirm_service_completion_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/mark_completed_confirm_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/provider_booking_sample_data.dart';
-import 'package:nchito/features/provider/bookings/presentation/widgets/provider_reschedule_booking_bottom_sheet.dart';
+import 'package:nchito/features/common/common_widgets/app_reschedule_booking_bottom_sheet/app_reschedule_booking_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/reject_booking_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/send_quote_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/dispute_details/provider_dispute_details_screen.dart';
@@ -23,7 +23,7 @@ import 'package:nchito/features/user/bookings/presentation/widgets/bookings_samp
 import 'package:nchito/features/user/bookings/presentation/widgets/cancel_booking_bottom_sheet.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/dispute_status_card.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/dispute_response_bottom_sheet.dart';
-import 'package:nchito/features/provider/bookings/presentation/screens/provider_availability/provider_availability_screen.dart';
+import 'package:nchito/features/provider/bookings/presentation/screens/provider_availability/provider_manage_availability_screen.dart';
 import 'package:nchito/features/common/common_widgets/app_detail_field/app_detail_field.dart';
 import 'package:nchito/features/provider/messages/presentation/screens/provider_chat_screen.dart';
 import 'package:nchito/features/user/messages/presentation/widgets/message_sample_data.dart';
@@ -307,10 +307,11 @@ class _ProviderBookingDetailsScreenState
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.1),
-      builder: (_) => ProviderRescheduleBookingBottomSheet(
+      builder: (_) => AppRescheduleBookingBottomSheet(
+        description: AppText.youReAboutToProposeANewDateAndTimeForThisBooking,
         onConfirm: () {
           context.push(
-            ProviderAvailabilityScreen.routeName,
+            ProviderManageAvailabilityScreen.routeName,
             extra: _bookingData,
           );
         },

@@ -21,7 +21,7 @@ import 'package:nchito/features/user/bookings/presentation/widgets/decline_quote
 import 'package:nchito/features/user/bookings/presentation/widgets/leave_review_bottom_sheet.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/proceed_to_payment_bottom_sheet.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/report_issue_bottom_sheet.dart';
-import 'package:nchito/features/user/bookings/presentation/widgets/reschedule_booking_bottom_sheet.dart';
+import 'package:nchito/features/common/common_widgets/app_reschedule_booking_bottom_sheet/app_reschedule_booking_bottom_sheet.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/dispute_status_card.dart';
 import '../dispute_details/dispute_details_screen.dart';
 import '../dpo_checkout/dpo_checkout_screen.dart';
@@ -135,7 +135,8 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.1),
-      builder: (_) => RescheduleBookingBottomSheet(
+      builder: (_) => AppRescheduleBookingBottomSheet(
+        description: AppText.youReAboutToRequestANewDateAndTimeForThisBooking,
         onConfirm: () {
           context.push(
             ProviderAvailabilityScreen.routeName,

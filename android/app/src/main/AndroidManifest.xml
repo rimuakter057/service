@@ -1,8 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for all API calls (Dio/HTTP) in release and profile builds;
+         debug builds already get it from the debug-only manifest. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:label="nchito"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:networkSecurityConfig="@xml/network_security_config">
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -42,6 +42,18 @@ dependencies:
   google_fonts: ^6.2.1
   go_router: ^17.2.3
 
+  # HTTP client used for all API integration
+  dio: ^5.7.0
+
+  # State management used across features (auth, bookings, etc.)
+  provider: ^6.1.2
+
+  # Detects whether the device actually has internet before hitting the API
+  connectivity_plus: ^6.1.0
+
+  # Pretty, leveled console logs for every request/response/error
+  logger: ^2.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -16,8 +16,7 @@ import 'package:nchito/features/provider/bookings/presentation/screens/booking_c
 import 'package:nchito/features/provider/bookings/presentation/screens/booking_details/provider_booking_details_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/customer_details/customer_details_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/dispute_details/provider_dispute_details_screen.dart';
-import 'package:nchito/features/provider/bookings/presentation/screens/provider_availability/provider_availability_screen.dart'
-    as provider_availability;
+import 'package:nchito/features/provider/bookings/presentation/screens/provider_availability/provider_manage_availability_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/dpo_checkout/provider_dpo_checkout_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/screens/booking_details/provider_bookings_screen.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/provider_booking_sample_data.dart';
@@ -51,8 +50,7 @@ import 'package:nchito/features/user/auth/presentation/screens/set_new_password/
 import 'package:nchito/features/user/auth/presentation/screens/signup/signup_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/verify_otp/verify_otp_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/screens/booking_confirmed/booking_confirmed_screen.dart';
-import 'package:nchito/features/user/bookings/presentation/screens/booking_details/booking_details_screen.dart'
-    as bookings;
+import 'package:nchito/features/user/bookings/presentation/screens/booking_details/booking_details_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/screens/bookings_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/screens/dispute_details/dispute_details_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/screens/dpo_checkout/dpo_checkout_screen.dart';
@@ -60,7 +58,7 @@ import 'package:nchito/features/user/bookings/presentation/widgets/bookings_samp
 import 'package:nchito/features/user/explore/presentation/screens/book_a_service/book_a_service_screen.dart';
 import 'package:nchito/features/user/explore/presentation/screens/explore_provider/explore_provider_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/all_reviews/all_reviews_screen.dart';
-import 'package:nchito/features/user/home/presentation/screens/booking_details/booking_details_screen.dart';
+import 'package:nchito/features/user/home/presentation/screens/booking_details/home_booking_details_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/home_screen/home_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_availability/provider_availability_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
@@ -87,50 +85,24 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: SplashScreen.routeName,
     routes: [
+
+      ///============= splash section common ============
       GoRoute(
         path: SplashScreen.routeName,
         builder: (context, state) => const SplashScreen(),
       ),
-      GoRoute(
-        path: OnboardingScreen.routeName,
-        builder: (context, state) => const OnboardingScreen(),
-      ),
-      GoRoute(
-        path: LoginScreen.routeName,
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: AgeConfirmationScreen.routeName,
-        builder: (context, state) => const AgeConfirmationScreen(),
-      ),
-      GoRoute(
-        path: SignUpScreen.routeName,
-        builder: (context, state) => const SignUpScreen(),
-      ),
-      GoRoute(
-        path: VerifyOtpScreen.routeName,
-        builder: (context, state) => const VerifyOtpScreen(),
-      ),
-      GoRoute(
-        path: ForgotPasswordScreen.routeName,
-        builder: (context, state) => const ForgotPasswordScreen(),
-      ),
-      GoRoute(
-        path: ForgotPasswordVerifyOtpScreen.routeName,
-        builder: (context, state) => const ForgotPasswordVerifyOtpScreen(),
-      ),
-      GoRoute(
-        path: SetNewPasswordScreen.routeName,
-        builder: (context, state) => const SetNewPasswordScreen(),
-      ),
+
+
+
+      ///============= role selection section ============
       GoRoute(
         path: RoleSelectionScreen.routeName,
         builder: (context, state) => const RoleSelectionScreen(),
       ),
 
-      // ==========================================================
-      // PROVIDER AUTHENTICATION ROUTES
-      // ==========================================================
+      ///================ Provider all screens ====================================
+
+      ///============= auth section provider ============
       GoRoute(
         path: ProviderLoginScreen.routeName,
         builder: (context, state) => const ProviderLoginScreen(),
@@ -180,10 +152,14 @@ class AppRouter {
         path: LinkPaymentAccountScreen.routeName,
         builder: (context, state) => const LinkPaymentAccountScreen(),
       ),
+
+      ///============= home section provider ============
       GoRoute(
         path: ProviderHomeScreen.routeName,
         builder: (context, state) => const ProviderHomeScreen(),
       ),
+
+      ///============= messages section provider ============
       GoRoute(
         path: ProviderMessagesScreen.routeName,
         builder: (context, state) => const ProviderMessagesScreen(),
@@ -194,6 +170,8 @@ class AppRouter {
           conversation: state.extra as MessageData,
         ),
       ),
+
+      ///============= profile section provider ============
       GoRoute(
         path: ProviderProfileScreen.routeName,
         builder: (context, state) => const ProviderProfileScreen(),
@@ -249,6 +227,8 @@ class AppRouter {
         path: ProviderEarningsScreen.routeName,
         builder: (context, state) => const ProviderEarningsScreen(),
       ),
+
+      ///============= services section provider ============
       GoRoute(
         path: MyServicesScreen.routeName,
         builder: (context, state) => const MyServicesScreen(),
@@ -273,6 +253,8 @@ class AppRouter {
           return ProviderEditServiceScreen(service: service);
         },
       ),
+
+      ///============= bookings section provider ============
       GoRoute(
         path: ProviderBookingDetailsScreen.routeName,
         builder: (context, state) => ProviderBookingDetailsScreen(
@@ -307,6 +289,63 @@ class AppRouter {
         ),
       ),
 
+
+      ///============= availability section provider (reschedule) ============
+      GoRoute(
+        path: ProviderManageAvailabilityScreen.routeName,
+        builder: (context, state) => ProviderManageAvailabilityScreen(
+          booking: state.extra,
+        ),
+      ),
+
+
+      ///============= dispute section provider ============
+      GoRoute(
+        path: ProviderDisputeDetailsScreen.routeName,
+        builder: (context, state) => ProviderDisputeDetailsScreen(
+          booking: state.extra,
+        ),
+      ),
+
+
+      ///======================User all screens====================================================
+
+
+      ///============= auth section user ============
+      GoRoute(
+        path: OnboardingScreen.routeName,
+        builder: (context, state) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: LoginScreen.routeName,
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AgeConfirmationScreen.routeName,
+        builder: (context, state) => const AgeConfirmationScreen(),
+      ),
+      GoRoute(
+        path: SignUpScreen.routeName,
+        builder: (context, state) => const SignUpScreen(),
+      ),
+      GoRoute(
+        path: VerifyOtpScreen.routeName,
+        builder: (context, state) => const VerifyOtpScreen(),
+      ),
+      GoRoute(
+        path: ForgotPasswordScreen.routeName,
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: ForgotPasswordVerifyOtpScreen.routeName,
+        builder: (context, state) => const ForgotPasswordVerifyOtpScreen(),
+      ),
+      GoRoute(
+        path: SetNewPasswordScreen.routeName,
+        builder: (context, state) => const SetNewPasswordScreen(),
+      ),
+
+      ///============= home section user ============
       GoRoute(
         path: HomeScreen.routeName,
         builder: (context, state) => const HomeScreen(),
@@ -320,7 +359,7 @@ class AppRouter {
         builder: (context, state) => const ServiceCategoriesScreen(),
       ),
       GoRoute(
-        path: ProviderDetailsScreen.routeName,
+        path: ProviderDetailsScreen.routeName, // user viewing a provider
         builder: (context, state) {
           final extra = state.extra;
           if (extra is Map<String, dynamic>) {
@@ -362,17 +401,12 @@ class AppRouter {
           return const ProviderAvailabilityScreen();
         },
       ),
+
+      ///============= explore section user ============
       GoRoute(
-        path: provider_availability.ProviderAvailabilityScreen.routeName,
+        path: HomeBookingDetailsScreen.routeName,
         builder: (context, state) =>
-            provider_availability.ProviderAvailabilityScreen(
-          booking: state.extra,
-        ),
-      ),
-      GoRoute(
-        path: BookingDetailsScreen.routeName,
-        builder: (context, state) =>
-            BookingDetailsScreen(booking: state.extra as HomeBookingData),
+            HomeBookingDetailsScreen(booking: state.extra as HomeBookingData),
       ),
       GoRoute(
         path: ExploreProviderScreen.routeName,
@@ -384,6 +418,8 @@ class AppRouter {
           provider: state.extra as HomeProviderData?,
         ),
       ),
+
+      ///============= profile section user ============
       GoRoute(
         path: ProfileScreen.routeName,
         builder: (context, state) => const ProfileScreen(),
@@ -416,6 +452,8 @@ class AppRouter {
         path: UpdateProfileScreen.routeName,
         builder: (context, state) => const UpdateProfileScreen(),
       ),
+
+      ///============= messages section user ============
       GoRoute(
         path: MessagesScreen.routeName,
         builder: (context, state) => const MessagesScreen(),
@@ -425,13 +463,15 @@ class AppRouter {
         builder: (context, state) =>
             ChatScreen(conversation: state.extra as MessageData),
       ),
+
+      ///============= bookings section user ============
       GoRoute(
         path: BookingsScreen.routeName,
         builder: (context, state) => const BookingsScreen(),
       ),
       GoRoute(
-        path: bookings.BookingDetailsScreen.routeName,
-        builder: (context, state) => bookings.BookingDetailsScreen(
+        path: BookingDetailsScreen.routeName,
+        builder: (context, state) => BookingDetailsScreen(
           booking: state.extra as BookingHistoryData,
         ),
       ),
@@ -453,12 +493,10 @@ class AppRouter {
           booking: state.extra as BookingHistoryData?,
         ),
       ),
-      GoRoute(
-        path: ProviderDisputeDetailsScreen.routeName,
-        builder: (context, state) => ProviderDisputeDetailsScreen(
-          booking: state.extra,
-        ),
-      ),
+
+
+
+      ///============= legal section user ============
       GoRoute(
         path: TermsAndConditionScreen.routeName,
         builder: (context, state) => const TermsAndConditionScreen(),
@@ -467,6 +505,7 @@ class AppRouter {
         path: PrivacyPolicyScreen.routeName,
         builder: (context, state) => const PrivacyPolicyScreen(),
       ),
+
     ],
   );
 }
