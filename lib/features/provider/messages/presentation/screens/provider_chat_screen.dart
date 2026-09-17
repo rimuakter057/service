@@ -215,19 +215,12 @@ class _ProviderChatScreenState extends State<ProviderChatScreen> {
                   ),
                   GestureDetector(
                     onTapDown: (details) => _onMenuTap(details.globalPosition),
-                    child: Container(
-                      width: ResponsiveHelper.width(40),
-                      height: ResponsiveHelper.width(40),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColors.bgOverlay.withValues(alpha: 0.04),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.more_vert_rounded,
-                        size: ResponsiveHelper.iconSize(20),
-                        color: AppColors.textBlackPrimary,
-                      ),
+                    child: BgIcon(
+                      assetPath: AssetsPath.providerHomeIconVert,
+                      bgColor: AppColors.brandSoft,
+                      bgSize: ResponsiveHelper.width(40),
+                      radius: ResponsiveHelper.width(20),
+                      iconSize: ResponsiveHelper.iconSize(20),
                     ),
                   ),
                 ],
