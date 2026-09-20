@@ -3,23 +3,28 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
 import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
 import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
+import 'package:nchito/features/user/auth/presentation/providers/auth_provider.dart';
 import 'package:nchito/features/user/auth/presentation/screens/set_new_password/set_new_password_screen.dart';
 
 /// Forgot Password OTP verification screen for User role
 class ForgotPasswordVerifyOtpScreen extends StatefulWidget {
   static const String routeName = '/forgot-password/verify-otp';
 
+  final String identifier;
   final String subtitle;
 
   const ForgotPasswordVerifyOtpScreen({
     super.key,
+    required this.identifier,
     this.subtitle =
-        AppText.enterThe6DigitVerificationCodeSentToYourMobileNumber,
+        AppText.enterThe6DigitVerificationCodeSentToYourEmailAddress,
   });
 
   @override
@@ -34,7 +39,7 @@ class _ForgotPasswordVerifyOtpScreenState
 
   final List<TextEditingController> _controllers = List.generate(
     _otpLength,
-    (index) => TextEditingController(text: '${index + 1}'),
+    (_) => TextEditingController(),
   );
   final List<FocusNode> _focusNodes = List.generate(
     _otpLength,
@@ -80,8 +85,60 @@ class _ForgotPasswordVerifyOtpScreenState
     }
   }
 
-  void _onVerifyPressed() {
-    context.push(SetNewPasswordScreen.routeName);
+  Future<void> _onResendPressed() async {
+    if (_secondsRemaining > 0) return;
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.requestPasswordResetOtp(
+      identifier: widget.identifier,
+    );
+    if (!mounted) return;
+    if (success) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'Verification code resent.',
+      );
+      _startResendTimer();
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'Failed to resend code.',
+      );
+    }
+  }
+
+  Future<void> _onVerifyPressed() async {
+    final code = _controllers.map((c) => c.text).join();
+    if (code.length != _otpLength) {
+      AppSnackbar.showError(context, 'Please enter the full 6-digit code');
+      return;
+    }
+
+    final authProvider = context.read<AuthProvider>();
+    final token = await authProvider.verifyPasswordResetOtp(
+      identifier: widget.identifier,
+      code: code,
+    );
+
+    if (!mounted) return;
+
+    if (token != null) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'OTP verified successfully.',
+      );
+      context.push(
+        SetNewPasswordScreen.routeName,
+        extra: {
+          'identifier': widget.identifier,
+          'verification_token': token,
+        },
+      );
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'OTP verification failed.',
+      );
+    }
   }
 
   @override
@@ -98,6 +155,8 @@ class _ForgotPasswordVerifyOtpScreenState
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthProvider>().isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -165,7 +224,7 @@ class _ForgotPasswordVerifyOtpScreenState
                           ),
                           GestureDetector(
                             onTap: _secondsRemaining == 0
-                                ? _startResendTimer
+                                ? _onResendPressed
                                 : null,
                             child: Text(
                               _secondsRemaining == 0
@@ -182,8 +241,17 @@ class _ForgotPasswordVerifyOtpScreenState
                       SizedBox(height: ResponsiveHelper.spacing(24)),
 
                       ElevatedButton(
-                        onPressed: _onVerifyPressed,
-                        child: Text(AppText.verifyCode),
+                        onPressed: isLoading ? null : _onVerifyPressed,
+                        child: isLoading
+                            ? SizedBox(
+                                width: ResponsiveHelper.iconSize(20),
+                                height: ResponsiveHelper.iconSize(20),
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(AppText.verifyCode),
                       ),
                     ],
                   ),

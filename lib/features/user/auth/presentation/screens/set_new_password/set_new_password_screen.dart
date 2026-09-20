@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
+import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
 import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/app_theme/app_theme.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
+import 'package:nchito/features/user/auth/presentation/providers/auth_provider.dart';
 import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
-import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
 
 class SetNewPasswordScreen extends StatefulWidget {
   static const String routeName = '/set-new-password';
 
-  const SetNewPasswordScreen({super.key});
+  final String identifier;
+  final String verificationToken;
+
+  const SetNewPasswordScreen({
+    super.key,
+    required this.identifier,
+    required this.verificationToken,
+  });
 
   @override
   State<SetNewPasswordScreen> createState() => _SetNewPasswordScreenState();
@@ -28,11 +38,31 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
   bool _obscureNewPassword = true;
   bool _obscureConfirmNewPassword = true;
 
-  void _onUpdatePasswordPressed() {
+  Future<void> _onUpdatePasswordPressed() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    // TODO: wire up "update password" usecase
-    context.go(LoginScreen.routeName);
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.resetPassword(
+      identifier: widget.identifier,
+      verificationToken: widget.verificationToken,
+      newPassword: _newPasswordController.text,
+      confirmPassword: _confirmNewPasswordController.text,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'Password updated successfully.',
+      );
+      context.go(LoginScreen.routeName);
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'Failed to update password.',
+      );
+    }
   }
 
   @override
@@ -44,6 +74,8 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthProvider>().isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -119,8 +151,17 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                         SizedBox(height: ResponsiveHelper.spacing(24)),
 
                         ElevatedButton(
-                          onPressed: _onUpdatePasswordPressed,
-                          child: Text(AppText.updatePassword),
+                          onPressed: isLoading ? null : _onUpdatePasswordPressed,
+                          child: isLoading
+                              ? SizedBox(
+                                  width: ResponsiveHelper.iconSize(20),
+                                  height: ResponsiveHelper.iconSize(20),
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(AppText.updatePassword),
                         ),
                       ],
                     ),

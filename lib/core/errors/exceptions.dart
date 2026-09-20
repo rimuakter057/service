@@ -130,8 +130,6 @@ class ConflictException extends AppException {
   const ConflictException(super.message) : super(statusCode: 409);
 }
 
-/// Thrown on HTTP 422, optionally carrying per-field validation errors
-/// (e.g. `{"email": ["already taken"]}`) so forms can highlight them.
 class ValidationException extends AppException {
   final Map<String, List<String>>? fieldErrors;
 

@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:nchito/features/common/role_selection/role_selection_screen.dart';
+import 'package:nchito/features/user/home/presentation/providers/category_provider.dart';
 import 'package:nchito/features/common/splash/presentation/screens/splash_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/age_confirmation/provider_age_confirmation_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/connect_payments/connect_payments_screen.dart';
@@ -121,16 +123,35 @@ class AppRouter {
       ),
       GoRoute(
         path: ProviderForgotPasswordVerifyOtpScreen.routeName,
-        builder: (context, state) =>
-            const ProviderForgotPasswordVerifyOtpScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return ProviderForgotPasswordVerifyOtpScreen(
+            identifier: extra?['identifier'] as String? ?? '',
+          );
+        },
       ),
       GoRoute(
         path: ProviderVerifyOtpScreen.routeName,
-        builder: (context, state) => const ProviderVerifyOtpScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return ProviderVerifyOtpScreen(
+            identifier: extra?['identifier'] as String? ?? '',
+            nextRouteName:
+                extra?['nextRouteName'] as String? ??
+                VerifyIdentityScreen.routeName,
+          );
+        },
       ),
       GoRoute(
         path: ProviderSetNewPasswordScreen.routeName,
-        builder: (context, state) => const ProviderSetNewPasswordScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return ProviderSetNewPasswordScreen(
+            identifier: extra?['identifier'] as String? ?? '',
+            verificationToken:
+                extra?['verification_token'] as String? ?? '',
+          );
+        },
       ),
       GoRoute(
         path: VerifyIdentityScreen.routeName,
@@ -330,7 +351,15 @@ class AppRouter {
       ),
       GoRoute(
         path: VerifyOtpScreen.routeName,
-        builder: (context, state) => const VerifyOtpScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return VerifyOtpScreen(
+            identifier: extra?['identifier'] as String? ?? '',
+            nextRouteName:
+                extra?['nextRouteName'] as String? ??
+                OnboardingScreen.routeName,
+          );
+        },
       ),
       GoRoute(
         path: ForgotPasswordScreen.routeName,
@@ -338,17 +367,31 @@ class AppRouter {
       ),
       GoRoute(
         path: ForgotPasswordVerifyOtpScreen.routeName,
-        builder: (context, state) => const ForgotPasswordVerifyOtpScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return ForgotPasswordVerifyOtpScreen(
+            identifier: extra?['identifier'] as String? ?? '',
+          );
+        },
       ),
       GoRoute(
         path: SetNewPasswordScreen.routeName,
-        builder: (context, state) => const SetNewPasswordScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return SetNewPasswordScreen(
+            identifier: extra?['identifier'] as String? ?? '',
+            verificationToken: extra?['verification_token'] as String? ?? '',
+          );
+        },
       ),
 
       ///============= home section user ============
       GoRoute(
         path: HomeScreen.routeName,
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (_) => CategoryProvider()..fetchCategories(),
+          child: const HomeScreen(),
+        ),
       ),
       GoRoute(
         path: NotificationsScreen.routeName,
@@ -356,7 +399,10 @@ class AppRouter {
       ),
       GoRoute(
         path: ServiceCategoriesScreen.routeName,
-        builder: (context, state) => const ServiceCategoriesScreen(),
+        builder: (context, state) => ChangeNotifierProvider(
+          create: (_) => CategoryProvider()..fetchCategories(),
+          child: const ServiceCategoriesScreen(),
+        ),
       ),
       GoRoute(
         path: ProviderDetailsScreen.routeName, // user viewing a provider
@@ -396,6 +442,12 @@ class AppRouter {
             return ProviderAvailabilityScreen(
               isRescheduling: extra['isRescheduling'] as bool? ?? false,
               booking: extra['booking'],
+              providerId: extra['providerId'] as String?,
+              provider: extra['provider'],
+            );
+          } else if (extra is String) {
+            return ProviderAvailabilityScreen(
+              providerId: extra,
             );
           }
           return const ProviderAvailabilityScreen();
@@ -414,9 +466,21 @@ class AppRouter {
       ),
       GoRoute(
         path: BookAServiceScreen.routeName,
-        builder: (context, state) => BookAServiceScreen(
-          provider: state.extra as HomeProviderData?,
-        ),
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is HomeProviderData) {
+            return BookAServiceScreen(provider: extra);
+          } else if (extra is Map<String, dynamic>) {
+            return BookAServiceScreen(
+              provider: extra['provider'] as HomeProviderData?,
+              selectedDate: extra['date'] as String?,
+              selectedSlot: extra['slot'] as String?,
+              selectedTime: extra['time'] as String?,
+              providerId: extra['providerId'] as String?,
+            );
+          }
+          return const BookAServiceScreen();
+        },
       ),
 
       ///============= profile section user ============

@@ -3,8 +3,10 @@ import 'package:dio/dio.dart';
 import '../constants/api_constants.dart';
 import '../errors/exceptions.dart';
 import 'interceptors/api_logger_interceptor.dart';
+import 'interceptors/auth_interceptor.dart';
 import 'interceptors/retry_interceptor.dart';
 import 'network_info.dart';
+import 'token_storage.dart';
 
 class ApiClient {
   ApiClient._internal({NetworkInfo? networkInfo})
@@ -18,6 +20,7 @@ class ApiClient {
 
     _dio.interceptors.addAll([
       ApiLoggerInterceptor(),
+      AuthInterceptor(_dio),
       RetryInterceptor(_dio),
     ]);
   }
@@ -31,8 +34,29 @@ class ApiClient {
 
   Dio get dio => _dio;
 
+  /// Restores a previously-saved token (if any) so an already-logged-in
+  /// user doesn't have to log in again after closing the app. Call this
+  /// once in `main()`, before `runApp()`.
+  Future<void> restoreSavedToken() async {
+    final token = await TokenStorage.read();
+    if (token != null) {
+      _applyToken(token);
+    }
+  }
 
-  void setAuthToken(String? token) {
+  /// Attaches/removes the bearer token used for authenticated requests,
+  /// and persists it so it survives app restarts. Call with `null` on
+  /// logout.
+  Future<void> setAuthToken(String? token) async {
+    _applyToken(token);
+    if (token == null) {
+      await TokenStorage.clear();
+    } else {
+      await TokenStorage.save(token);
+    }
+  }
+
+  void _applyToken(String? token) {
     if (token == null) {
       _dio.options.headers.remove('Authorization');
     } else {

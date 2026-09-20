@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
+import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
 import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
+import 'package:nchito/features/user/auth/presentation/providers/auth_provider.dart';
 import 'package:nchito/features/user/auth/presentation/screens/forgot_password_verify_otp/forgot_password_verify_otp_screen.dart';
-import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   static const String routeName = '/forgot-password';
@@ -18,13 +21,37 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController(
+    text: 'customer333@yopmail.com',
+  );
 
-  void _onSendVerificationCodePressed() {
+  Future<void> _onSendVerificationCodePressed() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    // TODO: wire up "send verification code" usecase
-    context.push(ForgotPasswordVerifyOtpScreen.routeName);
+    final identifier = _emailController.text.trim();
+    final authProvider = context.read<AuthProvider>();
+
+    final success = await authProvider.requestPasswordResetOtp(
+      identifier: identifier,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'Verification code sent.',
+      );
+      context.push(
+        ForgotPasswordVerifyOtpScreen.routeName,
+        extra: {'identifier': identifier},
+      );
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'Failed to send verification code.',
+      );
+    }
   }
 
   @override
@@ -35,6 +62,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthProvider>().isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -70,8 +99,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         SizedBox(height: ResponsiveHelper.spacing(24)),
 
                         ElevatedButton(
-                          onPressed: _onSendVerificationCodePressed,
-                          child: Text(AppText.sendVerificationCode),
+                          onPressed: isLoading
+                              ? null
+                              : _onSendVerificationCodePressed,
+                          child: isLoading
+                              ? SizedBox(
+                                  width: ResponsiveHelper.iconSize(20),
+                                  height: ResponsiveHelper.iconSize(20),
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(AppText.sendVerificationCode),
                         ),
                       ],
                     ),

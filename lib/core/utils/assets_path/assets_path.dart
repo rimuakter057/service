@@ -144,6 +144,8 @@ class AssetsPath {
       '$_exploreProviderIconBase/icon_calendar_chevron.svg';
   static const String exploreProviderIllustrationNoResults =
       '$_exploreProviderIconBase/illustration_no_results.svg';
+  static const String emptyBox =
+      'assets/icons/provider/home_section/home/empty.svg';
 
   static const String _exploreProviderImageBase =
       'assets/images/user/explore_provider_section/explore_provider';

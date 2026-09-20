@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:nchito/features/common/common_widgets/app_button/app_button.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/bg_icon.dart';
@@ -9,21 +10,18 @@ import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.da
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
+import 'package:nchito/features/user/home/presentation/providers/provider_detail_provider.dart';
 import 'package:nchito/features/user/home/presentation/screens/all_reviews/all_reviews_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_availability/provider_availability_screen.dart';
 import 'package:nchito/features/user/home/presentation/widgets/detail_field.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_sample_data.dart';
 
-
-/// Full provider profile — reached by tapping a provider card on Home.
+/// Full provider profile — displays dynamic provider details from API
+/// with safe default values for any null fields.
 class ProviderDetailsScreen extends StatefulWidget {
   static const String routeName = '/provider-details';
 
   final HomeProviderData provider;
-
-  /// Whether the heart toggle should start filled — e.g. true when opened
-  /// from [FavoriteProvidersScreen], since the provider is already a
-  /// favorite there.
   final bool initialFavorite;
 
   const ProviderDetailsScreen({
@@ -40,8 +38,28 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
   late bool _isFavorite = widget.initialFavorite;
 
   @override
+  void initState() {
+    super.initState();
+    _isFavorite = widget.initialFavorite;
+    final providerId = widget.provider.id;
+    if (providerId != null && providerId.trim().isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<ProviderDetailNotifier>().fetchProviderDetails(
+                providerId.trim(),
+                fallback: widget.provider,
+              );
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final provider = widget.provider;
+    final detailNotifier = context.watch<ProviderDetailNotifier>();
+    final liveModel = detailNotifier.detailModel;
+    final provider = detailNotifier.providerData ?? widget.provider;
+    final isVerified = liveModel?.isVerified ?? true;
 
     return Scaffold(
       body: SafeArea(
@@ -74,43 +92,63 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                           borderRadius: BorderRadius.circular(
                             ResponsiveHelper.borderRadius(16),
                           ),
-                          child: AppIcon(
-                            assetPath: provider.photo,
-                            size: ResponsiveHelper.width(72),
-                            fit: BoxFit.cover,
-                          ),
+                          child: provider.photo.startsWith('http')
+                              ? Image.network(
+                                  provider.photo,
+                                  width: ResponsiveHelper.width(72),
+                                  height: ResponsiveHelper.width(72),
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => AppIcon(
+                                    assetPath: AssetsPath.providerRobert,
+                                    size: ResponsiveHelper.width(72),
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : AppIcon(
+                                  assetPath: provider.photo.isNotEmpty
+                                      ? provider.photo
+                                      : AssetsPath.providerRobert,
+                                  size: ResponsiveHelper.width(72),
+                                  fit: BoxFit.cover,
+                                ),
                         ),
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: AppIcon(
-                            assetPath:
-                                AssetsPath.providerDetailsIconVerifiedBadge,
-                            size: ResponsiveHelper.iconSize(18),
+                        if (isVerified)
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: AppIcon(
+                              assetPath:
+                                  AssetsPath.providerDetailsIconVerifiedBadge,
+                              size: ResponsiveHelper.iconSize(18),
+                            ),
                           ),
-                        ),
                       ],
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(20)),
-///name===================
+
+                    // Name
                     DetailField(label: AppText.name, value: provider.name),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-///email===============
+
+                    // Email
                     DetailField(label: AppText.email, value: provider.email),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-///contact=======================
+
+                    // Contact Phone
                     DetailField(
                       label: AppText.contactPhone,
                       value: provider.phone,
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-///service area===================
+
+                    // Service Area
                     DetailField(
                       label: AppText.serviceArea,
                       value: provider.area,
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-///service type=====================================
+
+                    // Service Type Chips
                     DetailField(
                       label: AppText.serviceType,
                       child: Wrap(
@@ -122,14 +160,16 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                       ),
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-///description==================================
+
+                    // Description
                     DetailField(
                       label: AppText.serviceDescription,
                       value: provider.description,
                       emphasizeValue: false,
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-///reviews==============================
+
+                    // Reviews
                     DetailField(
                       label: AppText.reviews,
                       trailing: GestureDetector(
@@ -176,7 +216,8 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                       ),
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(12)),
-///complete count===============================
+
+                    // Total Jobs Completed
                     DetailField(
                       label: AppText.totalJobsCompleted,
                       value: provider.totalJobsCompleted,
@@ -210,8 +251,15 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                   Expanded(
                     child: AppButton(
                       text: AppText.seeAvailability,
-                      onPressed: () =>
-                          context.push(ProviderAvailabilityScreen.routeName),
+                      onPressed: () => context.push(
+                        ProviderAvailabilityScreen.routeName,
+                        extra: {
+                          'providerId': provider.id ??
+                              liveModel?.id ??
+                              '6aae448a527875a24459c632',
+                          'provider': provider,
+                        },
+                      ),
                       backgroundColor: AppColors.brandPrimary,
                       textColor: AppColors.textOnPrimary,
                       child: _ButtonContent(
@@ -230,7 +278,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     );
   }
 }
-///service=================================
+
 class _ServiceTagChip extends StatelessWidget {
   final ProviderTag tag;
 
@@ -256,7 +304,8 @@ class _ServiceTagChip extends StatelessWidget {
             size: ResponsiveHelper.iconSize(14),
           ),
           SizedBox(width: ResponsiveHelper.spacing(4)),
-          Text(tag.label, style: context.bodySmall.copyWith(fontWeight: FontWeight.w600)),
+          Text(tag.label,
+              style: context.bodySmall.copyWith(fontWeight: FontWeight.w600)),
         ],
       ),
     );
@@ -284,16 +333,12 @@ class _ButtonContent extends StatelessWidget {
           size: ResponsiveHelper.iconSize(16),
           color: color,
         ),
-        SizedBox(width: ResponsiveHelper.spacing(6)),
-        Flexible(
-          child: Text(
-            text,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: ResponsiveHelper.fontSize(14),
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
+        SizedBox(width: ResponsiveHelper.spacing(8)),
+        Text(
+          text,
+          style: context.labelMedium.copyWith(
+            fontWeight: FontWeight.w600,
+            color: color,
           ),
         ),
       ],

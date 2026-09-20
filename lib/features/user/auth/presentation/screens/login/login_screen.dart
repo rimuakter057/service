@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
@@ -10,7 +11,9 @@ import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
 import 'package:nchito/features/common/common_widgets/app_divider/app_divider.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
 import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
+import 'package:nchito/features/user/auth/presentation/providers/auth_provider.dart';
 import 'package:nchito/features/user/auth/presentation/screens/age_confirmation/age_confirmation_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/forgot_password/forgot_password_screen.dart';
 import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
@@ -30,18 +33,41 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   // TODO: remove test-only default values before release
   late final TextEditingController _emailController = TextEditingController(
-    text: 'test@nchito.com',
+    text: 'customer333@yopmail.com',
   );
   final TextEditingController _passwordController = TextEditingController(
-    text: 'test1234',
+    text: '123456Rr%',
   );
 
   bool _rememberMe = false;
   bool _obscurePassword = true;
 
-  void _onLoginPressed() {
-    if (_formKey.currentState?.validate() ?? false) {
+  Future<void> _onLoginPressed() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    final identifier = _emailController.text.trim();
+    final password = _passwordController.text;
+    final authProvider = context.read<AuthProvider>();
+
+    final success = await authProvider.login(
+      identifier: identifier,
+      password: password,
+      rememberMe: _rememberMe,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'Logged in successfully.',
+      );
       context.go(HomeScreen.routeName);
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'Login failed. Please try again.',
+      );
     }
   }
 
@@ -54,6 +80,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthProvider>().isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -151,8 +179,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         ///======================== Log In button
                         ElevatedButton(
-                          onPressed: _onLoginPressed,
-                          child: Text(AppText.logIn),
+                          onPressed: isLoading ? null : _onLoginPressed,
+                          child: isLoading
+                              ? SizedBox(
+                                  width: ResponsiveHelper.iconSize(20),
+                                  height: ResponsiveHelper.iconSize(20),
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(AppText.logIn),
                         ),
                         SizedBox(height: ResponsiveHelper.spacing(24)),
 

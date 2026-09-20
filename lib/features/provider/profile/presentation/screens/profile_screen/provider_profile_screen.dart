@@ -9,7 +9,6 @@ import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.da
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
-import 'package:nchito/features/common/role_selection/role_selection_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/connect_payments/connect_payments_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/verify_identity/verify_identity_screen.dart';
 import 'package:nchito/features/common/common_widgets/app_logout_bottom_sheet/app_logout_bottom_sheet.dart';
@@ -22,6 +21,10 @@ import 'package:nchito/features/provider/profile/presentation/screens/my_profile
 import 'package:nchito/features/provider/profile/presentation/screens/privacy_policy/provider_privacy_policy_screen.dart';
 import 'package:nchito/features/provider/profile/presentation/screens/set_availability/provider_set_availability_screen.dart';
 import 'package:nchito/features/provider/profile/presentation/screens/terms_and_condition/provider_terms_and_condition_screen.dart';
+
+import 'package:provider/provider.dart';
+import 'package:nchito/features/provider/auth/presentation/providers/provider_auth_provider.dart';
+import 'package:nchito/features/provider/auth/presentation/screens/login/provider_login_screen.dart';
 
 /// Standalone Provider Profile screen displaying provider avatar, name,
 /// complete account section, general options, more options, and [ProviderBottomNavBar].
@@ -37,8 +40,12 @@ class ProviderProfileScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.1),
       builder: (_) => AppLogOutBottomSheet(
-        onConfirm: () {
-          context.go(RoleSelectionScreen.routeName);
+        onConfirm: () async {
+          final authProvider = context.read<ProviderAuthProvider>();
+          await authProvider.logout();
+          if (context.mounted) {
+            context.go(ProviderLoginScreen.routeName);
+          }
         },
       ),
     );

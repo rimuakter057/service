@@ -65,12 +65,27 @@ class AppProviderCard extends StatelessWidget {
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(ResponsiveHelper.borderRadius(12)),
               ),
-              child: AppIcon(
-                assetPath: photo,
-                width: double.infinity,
-                height: ResponsiveHelper.height(134),
-                fit: BoxFit.cover,
-              ),
+              child: photo.startsWith('http')
+                  ? Image.network(
+                      photo,
+                      width: double.infinity,
+                      height: ResponsiveHelper.height(134),
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const AppIcon(
+                        assetPath: AssetsPath.exploreProviderPhotoJhoneDoe,
+                        width: double.infinity,
+                        height: 134,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : AppIcon(
+                      assetPath: photo.isNotEmpty
+                          ? photo
+                          : AssetsPath.exploreProviderPhotoJhoneDoe,
+                      width: double.infinity,
+                      height: ResponsiveHelper.height(134),
+                      fit: BoxFit.cover,
+                    ),
             ),
 
             // ── Info ─────────────────────────────────────────────────

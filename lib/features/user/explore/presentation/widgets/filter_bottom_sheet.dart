@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
@@ -6,6 +7,7 @@ import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.da
 import 'package:nchito/features/common/common_widgets/app_box_text_field/app_box_text_field.dart';
 import 'package:nchito/features/common/common_widgets/app_dropdown_field/app_dropdown_field.dart';
 import 'package:nchito/features/common/common_widgets/app_select_sheet/app_select_sheet.dart';
+import '../providers/explore_provider.dart';
 
 const List<String> _serviceTypeOptions = [
   AppText.categoryCleaning,
@@ -26,6 +28,14 @@ const List<String> _sortByOptions = [
   AppText.sortNearestFirst,
 ];
 
+const Map<String, String> _sortByApiMap = {
+  AppText.sortRecommended: 'recommended',
+  AppText.sortHighestRated: 'rating',
+  AppText.sortLowestPrice: 'price_asc',
+  AppText.sortHighestPrice: 'price_desc',
+  AppText.sortNearestFirst: 'nearest',
+};
+
 const List<String> _ratingOptions = [
   AppText.anyRating,
   AppText.upTo1,
@@ -34,6 +44,36 @@ const List<String> _ratingOptions = [
   AppText.upTo4,
   AppText.only1,
 ];
+
+String? _mapCategoryToSlug(String? serviceType) {
+  if (serviceType == null || serviceType.isEmpty) return null;
+  final lower = serviceType.toLowerCase();
+  if (lower.contains('gardening') || lower.contains('landscaping')) {
+    return 'gardening-landscaping';
+  }
+  if (lower.contains('moving') || lower.contains('relocation')) {
+    return 'moving-relocation';
+  }
+  if (lower.contains('electrical')) {
+    return 'electrical';
+  }
+  if (lower.contains('cleaning')) {
+    return 'cleaning';
+  }
+  if (lower.contains('plumbing')) {
+    return 'plumbing';
+  }
+  if (lower.contains('painting') || lower.contains('decorating')) {
+    return 'painting-decorating';
+  }
+  if (lower.contains('home maintenance')) {
+    return 'home-maintenance';
+  }
+  if (lower.contains('beauty')) {
+    return 'beauty-personal-care';
+  }
+  return serviceType.toLowerCase().replaceAll(RegExp(r'\s+'), '-');
+}
 
 /// Filter modal opened from Explore Provider's filter button — Service
 /// Type / Sort By pickers, Service Location, Price Range slider and
@@ -52,6 +92,17 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   double _priceValue = 100;
 
   final TextEditingController _locationController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Always start with empty fields as requested
+    _serviceType = null;
+    _sortBy = null;
+    _rating = AppText.anyRating;
+    _priceValue = 100;
+    _locationController.clear();
+  }
 
   @override
   void dispose() {
@@ -87,6 +138,49 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       _priceValue = 100;
       _locationController.clear();
     });
+    context.read<ExploreProviderNotifier>().resetFilters();
+    Navigator.of(context).pop();
+  }
+
+  void _onApply() {
+    final slug = _mapCategoryToSlug(_serviceType);
+    final city = _locationController.text.trim().isNotEmpty
+        ? _locationController.text.trim()
+        : null;
+    final sort = _sortByApiMap[_sortBy] ?? _sortBy;
+
+    double? minRating;
+    if (_rating == AppText.upTo1) {
+      minRating = 1.0;
+    } else if (_rating == AppText.upTo2) {
+      minRating = 2.0;
+    } else if (_rating == AppText.upTo3) {
+      minRating = 3.0;
+    } else if (_rating == AppText.upTo4) {
+      minRating = 4.0;
+    } else if (_rating == AppText.only1) {
+      minRating = 5.0;
+    }
+
+    context.read<ExploreProviderNotifier>().applyFilters(
+          category: slug,
+          city: city,
+          sort: sort,
+          minPrice: 0,
+          maxPrice: _priceValue,
+          minRating: minRating,
+        );
+
+    // Empty fields after applying filter
+    setState(() {
+      _serviceType = null;
+      _sortBy = null;
+      _rating = AppText.anyRating;
+      _priceValue = 100;
+      _locationController.clear();
+    });
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -245,7 +339,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 ),
                 child: Slider(
                   min: 0,
-                  max: 100,
+                  max: 500,
                   value: _priceValue,
                   onChanged: (val) => setState(() => _priceValue = val),
                 ),
@@ -308,7 +402,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   SizedBox(width: ResponsiveHelper.spacing(12)),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
+                      onTap: _onApply,
                       child: Container(
                         height: ResponsiveHelper.height(50),
                         alignment: Alignment.center,
@@ -337,7 +431,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     );
   }
 }
-
 
 class _RatingChip extends StatelessWidget {
   final String label;

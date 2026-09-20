@@ -12,6 +12,9 @@ import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/app_theme/app_theme.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
+import 'package:provider/provider.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
+import 'package:nchito/features/provider/auth/presentation/providers/provider_auth_provider.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/age_confirmation/provider_age_confirmation_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/forgot_password/provider_forgot_password_screen.dart';
 import 'package:nchito/features/provider/home/presentation/screens/home_screen/provider_home_screen.dart';
@@ -28,18 +31,39 @@ class ProviderLoginScreen extends StatefulWidget {
 
 class _ProviderLoginScreenState extends State<ProviderLoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController(
-    text: 'provider@nchito.com',
-  );
-  final TextEditingController _passwordController = TextEditingController(
-    text: 'test1234',
-  );
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   bool _rememberMe = false;
   bool _obscurePassword = true;
 
-  void _onLoginPressed() {
-    context.go(ProviderHomeScreen.routeName);
+  Future<void> _onLoginPressed() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    final identifier = _emailController.text.trim();
+    final password = _passwordController.text;
+    final authProvider = context.read<ProviderAuthProvider>();
+
+    final success = await authProvider.login(
+      identifier: identifier,
+      password: password,
+      rememberMe: _rememberMe,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'Logged in successfully.',
+      );
+      context.go(ProviderHomeScreen.routeName);
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'Invalid credentials. Please try again.',
+      );
+    }
   }
 
   @override
@@ -51,6 +75,8 @@ class _ProviderLoginScreenState extends State<ProviderLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<ProviderAuthProvider>().isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -150,8 +176,17 @@ class _ProviderLoginScreenState extends State<ProviderLoginScreen> {
 
                         // Log In button
                         ElevatedButton(
-                          onPressed: _onLoginPressed,
-                          child: Text(AppText.logIn),
+                          onPressed: isLoading ? null : _onLoginPressed,
+                          child: isLoading
+                              ? SizedBox(
+                                  width: ResponsiveHelper.iconSize(20),
+                                  height: ResponsiveHelper.iconSize(20),
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(AppText.logIn),
                         ),
                         SizedBox(height: ResponsiveHelper.spacing(24)),
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
 import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
 import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
@@ -10,6 +12,7 @@ import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/app_theme/app_theme.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
+import 'package:nchito/features/user/auth/presentation/providers/auth_provider.dart';
 import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/verify_otp/verify_otp_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/onboarding/onboarding_screen.dart';
@@ -52,29 +55,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  void _onCreateAccountPressed() {
+  Future<void> _onCreateAccountPressed() async {
     final isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid) return;
 
     if (!_agreeToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Please agree to the Terms of Service and Privacy Policy',
-          ),
-        ),
+      AppSnackbar.showError(
+        context,
+        'Please agree to the Terms of Service and Privacy Policy',
       );
       return;
     }
 
-    // TODO: wire up signup usecase
-    context.push(VerifyOtpScreen.routeName, extra: {
-      'nextRouteName': OnboardingScreen.routeName,
-    });
+    final identifier = _emailOrPhoneController.text.trim();
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.register(
+      identifier: identifier,
+      fullName: _fullNameController.text.trim(),
+      password: _passwordController.text,
+      confirmPassword: _confirmPasswordController.text,
+      acceptTerms: _agreeToTerms,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'Verification code sent to $identifier',
+      );
+      context.push(
+        VerifyOtpScreen.routeName,
+        extra: {
+          'identifier': identifier,
+          'nextRouteName': OnboardingScreen.routeName,
+        },
+      );
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'Something went wrong. Please try again.',
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthProvider>().isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -223,8 +251,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                         ///======================== Create Account button
                         ElevatedButton(
-                          onPressed: _onCreateAccountPressed,
-                          child: Text(AppText.createAccount),
+                          onPressed: isLoading ? null : _onCreateAccountPressed,
+                          child: isLoading
+                              ? SizedBox(
+                                  width: ResponsiveHelper.iconSize(20),
+                                  height: ResponsiveHelper.iconSize(20),
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(AppText.createAccount),
                         ),
                         SizedBox(height: ResponsiveHelper.spacing(24)),
 

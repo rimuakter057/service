@@ -73,9 +73,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                               illustration: AssetsPath
                                   .splashScreenIllustrationFindService,
                               label: AppText.findAService,
-                              selected: _selectedRole == UserRole.user,
+                              selected: _selectedRole == UserRole.customer,
                               onTap: () => setState(
-                                () => _selectedRole = UserRole.user,
+                                () => _selectedRole = UserRole.customer,
                               ),
                             ),
                           ),

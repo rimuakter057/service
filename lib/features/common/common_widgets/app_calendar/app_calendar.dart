@@ -60,8 +60,9 @@ class _AppCalendarState extends State<AppCalendar> {
   @override
   void initState() {
     super.initState();
-    _today = widget.today ?? DateTime(2025, 10, 17);
-    _selectedDate = widget.initialSelectedDate ?? DateTime(2025, 10, 26);
+    final now = DateTime.now();
+    _today = widget.today ?? DateTime(now.year, now.month, now.day);
+    _selectedDate = widget.initialSelectedDate ?? _today;
     _displayedMonth = widget.initialDisplayedMonth ??
         DateTime(_selectedDate!.year, _selectedDate!.month);
   }
@@ -158,14 +159,11 @@ class _AppCalendarState extends State<AppCalendar> {
             ),
             itemBuilder: (context, index) {
               final day = monthDays[index];
+              final dayDate = DateTime(day.year, day.month, day.day);
+              final todayDate = DateTime(_today.year, _today.month, _today.day);
               final isCurrentMonth = day.month == _displayedMonth.month;
-              final isPastInMonth = isCurrentMonth &&
-                  (day.year == _today.year &&
-                      day.month == _today.month &&
-                      day.day < _today.day);
-              final isToday = day.year == _today.year &&
-                  day.month == _today.month &&
-                  day.day == _today.day;
+              final isPastInMonth = isCurrentMonth && dayDate.isBefore(todayDate);
+              final isToday = dayDate.isAtSameMomentAs(todayDate);
               final isSelected = _selectedDate != null &&
                   day.year == _selectedDate!.year &&
                   day.month == _selectedDate!.month &&

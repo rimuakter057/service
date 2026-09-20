@@ -11,6 +11,9 @@ import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/app_theme/app_theme.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
+import 'package:provider/provider.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
+import 'package:nchito/features/provider/auth/presentation/providers/provider_auth_provider.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/login/provider_login_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/verify_identity/verify_identity_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/verify_otp/provider_verify_otp_screen.dart';
@@ -26,21 +29,14 @@ class ProviderSignUpScreen extends StatefulWidget {
 
 class _ProviderSignUpScreenState extends State<ProviderSignUpScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _fullNameController = TextEditingController(
-    text: 'Test Provider',
-  );
-  final TextEditingController _emailOrPhoneController = TextEditingController(
-    text: 'provider@nchito.com',
-  );
-  final TextEditingController _passwordController = TextEditingController(
-    text: 'test1234',
-  );
-  final TextEditingController _confirmPasswordController =
-      TextEditingController(text: 'test1234');
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _emailOrPhoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  bool _agreeToTerms = true;
+  bool _agreeToTerms = false;
 
   @override
   void dispose() {
@@ -51,15 +47,52 @@ class _ProviderSignUpScreenState extends State<ProviderSignUpScreen> {
     super.dispose();
   }
 
-  void _onCreateAccountPressed() {
-    context.push(
-      ProviderVerifyOtpScreen.routeName,
-      extra: {'nextRouteName': VerifyIdentityScreen.routeName},
+  Future<void> _onCreateAccountPressed() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    if (!_agreeToTerms) {
+      AppSnackbar.showError(
+        context,
+        'Please agree to the Terms of Service & Privacy Policy',
+      );
+      return;
+    }
+
+    final identifier = _emailOrPhoneController.text.trim();
+    final authProvider = context.read<ProviderAuthProvider>();
+    final success = await authProvider.register(
+      identifier: identifier,
+      fullName: _fullNameController.text.trim(),
+      password: _passwordController.text,
+      confirmPassword: _confirmPasswordController.text,
+      acceptTerms: _agreeToTerms,
     );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'Verification code sent to $identifier',
+      );
+      context.push(
+        ProviderVerifyOtpScreen.routeName,
+        extra: {
+          'identifier': identifier,
+          'nextRouteName': VerifyIdentityScreen.routeName,
+        },
+      );
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'Something went wrong. Please try again.',
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<ProviderAuthProvider>().isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -209,8 +242,17 @@ class _ProviderSignUpScreenState extends State<ProviderSignUpScreen> {
 
                         // Create Account button
                         ElevatedButton(
-                          onPressed: _onCreateAccountPressed,
-                          child: Text(AppText.createAccount),
+                          onPressed: isLoading ? null : _onCreateAccountPressed,
+                          child: isLoading
+                              ? SizedBox(
+                                  width: ResponsiveHelper.iconSize(20),
+                                  height: ResponsiveHelper.iconSize(20),
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(AppText.createAccount),
                         ),
                         SizedBox(height: ResponsiveHelper.spacing(24)),
 

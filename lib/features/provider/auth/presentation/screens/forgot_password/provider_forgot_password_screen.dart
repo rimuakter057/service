@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
 import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
 import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
+import 'package:nchito/features/provider/auth/presentation/providers/provider_auth_provider.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/validators/validators.dart';
@@ -20,12 +23,35 @@ class ProviderForgotPasswordScreen extends StatefulWidget {
 class _ProviderForgotPasswordScreenState
     extends State<ProviderForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController(
-    text: 'provider@nchito.com',
-  );
+  final TextEditingController _emailController = TextEditingController();
 
-  void _onSendVerificationCodePressed() {
-    context.push(ProviderForgotPasswordVerifyOtpScreen.routeName);
+  Future<void> _onSendVerificationCodePressed() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    final identifier = _emailController.text.trim();
+    final authProvider = context.read<ProviderAuthProvider>();
+
+    final success = await authProvider.requestPasswordResetOtp(
+      identifier: identifier,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'Verification code sent to $identifier',
+      );
+      context.push(
+        ProviderForgotPasswordVerifyOtpScreen.routeName,
+        extra: {'identifier': identifier},
+      );
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'Failed to send verification code.',
+      );
+    }
   }
 
   @override
@@ -36,6 +62,8 @@ class _ProviderForgotPasswordScreenState
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<ProviderAuthProvider>().isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -71,8 +99,19 @@ class _ProviderForgotPasswordScreenState
                         SizedBox(height: ResponsiveHelper.spacing(24)),
 
                         ElevatedButton(
-                          onPressed: _onSendVerificationCodePressed,
-                          child: Text(AppText.sendVerificationCode),
+                          onPressed: isLoading
+                              ? null
+                              : _onSendVerificationCodePressed,
+                          child: isLoading
+                              ? SizedBox(
+                                  width: ResponsiveHelper.iconSize(20),
+                                  height: ResponsiveHelper.iconSize(20),
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(AppText.sendVerificationCode),
                         ),
                       ],
                     ),

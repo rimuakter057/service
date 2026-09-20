@@ -6,6 +6,8 @@ import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.da
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/features/common/common_widgets/app_bottom_nav_bar/app_bottom_nav_bar.dart';
+import 'package:nchito/features/user/bookings/presentation/screens/bookings_screen.dart';
+import 'package:nchito/features/user/explore/presentation/screens/explore_provider/explore_provider_screen.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_active_booking_list.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_category_grid.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_header.dart';
@@ -52,7 +54,8 @@ class HomeScreen extends StatelessWidget {
 
                       SectionHeader(
                         title: AppText.popularNearYou,
-                        onViewAllTap: () {},
+                        onViewAllTap: () =>
+                            context.push(ExploreProviderScreen.routeName),
                       ),
                       SizedBox(height: ResponsiveHelper.spacing(12)),
                       ///popular near ====================================
@@ -61,7 +64,8 @@ class HomeScreen extends StatelessWidget {
 
                       SectionHeader(
                         title: AppText.activeBooking,
-                        onViewAllTap: () {},
+                        onViewAllTap: () =>
+                            context.push(BookingsScreen.routeName),
                       ),
                       SizedBox(height: ResponsiveHelper.spacing(12)),
                       ///active booking list==========================

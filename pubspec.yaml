@@ -54,6 +54,11 @@ dependencies:
   # Pretty, leveled console logs for every request/response/error
   logger: ^2.4.0
 
+  # Persists the auth token on-device so it survives app restarts —
+  # no need to log in again every time the app opens
+  shared_preferences: ^2.3.3
+  file_picker: ^11.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

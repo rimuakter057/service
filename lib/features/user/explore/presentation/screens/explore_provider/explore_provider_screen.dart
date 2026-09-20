@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:nchito/features/common/common_widgets/app_bottom_nav_bar/app_bottom_nav_bar.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/bg_icon.dart';
 import 'package:nchito/features/common/common_widgets/app_search_bar/app_search_bar.dart';
@@ -8,16 +9,14 @@ import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.da
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
+import 'package:nchito/features/user/explore/presentation/providers/explore_provider.dart';
 import 'package:nchito/features/user/explore/presentation/widgets/explore_empty_state.dart';
 import 'package:nchito/features/user/explore/presentation/widgets/explore_provider_grid.dart';
-import 'package:nchito/features/user/explore/presentation/widgets/explore_sample_data.dart';
+import 'package:nchito/features/user/explore/presentation/widgets/explore_provider_shimmer.dart';
 import 'package:nchito/features/user/explore/presentation/widgets/filter_bottom_sheet.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
 
-/// Search + filter screen for browsing providers — reached from the bottom
-/// nav's "Explore" tab. Shows [ExploreProviderGrid] when results match the
-/// search query, falling back to [ExploreEmptyState] (calendar + message)
-/// when nothing matches.
+/// Search + filter screen for browsing providers with infinite scroll pagination.
 class ExploreProviderScreen extends StatefulWidget {
   static const String routeName = '/explore-provider';
 
@@ -29,22 +28,33 @@ class ExploreProviderScreen extends StatefulWidget {
 
 class _ExploreProviderScreenState extends State<ExploreProviderScreen> {
   final TextEditingController _searchController = TextEditingController();
-  String _query = '';
+  final ScrollController _scrollController = ScrollController();
 
-  List<ExploreProviderEntry> get _filteredResults {
-    final query = _query.trim().toLowerCase();
-    if (query.isEmpty) return exploreProviderResults;
-    return exploreProviderResults
-        .where(
-          (entry) =>
-              entry.provider.name.toLowerCase().contains(query) ||
-              entry.provider.service.toLowerCase().contains(query),
-        )
-        .toList();
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<ExploreProviderNotifier>().fetchProviders();
+      }
+    });
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    // Trigger loading next page when user scrolls near the bottom
+    if (currentScroll >= (maxScroll - 200)) {
+      context.read<ExploreProviderNotifier>().loadMore();
+    }
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -60,6 +70,11 @@ class _ExploreProviderScreenState extends State<ExploreProviderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final exploreNotifier = context.watch<ExploreProviderNotifier>();
+    final entries = exploreNotifier.exploreEntries;
+    final isLoading = exploreNotifier.isLoading;
+    final errorMessage = exploreNotifier.errorMessage;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -91,36 +106,114 @@ class _ExploreProviderScreenState extends State<ExploreProviderScreen> {
                       ),
                     ),
                   ),
-                  Text(AppText.exploreProvider, style: context.labelMedium),
+                  Text(
+                    exploreNotifier.response?.title ?? AppText.exploreProvider,
+                    style: context.labelMedium,
+                  ),
                 ],
               ),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveHelper.padding(24),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppSearchBar(
-                      controller: _searchController,
-                      onChanged: (value) => setState(() => _query = value),
-                      onFilterTap: _onFilterTap,
-                    ),
-                    SizedBox(height: ResponsiveHelper.spacing(20)),
+              child: RefreshIndicator(
+                color: AppColors.brandPrimary,
+                onRefresh: () async {
+                  _searchController.clear();
+                  await context.read<ExploreProviderNotifier>().refreshAll();
+                },
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveHelper.padding(24),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppSearchBar(
+                        controller: _searchController,
+                        onChanged: (value) => context
+                            .read<ExploreProviderNotifier>()
+                            .onSearchChanged(value),
+                        onFilterTap: _onFilterTap,
+                      ),
+                      SizedBox(height: ResponsiveHelper.spacing(20)),
 
-                    _filteredResults.isEmpty
-                        ? const ExploreEmptyState()
-                        : ExploreProviderGrid(
-                            entries: _filteredResults,
-                            onProviderTap: (provider) => context.push(
-                              ProviderDetailsScreen.routeName,
-                              extra: provider,
+                      if (isLoading && entries.isEmpty)
+                        const ExploreProviderGridShimmer()
+                      else if (errorMessage != null && entries.isEmpty)
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: ResponsiveHelper.spacing(40),
+                          ),
+                          child: Center(
+                            child: Column(
+                              children: [
+                                Text(
+                                  errorMessage,
+                                  style: context.bodyMedium.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: ResponsiveHelper.spacing(12)),
+                                TextButton(
+                                  onPressed: () => context
+                                      .read<ExploreProviderNotifier>()
+                                      .fetchProviders(
+                                        search: _searchController.text.trim(),
+                                        refresh: true,
+                                      ),
+                                  child: Text(
+                                    'Retry',
+                                    style: context.bodyMedium.copyWith(
+                                      color: AppColors.brandPrimary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                    SizedBox(height: ResponsiveHelper.spacing(20)),
-                  ],
+                        )
+                      else if (entries.isEmpty)
+                        ExploreEmptyState(
+                          message: exploreNotifier.emptyMessage,
+                        )
+                      else ...[
+                        ExploreProviderGrid(
+                          entries: entries,
+                          onProviderTap: (provider) => context.push(
+                            ProviderDetailsScreen.routeName,
+                            extra: provider,
+                          ),
+                        ),
+                        // Shimmer placeholder cards while loading more pages
+                        if (exploreNotifier.isLoadingMore) ...[
+                          SizedBox(height: ResponsiveHelper.spacing(10)),
+                          const ExploreProviderGridShimmer(itemCount: 2),
+                        ],
+                        // Error retry banner for loadMore failures
+                        if (exploreNotifier.loadMoreErrorMessage != null) ...[
+                          SizedBox(height: ResponsiveHelper.spacing(12)),
+                          Center(
+                            child: TextButton(
+                              onPressed: () => context
+                                  .read<ExploreProviderNotifier>()
+                                  .loadMore(),
+                              child: Text(
+                                'Failed to load more. Tap to retry.',
+                                style: context.bodySmall.copyWith(
+                                  color: AppColors.brandPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                      SizedBox(height: ResponsiveHelper.spacing(20)),
+                    ],
+                  ),
                 ),
               ),
             ),

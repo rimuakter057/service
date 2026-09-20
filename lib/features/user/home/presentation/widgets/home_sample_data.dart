@@ -45,6 +45,7 @@ class ProviderTag {
 }
 
 class HomeProviderData {
+  final String? id;
   final String photo;
   final String name;
   final String service;
@@ -59,6 +60,7 @@ class HomeProviderData {
   final List<ProviderTag> tags;
 
   const HomeProviderData({
+    this.id,
     required this.photo,
     required this.name,
     required this.service,

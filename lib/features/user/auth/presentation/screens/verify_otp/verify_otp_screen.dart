@@ -3,23 +3,31 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
 import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
 import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
+import 'package:nchito/features/user/auth/presentation/providers/auth_provider.dart';
 import 'package:nchito/features/user/auth/presentation/screens/onboarding/onboarding_screen.dart';
 
 /// Signup OTP verification screen for User role
 class VerifyOtpScreen extends StatefulWidget {
   static const String routeName = '/verify-otp';
 
+  /// Email/phone the code was sent to — required to call verify-otp.
+  final String identifier;
   final String subtitle;
+  final String nextRouteName;
 
   const VerifyOtpScreen({
     super.key,
+    required this.identifier,
     this.subtitle =
         AppText.enterThe6DigitVerificationCodeSentToYourEmailAddress,
+    this.nextRouteName = OnboardingScreen.routeName,
   });
 
   @override
@@ -32,7 +40,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
   final List<TextEditingController> _controllers = List.generate(
     _otpLength,
-    (index) => TextEditingController(text: '${index + 1}'),
+    (_) => TextEditingController(),
   );
   final List<FocusNode> _focusNodes = List.generate(
     _otpLength,
@@ -78,8 +86,57 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
     }
   }
 
-  void _onVerifyPressed() {
-    context.push(OnboardingScreen.routeName);
+  Future<void> _onResendPressed() async {
+    if (_secondsRemaining > 0) return;
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.requestPasswordResetOtp(
+      identifier: widget.identifier,
+    );
+    if (!mounted) return;
+    if (success) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'Verification code resent.',
+      );
+      _startResendTimer();
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'Failed to resend code.',
+      );
+    }
+  }
+
+  Future<void> _onVerifyPressed() async {
+    final code = _controllers.map((c) => c.text).join();
+    if (code.length != _otpLength) {
+      AppSnackbar.showError(context, 'Please enter the full 6-digit code');
+      return;
+    }
+
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.verifyRegistrationOtp(
+      identifier: widget.identifier,
+      code: code,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'Account verified successfully!',
+      );
+      final targetRoute = widget.nextRouteName.isNotEmpty
+          ? widget.nextRouteName
+          : OnboardingScreen.routeName;
+      context.go(targetRoute);
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'Invalid code. Please try again.',
+      );
+    }
   }
 
   @override
@@ -96,6 +153,8 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<AuthProvider>().isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -163,7 +222,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                           ),
                           GestureDetector(
                             onTap: _secondsRemaining == 0
-                                ? _startResendTimer
+                                ? _onResendPressed
                                 : null,
                             child: Text(
                               _secondsRemaining == 0
@@ -180,8 +239,17 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                       SizedBox(height: ResponsiveHelper.spacing(24)),
 
                       ElevatedButton(
-                        onPressed: _onVerifyPressed,
-                        child: Text(AppText.verifyCode),
+                        onPressed: isLoading ? null : _onVerifyPressed,
+                        child: isLoading
+                            ? SizedBox(
+                                width: ResponsiveHelper.iconSize(20),
+                                height: ResponsiveHelper.iconSize(20),
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(AppText.verifyCode),
                       ),
                     ],
                   ),

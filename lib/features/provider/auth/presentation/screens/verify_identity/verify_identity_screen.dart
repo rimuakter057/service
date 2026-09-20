@@ -1,8 +1,12 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/features/common/common_widgets/app_select_sheet/app_select_sheet.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
 import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
+import 'package:nchito/features/provider/auth/presentation/providers/provider_auth_provider.dart';
 import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
@@ -32,7 +36,14 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen> {
   ];
 
   String? _idType = AppText.nationalId;
-  String? _uploadedFileName = 'national_id_card.pdf';
+  final List<String> _selectedFilePaths = [];
+
+  String? get _mappedDocumentType {
+    if (_idType == AppText.nationalId) return 'national_id';
+    if (_idType == AppText.passport) return 'passport';
+    if (_idType == AppText.driversLicense) return 'driving_license';
+    return null;
+  }
 
   Future<void> _pickIdType() async {
     final result = await AppSelectSheet.show(
@@ -44,17 +55,77 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen> {
     if (result != null) setState(() => _idType = result);
   }
 
-  void _onUploadTapped() {
-    // TODO: wire up real file/image picker
-    setState(() => _uploadedFileName = 'document.pdf');
+  Future<void> _onUploadTapped() async {
+    try {
+      final result = await FilePicker.pickFiles(
+        allowMultiple: true,
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+      );
+      if (result != null && result.files.isNotEmpty) {
+        setState(() {
+          for (final file in result.files) {
+            if (file.path != null && !_selectedFilePaths.contains(file.path)) {
+              if (_selectedFilePaths.length < 5) {
+                _selectedFilePaths.add(file.path!);
+              }
+            }
+          }
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        AppSnackbar.showError(context, 'Failed to pick file.');
+      }
+    }
   }
 
-  void _onSaveAndContinuePressed() {
-    context.push(ConnectPaymentsScreen.routeName);
+  void _onRemoveFile(int index) {
+    setState(() {
+      _selectedFilePaths.removeAt(index);
+    });
+  }
+
+  Future<void> _onSaveAndContinuePressed() async {
+    final docType = _mappedDocumentType;
+    if (docType == null) {
+      AppSnackbar.showError(context, 'Please select your identification type');
+      return;
+    }
+    if (_selectedFilePaths.isEmpty) {
+      AppSnackbar.showError(
+        context,
+        'Please upload at least one photo or PDF of your ID',
+      );
+      return;
+    }
+
+    final authProvider = context.read<ProviderAuthProvider>();
+    final success = await authProvider.submitIdentityDocuments(
+      documentType: docType,
+      filePaths: _selectedFilePaths,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.showSuccess(
+        context,
+        authProvider.successMessage ?? 'Identity documents submitted successfully!',
+      );
+      context.push(ConnectPaymentsScreen.routeName);
+    } else {
+      AppSnackbar.showError(
+        context,
+        authProvider.errorMessage ?? 'Failed to submit identity documents.',
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.watch<ProviderAuthProvider>().isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
@@ -89,19 +160,29 @@ class _VerifyIdentityScreenState extends State<VerifyIdentityScreen> {
                       Text(AppText.uploadId, style: context.labelLarge),
                       SizedBox(height: ResponsiveHelper.spacing(8)),
                       _UploadIdBox(onTap: _onUploadTapped),
-                      if (_uploadedFileName != null) ...[
+                      for (int i = 0; i < _selectedFilePaths.length; i++) ...[
                         SizedBox(height: ResponsiveHelper.spacing(10)),
                         _UploadedFileRow(
-                          fileName: _uploadedFileName!,
-                          onRemove: () =>
-                              setState(() => _uploadedFileName = null),
+                          fileName: _selectedFilePaths[i]
+                              .split(RegExp(r'[/\\]'))
+                              .last,
+                          onRemove: () => _onRemoveFile(i),
                         ),
                       ],
                       SizedBox(height: ResponsiveHelper.spacing(24)),
 
                       ElevatedButton(
-                        onPressed: _onSaveAndContinuePressed,
-                        child: Text(AppText.saveAndContinue),
+                        onPressed: isLoading ? null : _onSaveAndContinuePressed,
+                        child: isLoading
+                            ? SizedBox(
+                                width: ResponsiveHelper.iconSize(20),
+                                height: ResponsiveHelper.iconSize(20),
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(AppText.saveAndContinue),
                       ),
                     ],
                   ),
