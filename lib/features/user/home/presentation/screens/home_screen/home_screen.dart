@@ -13,6 +13,9 @@ import 'package:nchito/features/user/home/presentation/widgets/home_category_gri
 import 'package:nchito/features/user/home/presentation/widgets/home_header.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_popular_providers.dart';
 import 'package:nchito/features/user/home/presentation/widgets/section_header.dart';
+import 'package:provider/provider.dart';
+import 'package:nchito/features/user/home/presentation/providers/near_providers_notifier.dart';
+import 'package:nchito/features/user/home/presentation/providers/ongoing_bookings_notifier.dart';
 import 'package:nchito/features/user/notifications/presentation/screens/notifications_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -34,43 +37,60 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: SafeArea(
                 top: false,
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: ResponsiveHelper.padding(24),
-                    vertical: ResponsiveHelper.padding(20),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppText.selectableFeaturedService,
-                        style: context.labelMedium.copyWith(color: AppColors.textBlackPrimary),
-                      ),
-                      SizedBox(height: ResponsiveHelper.spacing(12)),
+                child: RefreshIndicator(
+                  color: AppColors.brandPrimary,
+                  onRefresh: () async {
+                    await Future.wait([
+                      context
+                          .read<NearProvidersNotifier>()
+                          .fetchNearProviders(refresh: true),
+                      context
+                          .read<OngoingBookingsNotifier>()
+                          .fetchOngoingBookings(refresh: true),
+                    ]);
+                  },
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveHelper.padding(24),
+                      vertical: ResponsiveHelper.padding(20),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppText.selectableFeaturedService,
+                          style: context.labelMedium
+                              .copyWith(color: AppColors.textBlackPrimary),
+                        ),
+                        SizedBox(height: ResponsiveHelper.spacing(12)),
 
-                      ///service items=====================================
-                      const HomeCategoryGrid(),
-                      SizedBox(height: ResponsiveHelper.spacing(24)),
+                        ///service items=====================================
+                        const HomeCategoryGrid(),
+                        SizedBox(height: ResponsiveHelper.spacing(24)),
 
-                      SectionHeader(
-                        title: AppText.popularNearYou,
-                        onViewAllTap: () =>
-                            context.push(ExploreProviderScreen.routeName),
-                      ),
-                      SizedBox(height: ResponsiveHelper.spacing(12)),
-                      ///popular near ====================================
-                      const HomePopularProviders(),
-                      SizedBox(height: ResponsiveHelper.spacing(24)),
+                        SectionHeader(
+                          title: AppText.popularNearYou,
+                          onViewAllTap: () =>
+                              context.push(ExploreProviderScreen.routeName),
+                        ),
+                        SizedBox(height: ResponsiveHelper.spacing(12)),
 
-                      SectionHeader(
-                        title: AppText.activeBooking,
-                        onViewAllTap: () =>
-                            context.push(BookingsScreen.routeName),
-                      ),
-                      SizedBox(height: ResponsiveHelper.spacing(12)),
-                      ///active booking list==========================
-                      const HomeActiveBookingList(),
-                    ],
+                        ///popular near ====================================
+                        const HomePopularProviders(),
+                        SizedBox(height: ResponsiveHelper.spacing(24)),
+
+                        SectionHeader(
+                          title: AppText.activeBooking,
+                          onViewAllTap: () =>
+                              context.push(BookingsScreen.routeName),
+                        ),
+                        SizedBox(height: ResponsiveHelper.spacing(12)),
+
+                        ///active booking list==========================
+                        const HomeActiveBookingList(),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -10,6 +10,8 @@ abstract class ExploreRepository {
     double? minRating,
     String? sort,
     String? date,
+    double? lat,
+    double? lng,
     int? page,
     int? pageSize,
   });

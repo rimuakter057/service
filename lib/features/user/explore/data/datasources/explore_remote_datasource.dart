@@ -12,6 +12,8 @@ abstract class ExploreRemoteDataSource {
     double? minRating,
     String? sort,
     String? date,
+    double? lat,
+    double? lng,
     int? page,
     int? pageSize,
   });
@@ -33,6 +35,8 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
     double? minRating,
     String? sort,
     String? date,
+    double? lat,
+    double? lng,
     int? page,
     int? pageSize,
   }) async {
@@ -61,6 +65,12 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
     }
     if (date != null && date.trim().isNotEmpty) {
       queryParameters['date'] = date.trim();
+    }
+    if (lat != null) {
+      queryParameters['lat'] = lat;
+    }
+    if (lng != null) {
+      queryParameters['lng'] = lng;
     }
     if (page != null) {
       queryParameters['page'] = page;

@@ -273,21 +273,27 @@ class ExploreProvidersResponseModel {
   });
 
   factory ExploreProvidersResponseModel.fromJson(Map<String, dynamic> json) {
+    final rawList = (json['results'] ?? json['data']) as List<dynamic>? ?? [];
+    final count = json['count'] as int? ?? rawList.length;
+    final pageSize = json['page_size'] as int? ?? 20;
+    final totalPages = json['total_pages'] as int? ??
+        (count > 0 ? (count / pageSize).ceil() : 1);
+    final currentPage = json['current_page'] as int? ?? 1;
+
     return ExploreProvidersResponseModel(
-      success: json['success'] as bool? ?? false,
-      count: json['count'] as int? ?? 0,
-      totalPages: json['total_pages'] as int? ?? 1,
-      currentPage: json['current_page'] as int? ?? 1,
-      pageSize: json['page_size'] as int? ?? 20,
+      success: json['success'] as bool? ?? true,
+      count: count,
+      totalPages: totalPages,
+      currentPage: currentPage,
+      pageSize: pageSize,
       next: json['next'] as String?,
       previous: json['previous'] as String?,
       title: json['title'] as String? ?? 'Explore Provider',
       emptyMessage: json['empty_message'] as String? ?? "We Couldn't Find Any Matches.",
-      data: (json['data'] as List<dynamic>?)
-              ?.map((e) =>
-                  ExploreProviderItemModel.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
+      data: rawList
+          .map((e) =>
+              ExploreProviderItemModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

@@ -20,6 +20,8 @@ class ExploreRepositoryImpl implements ExploreRepository {
     double? minRating,
     String? sort,
     String? date,
+    double? lat,
+    double? lng,
     int? page,
     int? pageSize,
   }) async {
@@ -33,6 +35,8 @@ class ExploreRepositoryImpl implements ExploreRepository {
         minRating: minRating,
         sort: sort,
         date: date,
+        lat: lat,
+        lng: lng,
         page: page,
         pageSize: pageSize,
       );

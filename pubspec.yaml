@@ -58,6 +58,7 @@ dependencies:
   # no need to log in again every time the app opens
   shared_preferences: ^2.3.3
   file_picker: ^11.0.3
+  geolocator: ^14.0.2
 
 dev_dependencies:
   flutter_test:

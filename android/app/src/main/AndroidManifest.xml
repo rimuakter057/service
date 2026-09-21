@@ -2,6 +2,8 @@
     <!-- Required for all API calls (Dio/HTTP) in release and profile builds;
          debug builds already get it from the debug-only manifest. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:label="nchito"

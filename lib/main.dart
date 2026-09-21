@@ -13,6 +13,8 @@ import 'features/user/auth/presentation/screens/login/login_screen.dart';
 import 'features/user/explore/presentation/providers/explore_provider.dart';
 import 'features/user/home/presentation/providers/provider_detail_provider.dart';
 import 'features/user/home/presentation/providers/provider_availability_provider.dart';
+import 'features/user/home/presentation/providers/near_providers_notifier.dart';
+import 'features/user/home/presentation/providers/ongoing_bookings_notifier.dart';
 import 'features/user/bookings/presentation/providers/booking_notifier.dart';
 
 void main() async {
@@ -27,6 +29,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ProviderDetailNotifier()),
         ChangeNotifierProvider(create: (_) => ProviderAvailabilityNotifier()),
         ChangeNotifierProvider(create: (_) => BookingNotifier()),
+        ChangeNotifierProvider(create: (_) => NearProvidersNotifier()),
+        ChangeNotifierProvider(create: (_) => OngoingBookingsNotifier()),
       ],
       child: const MyApp(),
     ),

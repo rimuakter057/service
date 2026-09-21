@@ -36,4 +36,37 @@ class BookingRepositoryImpl implements BookingRepository {
       throw UnknownFailure('Failed to load booking form options.');
     }
   }
+
+  @override
+  Future<CustomerBookingsResponseModel> getCustomerBookings({
+    String? group,
+    String? status,
+    String? date,
+    String? dateFrom,
+    String? dateTo,
+    bool? today,
+    String? search,
+    String? ordering,
+    int? page,
+    int? pageSize,
+  }) async {
+    try {
+      return await _remoteDataSource.getCustomerBookings(
+        group: group,
+        status: status,
+        date: date,
+        dateFrom: dateFrom,
+        dateTo: dateTo,
+        today: today,
+        search: search,
+        ordering: ordering,
+        page: page,
+        pageSize: pageSize,
+      );
+    } on AppException catch (e) {
+      throw Failure.fromException(e);
+    } catch (e) {
+      throw UnknownFailure('Failed to load customer bookings. Please try again.');
+    }
+  }
 }

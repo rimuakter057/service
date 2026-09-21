@@ -15,6 +15,8 @@ class GetExploreProviders {
     double? minRating,
     String? sort,
     String? date,
+    double? lat,
+    double? lng,
     int? page,
     int? pageSize,
   }) {
@@ -27,6 +29,8 @@ class GetExploreProviders {
       minRating: minRating,
       sort: sort,
       date: date,
+      lat: lat,
+      lng: lng,
       page: page,
       pageSize: pageSize,
     );

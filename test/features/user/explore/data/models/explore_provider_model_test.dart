@@ -127,4 +127,52 @@ void main() {
     expect(entry2.provider.price, 'ZMW 100');
     expect(entry2.provider.rating, '4.5');
   });
+
+  test('ExploreProvidersResponseModel parses DRF results JSON for near providers', () {
+    final drfJson = {
+      "count": 123,
+      "next": "http://api.example.org/accounts/?page=4",
+      "previous": "http://api.example.org/accounts/?page=2",
+      "results": [
+        {
+          "id": "prov_123",
+          "full_name": "Daniel Sakala",
+          "business_name": "Sakala Electricals",
+          "avatar": "https://example.com/avatar.jpg",
+          "headline": "Experienced Electrician",
+          "service_types": ["srv_1"],
+          "service_type_names": ["Electrical"],
+          "service_type_chips": [
+            {
+              "id": "srv_1",
+              "name": "Electrical",
+              "slug": "electrical",
+              "icon": null
+            }
+          ],
+          "service_area": "Kabulonga",
+          "city": "Lusaka",
+          "starting_price": "150.00",
+          "currency": "ZMW",
+          "rating_average": 4.9,
+          "rating_count": 42,
+          "total_jobs_completed": 88,
+          "is_verified": true,
+          "is_accepting_bookings": true,
+          "is_favorited": true
+        }
+      ]
+    };
+
+    final model = ExploreProvidersResponseModel.fromJson(drfJson);
+
+    expect(model.count, 123);
+    expect(model.next, "http://api.example.org/accounts/?page=4");
+    expect(model.data.length, 1);
+    final item = model.data.first;
+    expect(item.id, "prov_123");
+    expect(item.fullName, "Daniel Sakala");
+    expect(item.displayPrice, "ZMW 150");
+    expect(item.displayRating, "4.9");
+  });
 }
