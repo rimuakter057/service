@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/bg_icon.dart';
 import 'package:nchito/features/common/common_widgets/app_status_card/app_status_card.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
 import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
+import 'package:nchito/features/common/chat/presentation/providers/chat_thread_notifier.dart';
 import 'package:nchito/features/user/messages/presentation/widgets/block_provider_bottom_sheet.dart';
 import 'package:nchito/features/user/messages/presentation/widgets/chat_sample_data.dart';
 import 'package:nchito/features/user/messages/presentation/widgets/delete_conversation_bottom_sheet.dart';
@@ -31,9 +34,24 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final _messageController = TextEditingController();
   bool _isBlocked = false;
+  String? _conversationId;
 
   bool get _isDisabled =>
       _isBlocked || widget.conversation.isMessagingUnavailable;
+
+  @override
+  void initState() {
+    super.initState();
+    _conversationId = widget.conversation.id;
+    _isBlocked = false;
+    if (_conversationId != null && _conversationId!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final notifier = context.read<CustomerChatThreadNotifier>();
+        notifier.clear();
+        notifier.fetchMessages(_conversationId!);
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -58,10 +76,19 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.1),
       builder: (_) => BlockProviderBottomSheet(
-        onConfirm: () {
-          // TODO(backend): block this provider here once the backend is
-          // available.
+        onConfirm: () async {
           setState(() => _isBlocked = true);
+          if (_conversationId == null || _conversationId!.isEmpty) return;
+          final notifier = context.read<CustomerChatThreadNotifier>();
+          final ok = await notifier.block(_conversationId!);
+          if (!context.mounted) return;
+          if (!ok) {
+            setState(() => _isBlocked = false);
+            AppSnackbar.showError(
+              context,
+              notifier.actionErrorMessage ?? 'Failed to block',
+            );
+          }
         },
       ),
     );
@@ -74,10 +101,19 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.1),
       builder: (_) => UnblockProviderBottomSheet(
-        onConfirm: () {
-          // TODO(backend): unblock this provider here once the backend is
-          // available.
+        onConfirm: () async {
           setState(() => _isBlocked = false);
+          if (_conversationId == null || _conversationId!.isEmpty) return;
+          final notifier = context.read<CustomerChatThreadNotifier>();
+          final ok = await notifier.unblock(_conversationId!);
+          if (!context.mounted) return;
+          if (!ok) {
+            setState(() => _isBlocked = true);
+            AppSnackbar.showError(
+              context,
+              notifier.actionErrorMessage ?? 'Failed to unblock',
+            );
+          }
         },
       ),
     );
@@ -90,19 +126,35 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.1),
       builder: (_) => DeleteConversationBottomSheet(
-        onConfirm: () {
-          // TODO(backend): delete this conversation here once the backend
-          // is available.
+        onConfirm: () async {
+          if (_conversationId != null && _conversationId!.isNotEmpty) {
+            await context
+                .read<CustomerChatThreadNotifier>()
+                .deleteConversation(_conversationId!);
+          }
+          if (!context.mounted) return;
           context.pop();
         },
       ),
     );
   }
 
-  void _onSend() {
-    // TODO(backend): send the typed message here once the backend is
-    // available.
+  Future<void> _onSend() async {
+    final text = _messageController.text;
+    if (text.trim().isEmpty) return;
+    if (_conversationId == null || _conversationId!.isEmpty) {
+      _messageController.clear();
+      return;
+    }
     _messageController.clear();
+    final notifier = context.read<CustomerChatThreadNotifier>();
+    final ok = await notifier.sendMessage(_conversationId!, text);
+    if (!ok && mounted) {
+      AppSnackbar.showError(
+        context,
+        notifier.actionErrorMessage ?? 'Failed to send message',
+      );
+    }
   }
 
   @override
@@ -245,28 +297,49 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                       ),
                     )
-                  : SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveHelper.padding(20),
-                      ),
-                      child: Column(
-                        children: [
-                          SizedBox(height: ResponsiveHelper.spacing(20)),
-                          Text(
-                            AppText.today,
-                            style: context.bodySmall.copyWith(
-                              fontSize: ResponsiveHelper.fontSize(10),
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textSecondary,
+                  : Consumer<CustomerChatThreadNotifier>(
+                      builder: (context, notifier, child) {
+                        final hasRealThread =
+                            _conversationId != null && _conversationId!.isNotEmpty;
+                        final isLoadingInitial = hasRealThread &&
+                            notifier.isLoading &&
+                            notifier.messages.isEmpty;
+                        final messages = hasRealThread
+                            ? notifier.messages.map((m) => m.toChatMessageData()).toList()
+                            : chatSampleMessages;
+
+                        if (isLoadingInitial) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.brandPrimary,
                             ),
+                          );
+                        }
+
+                        return SingleChildScrollView(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveHelper.padding(20),
                           ),
-                          SizedBox(height: ResponsiveHelper.spacing(20)),
-                          for (final message in chatSampleMessages) ...[
-                            _ChatBubble(message: message),
-                            SizedBox(height: ResponsiveHelper.spacing(20)),
-                          ],
-                        ],
-                      ),
+                          child: Column(
+                            children: [
+                              SizedBox(height: ResponsiveHelper.spacing(20)),
+                              Text(
+                                AppText.today,
+                                style: context.bodySmall.copyWith(
+                                  fontSize: ResponsiveHelper.fontSize(10),
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              SizedBox(height: ResponsiveHelper.spacing(20)),
+                              for (final message in messages) ...[
+                                _ChatBubble(message: message),
+                                SizedBox(height: ResponsiveHelper.spacing(20)),
+                              ],
+                            ],
+                          ),
+                        );
+                      },
                     ),
             ),
             IgnorePointer(

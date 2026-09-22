@@ -15,4 +15,15 @@ abstract class ExploreRepository {
     int? page,
     int? pageSize,
   });
+
+  Future<ExploreFiltersResponseModel> getFilters();
+
+  Future<FavoriteProvidersResponseModel> getFavorites({
+    int? page,
+    int? pageSize,
+  });
+
+  Future<bool> addFavorite(String providerId);
+
+  Future<bool> removeFavorite(String providerId);
 }

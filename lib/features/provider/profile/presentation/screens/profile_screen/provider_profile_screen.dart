@@ -24,7 +24,7 @@ import 'package:nchito/features/provider/profile/presentation/screens/terms_and_
 
 import 'package:provider/provider.dart';
 import 'package:nchito/features/provider/auth/presentation/providers/provider_auth_provider.dart';
-import 'package:nchito/features/provider/auth/presentation/screens/login/provider_login_screen.dart';
+import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
 
 /// Standalone Provider Profile screen displaying provider avatar, name,
 /// complete account section, general options, more options, and [ProviderBottomNavBar].
@@ -44,7 +44,7 @@ class ProviderProfileScreen extends StatelessWidget {
           final authProvider = context.read<ProviderAuthProvider>();
           await authProvider.logout();
           if (context.mounted) {
-            context.go(ProviderLoginScreen.routeName);
+            context.go(LoginScreen.routeName);
           }
         },
       ),

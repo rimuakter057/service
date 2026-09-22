@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:nchito/features/common/common_widgets/app_button/app_button.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
+import 'package:nchito/features/user/reviews/presentation/providers/customer_review_notifier.dart';
 import 'package:nchito/features/common/common_widgets/app_container_bg/app_container_bg.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/bg_icon.dart';
@@ -97,18 +100,37 @@ class _HomeBookingDetailsScreenState extends State<HomeBookingDetailsScreen> {
       barrierColor: Colors.black.withValues(alpha: 0.2),
       builder: (_) => LeaveReviewBottomSheet(
         providerName: booking.providerName,
-        onSubmit: (rating, comment) {
+        onSubmit: (rating, comment) async {
           setState(() {
             _isReviewed = true;
             _rating = rating;
             _reviewComment = comment;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Thank you for rating $rating stars!'),
-              duration: const Duration(seconds: 2),
-            ),
+          final bookingId = widget.booking.id;
+          if (bookingId == null || bookingId.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Thank you for rating $rating stars!'),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+            return;
+          }
+          final notifier = context.read<CustomerReviewNotifier>();
+          final ok = await notifier.submitReview(
+            booking: bookingId,
+            rating: rating,
+            comment: comment,
           );
+          if (!context.mounted) return;
+          if (ok) {
+            AppSnackbar.showSuccess(context, 'Thank you for rating $rating stars!');
+          } else {
+            AppSnackbar.showError(
+              context,
+              notifier.submitErrorMessage ?? 'Failed to submit review',
+            );
+          }
         },
       ),
     );

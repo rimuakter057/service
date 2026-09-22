@@ -33,7 +33,7 @@ class BookingConfirmedScreen extends StatelessWidget {
         booking?.serviceCost ?? booking?.price ?? 'ZMW 525.00';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFBF9F7),
+      backgroundColor: AppColors.bgApp,
       body: SafeArea(
         child: Column(
           children: [

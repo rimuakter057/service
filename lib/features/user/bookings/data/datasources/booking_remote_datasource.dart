@@ -1,6 +1,7 @@
 import 'package:nchito/core/network/api_client.dart';
 import 'package:nchito/core/network/api_url.dart';
 import '../models/booking_model.dart';
+import '../models/customer_booking_detail_model.dart';
 
 abstract class BookingRemoteDataSource {
   Future<BookingResponseModel> createBooking(CreateBookingRequestModel request);
@@ -17,6 +18,17 @@ abstract class BookingRemoteDataSource {
     int? page,
     int? pageSize,
   });
+  Future<CustomerBookingDetailModel> getCustomerBookingDetail(String bookingId);
+  Future<CustomerBookingDetailModel> acceptBooking(String bookingId, {String? amount, String? note});
+  Future<CustomerBookingDetailModel> cancelBooking(String bookingId, {String? reason});
+  Future<CustomerBookingDetailModel> completeBooking(String bookingId);
+  Future<CustomerBookingDetailModel> declineQuote(String bookingId, {required String reason});
+  Future<CustomerBookingDetailModel> rejectBooking(String bookingId, {String? reason});
+  Future<CustomerBookingDetailModel> rescheduleBooking(String bookingId, {required String scheduledDate, required String scheduledTime, String? reason});
+  Future<CustomerBookingDetailModel> rescheduleRespond(String bookingId, {required bool accept});
+  Future<CustomerBookingDetailModel> resendCompletionCode(String bookingId);
+  Future<CustomerBookingDetailModel> startBooking(String bookingId);
+  Future<CustomerBookingDetailModel> verifyCompletion(String bookingId);
 }
 
 class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
@@ -61,6 +73,7 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
     }
     return {};
   }
+
 
   @override
   Future<CustomerBookingsResponseModel> getCustomerBookings({
@@ -121,5 +134,161 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
       );
     }
     throw FormatException('Unexpected response format: $responseData');
+  }
+
+  @override
+  Future<CustomerBookingDetailModel> getCustomerBookingDetail(
+      String bookingId) async {
+    final response = await _apiClient.get(
+      ApiUrl.customerBookingDetails(bookingId),
+    );
+
+    final responseData = response.data;
+    if (responseData is Map<String, dynamic>) {
+      return CustomerBookingDetailModel.fromJson(responseData);
+    }
+    throw FormatException('Unexpected response format: $responseData');
+  }
+
+  CustomerBookingDetailModel _parseDetailResponse(dynamic responseData, String bookingId) {
+    if (responseData is Map<String, dynamic>) {
+      return CustomerBookingDetailModel.fromJson(responseData);
+    }
+    return CustomerBookingDetailModel(
+      id: bookingId,
+      status: 'pending',
+      serviceTitle: '',
+    );
+  }
+
+  @override
+  Future<CustomerBookingDetailModel> acceptBooking(
+    String bookingId, {
+    String? amount,
+    String? note,
+  }) async {
+    final body = <String, dynamic>{};
+    if (amount != null && amount.trim().isNotEmpty) body['amount'] = amount.trim();
+    if (note != null && note.trim().isNotEmpty) body['note'] = note.trim();
+
+    final response = await _apiClient.post(
+      ApiUrl.customerBookingAccept(bookingId),
+      data: body.isNotEmpty ? body : null,
+    );
+    return _parseDetailResponse(response.data, bookingId);
+  }
+
+  @override
+  Future<CustomerBookingDetailModel> cancelBooking(
+    String bookingId, {
+    String? reason,
+  }) async {
+    final body = <String, dynamic>{};
+    if (reason != null && reason.trim().isNotEmpty) {
+      body['cancellation_reason'] = reason.trim();
+      body['reason'] = reason.trim();
+    }
+
+    final response = await _apiClient.post(
+      ApiUrl.customerBookingCancel(bookingId),
+      data: body.isNotEmpty ? body : null,
+    );
+    return _parseDetailResponse(response.data, bookingId);
+  }
+
+  @override
+  Future<CustomerBookingDetailModel> completeBooking(String bookingId) async {
+    final response = await _apiClient.post(
+      ApiUrl.customerBookingComplete(bookingId),
+    );
+    return _parseDetailResponse(response.data, bookingId);
+  }
+
+  @override
+  Future<CustomerBookingDetailModel> declineQuote(
+    String bookingId, {
+    required String reason,
+  }) async {
+    final response = await _apiClient.post(
+      ApiUrl.customerBookingDeclineQuote(bookingId),
+      data: {'reason': reason.trim()},
+    );
+    return _parseDetailResponse(response.data, bookingId);
+  }
+
+  @override
+  Future<CustomerBookingDetailModel> rejectBooking(
+    String bookingId, {
+    String? reason,
+  }) async {
+    final body = <String, dynamic>{};
+    if (reason != null && reason.trim().isNotEmpty) {
+      body['rejection_reason'] = reason.trim();
+      body['reason'] = reason.trim();
+    }
+
+    final response = await _apiClient.post(
+      ApiUrl.customerBookingReject(bookingId),
+      data: body.isNotEmpty ? body : null,
+    );
+    return _parseDetailResponse(response.data, bookingId);
+  }
+
+  @override
+  Future<CustomerBookingDetailModel> rescheduleBooking(
+    String bookingId, {
+    required String scheduledDate,
+    required String scheduledTime,
+    String? reason,
+  }) async {
+    final body = <String, dynamic>{
+      'scheduled_date': scheduledDate.trim(),
+      'scheduled_time': scheduledTime.trim(),
+    };
+    if (reason != null && reason.trim().isNotEmpty) {
+      body['reason'] = reason.trim();
+    }
+
+    final response = await _apiClient.post(
+      ApiUrl.customerBookingReschedule(bookingId),
+      data: body,
+    );
+    return _parseDetailResponse(response.data, bookingId);
+  }
+
+  @override
+  Future<CustomerBookingDetailModel> rescheduleRespond(
+    String bookingId, {
+    required bool accept,
+  }) async {
+    final response = await _apiClient.post(
+      ApiUrl.customerBookingRescheduleRespond(bookingId),
+      data: {'accept': accept},
+    );
+    return _parseDetailResponse(response.data, bookingId);
+  }
+
+  @override
+  Future<CustomerBookingDetailModel> resendCompletionCode(String bookingId) async {
+    final response = await _apiClient.post(
+      ApiUrl.customerBookingResendCompletionCode(bookingId),
+    );
+    return _parseDetailResponse(response.data, bookingId);
+  }
+
+  @override
+  Future<CustomerBookingDetailModel> startBooking(String bookingId) async {
+    final response = await _apiClient.post(
+      ApiUrl.customerBookingStart(bookingId),
+    );
+    return _parseDetailResponse(response.data, bookingId);
+  }
+
+  @override
+  Future<CustomerBookingDetailModel> verifyCompletion(String bookingId) async {
+    final response = await _apiClient.post(
+      ApiUrl.customerBookingVerifyCompletion(bookingId),
+    );
+    return _parseDetailResponse(response.data, bookingId);
   }
 }

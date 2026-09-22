@@ -182,10 +182,21 @@ class _ExploreProviderScreenState extends State<ExploreProviderScreen> {
                       else ...[
                         ExploreProviderGrid(
                           entries: entries,
-                          onProviderTap: (provider) => context.push(
-                            ProviderDetailsScreen.routeName,
-                            extra: provider,
-                          ),
+                          onProviderTap: (provider) {
+                            bool isFav = false;
+                            try {
+                              isFav = exploreNotifier.providers
+                                  .firstWhere((p) => p.id == provider.id)
+                                  .isFavorited;
+                            } catch (_) {}
+                            context.push(
+                              ProviderDetailsScreen.routeName,
+                              extra: {
+                                'provider': provider,
+                                'isFavorite': isFav,
+                              },
+                            );
+                          },
                         ),
                         // Shimmer placeholder cards while loading more pages
                         if (exploreNotifier.isLoadingMore) ...[

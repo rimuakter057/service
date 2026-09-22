@@ -14,10 +14,12 @@ import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
 import 'package:nchito/features/common/common_widgets/auth_header/auth_header.dart';
 import 'package:nchito/features/user/auth/presentation/providers/auth_provider.dart';
-import 'package:nchito/features/user/auth/presentation/screens/age_confirmation/age_confirmation_screen.dart';
 import 'package:nchito/features/user/auth/presentation/screens/forgot_password/forgot_password_screen.dart';
 import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
+import 'package:nchito/core/network/token_storage.dart';
+import 'package:nchito/features/provider/home/presentation/screens/home_screen/provider_home_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/home_screen/home_screen.dart';
+import 'package:nchito/features/common/role_selection/role_selection_screen.dart';
 import 'package:nchito/features/user/auth/presentation/widgets/social_icon_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -62,7 +64,20 @@ class _LoginScreenState extends State<LoginScreen> {
         context,
         authProvider.successMessage ?? 'Logged in successfully.',
       );
-      context.go(HomeScreen.routeName);
+
+      final role = (authProvider.user?.role ??
+              await TokenStorage.readRole() ??
+              'customer')
+          .toLowerCase()
+          .trim();
+
+      if (!mounted) return;
+
+      if (role == 'provider') {
+        context.go(ProviderHomeScreen.routeName);
+      } else {
+        context.go(HomeScreen.routeName);
+      }
     } else {
       AppSnackbar.showError(
         context,
@@ -239,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               SizedBox(width: ResponsiveHelper.spacing(4)),
                               GestureDetector(
                                 onTap: () => context.push(
-                                  AgeConfirmationScreen.routeName,
+                                  RoleSelectionScreen.routeName,
                                 ),
                                 child: Text(
                                   AppText.createAnAccount,

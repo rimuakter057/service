@@ -43,6 +43,12 @@ void main() {
       expect(ApiUrl.providerDeletionStatus, '/provider/auth/me/deletion-status/');
       expect(ApiUrl.providerRoles, '/provider/auth/roles/');
     });
+
+    test('Common auth endpoints are defined correctly', () {
+      expect(ApiUrl.authLogin, '/auth/login/');
+      expect(ApiUrl.commonLogin, '/auth/login/');
+      expect(ApiUrl.login, '/auth/login/');
+    });
   });
 }
 

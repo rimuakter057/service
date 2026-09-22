@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:nchito/features/common/common_widgets/app_button/app_button.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
 import 'package:nchito/features/common/common_widgets/app_container_bg/app_container_bg.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/bg_icon.dart';
@@ -15,6 +17,10 @@ import 'package:nchito/features/provider/bookings/presentation/widgets/accept_qu
 import 'package:nchito/features/provider/bookings/presentation/widgets/confirm_service_completion_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/mark_completed_confirm_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/provider_booking_sample_data.dart';
+import 'package:nchito/features/provider/bookings/data/models/provider_booking_detail_model.dart';
+import 'package:nchito/features/provider/bookings/presentation/providers/provider_booking_detail_notifier.dart';
+import 'package:nchito/features/provider/bookings/presentation/providers/provider_dispute_notifier.dart';
+import 'package:nchito/features/common/chat/presentation/providers/conversations_notifier.dart';
 import 'package:nchito/features/common/common_widgets/app_reschedule_booking_bottom_sheet/app_reschedule_booking_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/reject_booking_bottom_sheet.dart';
 import 'package:nchito/features/provider/bookings/presentation/widgets/send_quote_bottom_sheet.dart';
@@ -46,14 +52,73 @@ class _ProviderBookingDetailsScreenState
   late String _currentStatus;
   late String _currentPrice;
   bool _isCanceledByProvider = false;
-  bool _hasReview = false;
   bool _isResponseSubmitted = false;
+  BookingEmbeddedReviewModel? _review;
+  String? _bookingId;
+
+  /// Raw API status (e.g. `pending`, `accepted`, `in_progress`) → the
+  /// display status this screen already branches its UI on.
+  String _mapApiStatus(String rawStatus) {
+    switch (rawStatus.toLowerCase()) {
+      case 'pending':
+        return AppText.pending;
+      case 'accepted':
+        // Matches this screen's existing accept flow, which moves a
+        // booking straight to "In Progress" once a price is sent.
+        return AppText.inProgress;
+      case 'scheduled':
+      case 'confirmed':
+        return AppText.scheduled;
+      case 'in_progress':
+      case 'started':
+        return AppText.inProgress;
+      case 'completed':
+        return AppText.completed;
+      case 'cancelled':
+      case 'canceled':
+        return AppText.cancelled;
+      case 'rejected':
+        return AppText.rejected;
+      case 'disputed':
+        return AppText.disputed;
+      case 'quoted':
+        // Price sent, awaiting the customer's accept/decline — confirmed
+        // against live data as a real intermediate status between
+        // "pending" and "accepted". No dedicated UI bucket in this
+        // screen's design, so it's shown like "scheduled" (booking is
+        // locked in, nothing left for the provider to action but
+        // cancel/message while the customer decides).
+        return AppText.scheduled;
+      default:
+        return rawStatus.isEmpty
+            ? AppText.pending
+            : '${rawStatus[0].toUpperCase()}${rawStatus.substring(1)}';
+    }
+  }
+
+  /// Re-syncs the locally-held display fields from the notifier once a
+  /// real booking detail arrives (initial load or after an action).
+  void _onDetailChanged() {
+    if (!mounted) return;
+    final notifier = context.read<ProviderBookingDetailNotifier>();
+    final detail = notifier.bookingDetail;
+    if (detail != null && notifier.currentBookingId == _bookingId) {
+      setState(() {
+        _bookingData = detail.toProviderBookingData();
+        _currentStatus = _mapApiStatus(detail.status);
+        _currentPrice = _bookingData.price;
+        _isCanceledByProvider = detail.cancelledBy?.toLowerCase() == 'provider';
+        _review = detail.review;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     if (widget.booking is ProviderBookingData) {
       _bookingData = widget.booking as ProviderBookingData;
+      _bookingId = _bookingData.id;
     } else if (widget.booking is BookingHistoryData) {
       final b = widget.booking as BookingHistoryData;
       final is25Aug = (b.day == '25' && b.month.toLowerCase().startsWith('aug'));
@@ -85,9 +150,19 @@ class _ProviderBookingDetailsScreenState
         customerPhoto: AssetsPath.avatarUser,
         customerEmailOrPhone: 'customer@nchito.com',
       );
+      _bookingId = b.id;
     } else {
       _bookingData = providerNewBookingRequests.first;
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final notifier = context.read<ProviderBookingDetailNotifier>();
+      notifier.clear();
+      notifier.addListener(_onDetailChanged);
+      if (_bookingId != null && _bookingId!.isNotEmpty) {
+        notifier.fetchBookingDetail(_bookingId!);
+      }
+    });
 
     _currentStatus = _bookingData.status == AppText.pending
         ? AppText.pending
@@ -101,6 +176,12 @@ class _ProviderBookingDetailsScreenState
   }
 
   ProviderBookingData get booking => _bookingData;
+
+  @override
+  void dispose() {
+    context.read<ProviderBookingDetailNotifier>().removeListener(_onDetailChanged);
+    super.dispose();
+  }
 
   static final _fieldColor = AppColors.bgOverlay.withValues(alpha: 0.04);
   static final _fieldRadius = ResponsiveHelper.borderRadius(10);
@@ -155,16 +236,30 @@ class _ProviderBookingDetailsScreenState
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.25),
       builder: (_) => RejectBookingBottomSheet(
-        onConfirm: () {
+        onConfirm: () async {
           setState(() {
             _currentStatus = AppText.rejected;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Booking request rejected'),
-              duration: Duration(seconds: 2),
-            ),
-          );
+          if (_bookingId == null || _bookingId!.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Booking request rejected'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            return;
+          }
+          final notifier = context.read<ProviderBookingDetailNotifier>();
+          final ok = await notifier.rejectBooking(_bookingId!);
+          if (!context.mounted) return;
+          if (ok) {
+            AppSnackbar.showSuccess(context, 'Booking request rejected');
+          } else {
+            AppSnackbar.showError(
+              context,
+              notifier.actionErrorMessage ?? 'Failed to reject booking',
+            );
+          }
         },
       ),
     );
@@ -191,17 +286,34 @@ class _ProviderBookingDetailsScreenState
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.25),
       builder: (_) => AcceptQuoteConfirmBottomSheet(
-        onConfirm: () {
+        onConfirm: () async {
           setState(() {
             _currentStatus = AppText.inProgress;
             _currentPrice = price.startsWith('ZMW') ? price : 'ZMW $price';
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Pricing quote sent: $_currentPrice'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
+          if (_bookingId == null || _bookingId!.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Pricing quote sent: $_currentPrice'),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+            return;
+          }
+          // Strip the "ZMW" prefix / commas back out for the API — it
+          // wants a plain numeric amount string.
+          final amount = price.replaceAll(RegExp(r'[^0-9.]'), '');
+          final notifier = context.read<ProviderBookingDetailNotifier>();
+          final ok = await notifier.acceptBooking(_bookingId!, amount: amount);
+          if (!context.mounted) return;
+          if (ok) {
+            AppSnackbar.showSuccess(context, 'Pricing quote sent: $_currentPrice');
+          } else {
+            AppSnackbar.showError(
+              context,
+              notifier.actionErrorMessage ?? 'Failed to send quote',
+            );
+          }
         },
       ),
     );
@@ -214,46 +326,84 @@ class _ProviderBookingDetailsScreenState
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.25),
       builder: (_) => ConfirmServiceCompletionBottomSheet(
-        onVerifyOtp: () {
-          _showMarkCompletedConfirm(context);
+        onVerifyOtp: (code) {
+          _showMarkCompletedConfirm(context, code);
         },
       ),
     );
   }
 
-  void _showMarkCompletedConfirm(BuildContext context) {
+  void _showMarkCompletedConfirm(BuildContext context, String otpCode) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.25),
       builder: (_) => MarkCompletedConfirmBottomSheet(
-        onConfirm: () {
+        onConfirm: () async {
           if (!mounted) return;
           setState(() {
             _currentStatus = AppText.completed;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Service marked as completed!'),
-              duration: Duration(seconds: 2),
-            ),
-          );
+          if (_bookingId == null || _bookingId!.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Service marked as completed!'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            return;
+          }
+          final notifier = context.read<ProviderBookingDetailNotifier>();
+          final ok = await notifier.verifyCompletion(_bookingId!, code: otpCode);
+          if (!context.mounted) return;
+          if (ok) {
+            AppSnackbar.showSuccess(context, 'Service marked as completed!');
+          } else {
+            AppSnackbar.showError(
+              context,
+              notifier.actionErrorMessage ?? 'Failed to verify completion',
+            );
+          }
         },
       ),
     );
   }
 
-  void _onMessageCustomer(BuildContext context) {
-    context.push(
-      ProviderChatScreen.routeName,
-      extra: MessageData(
-        name: booking.customerName,
-        avatarAsset: booking.customerPhoto,
-        lastMessage: 'Hi, regarding your booking for ${booking.service}.',
-        timeLabel: 'Now',
-      ),
+  Future<void> _onMessageCustomer(BuildContext context) async {
+    final detail = context.read<ProviderBookingDetailNotifier>().bookingDetail;
+    final customerId = detail?.customerDetail?.id ?? detail?.counterparty?.id;
+
+    if (customerId == null || customerId.isEmpty) {
+      // No real customer id available yet (detail hasn't loaded) — fall
+      // back to the old placeholder-thread behaviour rather than blocking
+      // the button.
+      context.push(
+        ProviderChatScreen.routeName,
+        extra: MessageData(
+          name: booking.customerName,
+          avatarAsset: booking.customerPhoto,
+          lastMessage: 'Hi, regarding your booking for ${booking.service}.',
+          timeLabel: 'Now',
+        ),
+      );
+      return;
+    }
+
+    final conversationsNotifier = context.read<ProviderConversationsNotifier>();
+    final conversation = await conversationsNotifier.startConversation(
+      participantId: customerId,
+      bookingId: _bookingId,
     );
+    if (!context.mounted) return;
+    if (conversation != null) {
+      context.push(ProviderChatScreen.routeName, extra: conversation.toMessageData());
+    } else {
+      AppSnackbar.showError(
+        context,
+        conversationsNotifier.errorMessage ?? 'Failed to start conversation',
+      );
+    }
   }
 
   void _openDisputeResponseBottomSheet(BuildContext context) {
@@ -263,16 +413,45 @@ class _ProviderBookingDetailsScreenState
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.25),
       builder: (_) => DisputeResponseBottomSheet(
-        onSubmit: (response, evidenceImages) {
+        onSubmit: (response, evidenceImages) async {
           setState(() {
             _isResponseSubmitted = true;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(AppText.responseSubmittedSuccessfully),
-              duration: Duration(seconds: 2),
-            ),
+          // The booking's `dispute` field carries the dispute id once one
+          // has been raised against it; there's no other way to reach it
+          // from this screen today.
+          final disputeId = context
+              .read<ProviderBookingDetailNotifier>()
+              .bookingDetail
+              ?.dispute
+              ?.toString();
+          if (disputeId == null || disputeId.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(AppText.responseSubmittedSuccessfully),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            return;
+          }
+          final notifier = context.read<ProviderDisputeNotifier>();
+          final ok = await notifier.respondDispute(
+            disputeId,
+            message: response,
+            evidenceFiles: evidenceImages,
           );
+          if (!context.mounted) return;
+          if (ok) {
+            AppSnackbar.showSuccess(
+              context,
+              AppText.responseSubmittedSuccessfully,
+            );
+          } else {
+            AppSnackbar.showError(
+              context,
+              notifier.actionErrorMessage ?? 'Failed to submit response',
+            );
+          }
         },
       ),
     );
@@ -285,17 +464,31 @@ class _ProviderBookingDetailsScreenState
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.25),
       builder: (_) => CancelBookingBottomSheet(
-        onConfirm: () {
+        onConfirm: () async {
           setState(() {
             _currentStatus = AppText.cancelled;
             _isCanceledByProvider = true;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Booking canceled successfully'),
-              duration: Duration(seconds: 2),
-            ),
-          );
+          if (_bookingId == null || _bookingId!.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Booking canceled successfully'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+            return;
+          }
+          final notifier = context.read<ProviderBookingDetailNotifier>();
+          final ok = await notifier.cancelBooking(_bookingId!);
+          if (!context.mounted) return;
+          if (ok) {
+            AppSnackbar.showSuccess(context, 'Booking canceled successfully');
+          } else {
+            AppSnackbar.showError(
+              context,
+              notifier.actionErrorMessage ?? 'Failed to cancel booking',
+            );
+          }
         },
       ),
     );
@@ -764,135 +957,182 @@ class _ProviderBookingDetailsScreenState
 
                     // Review Section (Completed only)
                     if (_currentStatus == AppText.completed) ...[
-                      if (!_hasReview)
-                        GestureDetector(
-                          onTap: () => setState(() => _hasReview = true),
-                          child: Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.symmetric(
-                              vertical: ResponsiveHelper.padding(12),
+                      if (_review == null || !_review!.exists)
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            vertical: ResponsiveHelper.padding(12),
+                          ),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(
+                              ResponsiveHelper.borderRadius(100),
                             ),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(
-                                ResponsiveHelper.borderRadius(100),
-                              ),
-                              border: Border.all(
-                                color: const Color(0xFFCBD5E1),
-                                width: 1,
-                              ),
+                            border: Border.all(
+                              color: const Color(0xFFCBD5E1),
+                              width: 1,
                             ),
-                            child: Text(
-                              AppText.noReviewYet,
-                              style: context.bodyMedium.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF94A3B8),
-                              ),
+                          ),
+                          child: Text(
+                            AppText.noReviewYet,
+                            style: context.bodyMedium.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF94A3B8),
                             ),
                           ),
                         )
                       else
-                        GestureDetector(
-                          onTap: () => setState(() => _hasReview = false),
-                          child: AppContainerBg(
-                            width: double.infinity,
-                            color: _fieldColor,
-                            radius: _fieldRadius,
-                            padding: _fieldPadding,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: ResponsiveHelper.width(36),
-                                      height: ResponsiveHelper.width(36),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: AppColors.borderDefault,
-                                        ),
-                                        borderRadius: BorderRadius.circular(
-                                          ResponsiveHelper.borderRadius(8),
-                                        ),
+                        AppContainerBg(
+                          width: double.infinity,
+                          color: _fieldColor,
+                          radius: _fieldRadius,
+                          padding: _fieldPadding,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: ResponsiveHelper.width(36),
+                                    height: ResponsiveHelper.width(36),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: AppColors.borderDefault,
                                       ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          ResponsiveHelper.borderRadius(8),
-                                        ),
-                                        child: AppIcon(
-                                          assetPath: booking.customerPhoto,
-                                          size: ResponsiveHelper.width(36),
-                                          fit: BoxFit.cover,
-                                        ),
+                                      borderRadius: BorderRadius.circular(
+                                        ResponsiveHelper.borderRadius(8),
                                       ),
                                     ),
-                                    SizedBox(width: ResponsiveHelper.spacing(10)),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            booking.customerName,
-                                            style: TextStyle(
-                                              fontSize:
-                                                  ResponsiveHelper.fontSize(12.5),
-                                              fontWeight: FontWeight.w700,
-                                              fontStyle: FontStyle.italic,
-                                              color: const Color(0xFF0F172A),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        ResponsiveHelper.borderRadius(8),
+                                      ),
+                                      child: AppIcon(
+                                        assetPath: (_review!.authorAvatar != null &&
+                                                _review!.authorAvatar!.isNotEmpty)
+                                            ? _review!.authorAvatar!
+                                            : booking.customerPhoto,
+                                        size: ResponsiveHelper.width(36),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: ResponsiveHelper.spacing(10)),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _review!.authorName?.isNotEmpty == true
+                                              ? _review!.authorName!
+                                              : booking.customerName,
+                                          style: TextStyle(
+                                            fontSize:
+                                                ResponsiveHelper.fontSize(12.5),
+                                            fontWeight: FontWeight.w700,
+                                            fontStyle: FontStyle.italic,
+                                            color: const Color(0xFF0F172A),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                            height:
+                                                ResponsiveHelper.spacing(2)),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.star_rounded,
+                                              size: 13,
+                                              color: Color(0xFFFABD24),
                                             ),
-                                          ),
-                                          SizedBox(
-                                              height:
-                                                  ResponsiveHelper.spacing(2)),
-                                          Row(
-                                            children: [
-                                              const Icon(
-                                                Icons.star_rounded,
-                                                size: 13,
-                                                color: Color(0xFFFABD24),
+                                            SizedBox(
+                                                width:
+                                                    ResponsiveHelper.spacing(
+                                                        2)),
+                                            Text(
+                                              _review!.ratingDisplay ??
+                                                  '${_review!.rating}/5.0',
+                                              style: TextStyle(
+                                                fontSize:
+                                                    ResponsiveHelper.fontSize(
+                                                        10.5),
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xFF0F172A),
                                               ),
-                                              SizedBox(
-                                                  width:
-                                                      ResponsiveHelper.spacing(
-                                                          2)),
-                                              Text(
-                                                '4.8/5.0',
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      ResponsiveHelper.fontSize(
-                                                          10.5),
-                                                  fontWeight: FontWeight.w600,
-                                                  color: const Color(0xFF0F172A),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      '15 Mar 2026',
-                                      style: TextStyle(
-                                        fontSize: ResponsiveHelper.fontSize(11),
-                                        color: const Color(0xFF64748B),
-                                      ),
+                                  ),
+                                  Text(
+                                    ProviderBookingDetailModel
+                                        .formattedShortDate(_review!.createdAt),
+                                    style: TextStyle(
+                                      fontSize: ResponsiveHelper.fontSize(11),
+                                      color: const Color(0xFF64748B),
                                     ),
-                                  ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: ResponsiveHelper.spacing(10)),
+                              Text(
+                                _review!.comment?.isNotEmpty == true
+                                    ? _review!.comment!
+                                    : 'No comment left.',
+                                style: TextStyle(
+                                  fontSize: ResponsiveHelper.fontSize(11),
+                                  fontStyle: FontStyle.italic,
+                                  color: const Color(0xFF475569),
+                                  height: 1.4,
                                 ),
+                              ),
+                              if (_review!.replyMessage != null &&
+                                  _review!.replyMessage!.isNotEmpty) ...[
                                 SizedBox(height: ResponsiveHelper.spacing(10)),
-                                Text(
-                                  'The electrical service provided by this company was exceptional! They arrived on time and handled the installation with great professionalism. My home is now equipped with energy-efficient solutions that work perfectly. Highly recommend their services!',
-                                  style: TextStyle(
-                                    fontSize: ResponsiveHelper.fontSize(11),
-                                    fontStyle: FontStyle.italic,
-                                    color: const Color(0xFF475569),
-                                    height: 1.4,
+                                Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(
+                                    ResponsiveHelper.padding(10),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(
+                                      ResponsiveHelper.borderRadius(8),
+                                    ),
+                                    border: Border.all(
+                                      color: AppColors.borderDefault,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        AppText.yourResponse,
+                                        style: TextStyle(
+                                          fontSize:
+                                              ResponsiveHelper.fontSize(10),
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          height: ResponsiveHelper.spacing(4)),
+                                      Text(
+                                        _review!.replyMessage!,
+                                        style: TextStyle(
+                                          fontSize:
+                                              ResponsiveHelper.fontSize(11),
+                                          color: const Color(0xFF0F172A),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
-                            ),
+                            ],
                           ),
                         ),
                       SizedBox(height: ResponsiveHelper.spacing(10)),

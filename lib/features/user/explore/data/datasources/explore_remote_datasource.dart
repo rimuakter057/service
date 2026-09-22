@@ -17,6 +17,17 @@ abstract class ExploreRemoteDataSource {
     int? page,
     int? pageSize,
   });
+
+  Future<ExploreFiltersResponseModel> getFilters();
+
+  Future<FavoriteProvidersResponseModel> getFavorites({
+    int? page,
+    int? pageSize,
+  });
+
+  Future<bool> addFavorite(String providerId);
+
+  Future<bool> removeFavorite(String providerId);
 }
 
 class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
@@ -57,7 +68,6 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
       queryParameters['max_price'] = maxPrice;
     }
     if (minRating != null) {
-      // In Swagger: min_rating is integer 1 to 5
       queryParameters['min_rating'] = minRating.toInt();
     }
     if (sort != null && sort.trim().isNotEmpty) {
@@ -89,5 +99,66 @@ class ExploreRemoteDataSourceImpl implements ExploreRemoteDataSource {
       return ExploreProvidersResponseModel.fromJson(responseData);
     }
     throw FormatException('Unexpected response format: $responseData');
+  }
+
+  @override
+  Future<ExploreFiltersResponseModel> getFilters() async {
+    try {
+      final response = await _apiClient.get(ApiUrl.customerProviderFilters);
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        return ExploreFiltersResponseModel.fromJson(data);
+      }
+    } catch (_) {}
+    return const ExploreFiltersResponseModel(
+      success: true,
+      categories: [],
+      cities: [],
+      minPrice: 0,
+      maxPrice: 500,
+      sortOptions: [],
+      ratingOptions: [],
+    );
+  }
+
+  @override
+  Future<FavoriteProvidersResponseModel> getFavorites({
+    int? page,
+    int? pageSize,
+  }) async {
+    final Map<String, dynamic> queryParameters = {};
+    if (page != null) queryParameters['page'] = page;
+    if (pageSize != null) queryParameters['page_size'] = pageSize;
+
+    final response = await _apiClient.get(
+      ApiUrl.customerProviderFavorites,
+      queryParameters: queryParameters.isNotEmpty ? queryParameters : null,
+    );
+
+    return FavoriteProvidersResponseModel.fromJson(response.data);
+  }
+
+  @override
+  Future<bool> addFavorite(String providerId) async {
+    final response = await _apiClient.post(
+      ApiUrl.customerProviderFavoriteToggle(providerId),
+    );
+    final data = response.data;
+    if (data is Map<String, dynamic>) {
+      return data['success'] as bool? ?? true;
+    }
+    return true;
+  }
+
+  @override
+  Future<bool> removeFavorite(String providerId) async {
+    final response = await _apiClient.delete(
+      ApiUrl.customerProviderFavoriteToggle(providerId),
+    );
+    final data = response.data;
+    if (data is Map<String, dynamic>) {
+      return data['success'] as bool? ?? true;
+    }
+    return true;
   }
 }

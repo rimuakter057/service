@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:nchito/features/common/cms_support/presentation/providers/faq_notifier.dart';
 import 'package:nchito/features/common/common_widgets/app_button/app_button.dart';
 import 'package:nchito/features/common/common_widgets/app_text_field/app_text_field.dart';
 import 'package:nchito/features/common/common_widgets/app_top_bar/app_top_bar.dart';
@@ -26,6 +28,14 @@ class _ProviderHelpSupportScreenState extends State<ProviderHelpSupportScreen> {
   final _descriptionController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProviderFaqNotifier>().fetchFaqs();
+    });
+  }
+
+  @override
   void dispose() {
     _reasonController.dispose();
     _descriptionController.dispose();
@@ -44,87 +54,142 @@ class _ProviderHelpSupportScreenState extends State<ProviderHelpSupportScreen> {
           children: [
             const TopAppbar(title: AppText.helpAndSupport),
             Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveHelper.padding(24),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppText.faqSectionTitle,
-                      style: TextStyle(
-                        fontSize: ResponsiveHelper.fontSize(20),
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.brandPrimary,
+              child: Consumer<ProviderFaqNotifier>(
+                builder: (context, notifier, child) {
+                  return RefreshIndicator(
+                    color: AppColors.brandPrimary,
+                    onRefresh: () => notifier.fetchFaqs(forceRefresh: true),
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveHelper.padding(24),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppText.faqSectionTitle,
+                            style: TextStyle(
+                              fontSize: ResponsiveHelper.fontSize(20),
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.brandPrimary,
+                            ),
+                          ),
+                          SizedBox(height: ResponsiveHelper.spacing(12)),
+
+                          if (notifier.isLoading && notifier.faqs.isEmpty)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 24.0),
+                                child: CircularProgressIndicator(
+                                  color: AppColors.brandPrimary,
+                                ),
+                              ),
+                            )
+                          else if (notifier.errorMessage != null &&
+                              notifier.faqs.isEmpty)
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16.0,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      notifier.errorMessage!,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: AppColors.red,
+                                        fontSize: ResponsiveHelper.fontSize(14),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: ResponsiveHelper.spacing(12),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.brandPrimary,
+                                      ),
+                                      onPressed: () => notifier.fetchFaqs(
+                                        forceRefresh: true,
+                                      ),
+                                      child: const Text(
+                                        'Retry',
+                                        style:
+                                            TextStyle(color: AppColors.white),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          else if (notifier.faqs.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                              child: Text(
+                                'No FAQs available at the moment.',
+                                style: TextStyle(
+                                  fontSize: ResponsiveHelper.fontSize(14),
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            )
+                          else
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: notifier.faqs.length,
+                              separatorBuilder: (_, __) =>
+                                  SizedBox(height: ResponsiveHelper.spacing(10)),
+                              itemBuilder: (context, index) {
+                                final faq = notifier.faqs[index];
+                                return _ProviderFaqItem(
+                                  key: ValueKey(faq.id),
+                                  question: faq.question,
+                                  answer: faq.answer,
+                                  initiallyExpanded: index == 0,
+                                );
+                              },
+                            ),
+
+                          SizedBox(height: ResponsiveHelper.spacing(24)),
+                          Text(
+                            AppText.contactUsSectionTitle,
+                            style: TextStyle(
+                              fontSize: ResponsiveHelper.fontSize(16),
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.brandPrimary,
+                            ),
+                          ),
+                          SizedBox(height: ResponsiveHelper.spacing(14)),
+                          AppTextField(
+                            label: AppText.reasonForContact,
+                            hint: AppText.enterYourReasonForContact,
+                            controller: _reasonController,
+                          ),
+                          SizedBox(height: ResponsiveHelper.spacing(14)),
+                          AppTextField(
+                            label: AppText.descriptionLabel,
+                            hint: AppText
+                                .pleaseDescribeYourIssueOrQuestionInDetail,
+                            controller: _descriptionController,
+                            maxLines: 4,
+                          ),
+                          SizedBox(height: ResponsiveHelper.spacing(18)),
+                          AppButton(
+                            text: AppText.submit,
+                            onPressed: _onSubmit,
+                            width: double.infinity,
+                            backgroundColor: AppColors.brandPrimary,
+                            textColor: AppColors.white,
+                            radius: ResponsiveHelper.borderRadius(10),
+                          ),
+                          SizedBox(height: ResponsiveHelper.spacing(24)),
+                        ],
                       ),
                     ),
-                    SizedBox(height: ResponsiveHelper.spacing(12)),
-                    _ProviderFaqItem(
-                      question: AppText.howDoIBookAService,
-                      answer: AppText
-                          .chooseAServiceSelectAProviderChooseAnAvailableDateAndTimeAndConfirmYourBooking,
-                      initiallyExpanded: true,
-                    ),
-                    _ProviderFaqItem(
-                      question: AppText.howDoIOfferAService,
-                      answer: AppText
-                          .chooseAServiceSelectAProviderChooseAnAvailableDateAndTimeAndConfirmYourBooking,
-                    ),
-                    _ProviderFaqItem(
-                      question: AppText.howCanICancelABooking,
-                      answer: AppText
-                          .chooseAServiceSelectAProviderChooseAnAvailableDateAndTimeAndConfirmYourBooking,
-                    ),
-                    _ProviderFaqItem(
-                      question: AppText.whatIfIHaveAnIssueWithAService,
-                      answer: AppText
-                          .chooseAServiceSelectAProviderChooseAnAvailableDateAndTimeAndConfirmYourBooking,
-                    ),
-                    _ProviderFaqItem(
-                      question: AppText.howCanIContactAProvider,
-                      answer: AppText
-                          .chooseAServiceSelectAProviderChooseAnAvailableDateAndTimeAndConfirmYourBooking,
-                    ),
-                    _ProviderFaqItem(
-                      question: AppText.howDoIContactNchitoSupport,
-                      answer: AppText
-                          .chooseAServiceSelectAProviderChooseAnAvailableDateAndTimeAndConfirmYourBooking,
-                    ),
-                    SizedBox(height: ResponsiveHelper.spacing(24)),
-                    Text(
-                      AppText.contactUsSectionTitle,
-                      style: TextStyle(
-                        fontSize: ResponsiveHelper.fontSize(16),
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.brandPrimary,
-                      ),
-                    ),
-                    SizedBox(height: ResponsiveHelper.spacing(14)),
-                    AppTextField(
-                      label: AppText.reasonForContact,
-                      hint: AppText.enterYourReasonForContact,
-                      controller: _reasonController,
-                    ),
-                    SizedBox(height: ResponsiveHelper.spacing(14)),
-                    AppTextField(
-                      label: AppText.descriptionLabel,
-                      hint: AppText.pleaseDescribeYourIssueOrQuestionInDetail,
-                      controller: _descriptionController,
-                      maxLines: 4,
-                    ),
-                    SizedBox(height: ResponsiveHelper.spacing(18)),
-                    AppButton(
-                      text: AppText.submit,
-                      onPressed: _onSubmit,
-                      width: double.infinity,
-                      backgroundColor: AppColors.brandPrimary,
-                      textColor: AppColors.white,
-                      radius: ResponsiveHelper.borderRadius(10),
-                    ),
-                    SizedBox(height: ResponsiveHelper.spacing(24)),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],
@@ -136,12 +201,13 @@ class _ProviderHelpSupportScreenState extends State<ProviderHelpSupportScreen> {
 
 class _ProviderFaqItem extends StatefulWidget {
   final String question;
-  final String answer;
+  final String? answer;
   final bool initiallyExpanded;
 
   const _ProviderFaqItem({
+    super.key,
     required this.question,
-    required this.answer,
+    this.answer,
     this.initiallyExpanded = false,
   });
 
@@ -154,60 +220,61 @@ class _ProviderFaqItemState extends State<_ProviderFaqItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        InkWell(
-          onTap: () => setState(() => _expanded = !_expanded),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: ResponsiveHelper.padding(10),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+    final isExpandable = widget.answer != null && widget.answer!.isNotEmpty;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(ResponsiveHelper.padding(12)),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.brandSoft),
+        borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(10)),
+      ),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: isExpandable
+            ? () => setState(() => _expanded = !_expanded)
+            : null,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
                 Expanded(
                   child: Text(
                     widget.question,
-                    style: TextStyle(
-                      fontSize: ResponsiveHelper.fontSize(14),
-                      fontWeight: FontWeight.w700,
+                    style: context.bodySmall.copyWith(
+                      fontWeight: FontWeight.w600,
                       color: AppColors.textBlackPrimary,
                     ),
                   ),
                 ),
                 Transform.rotate(
-                  angle: _expanded ? math.pi / 2 : 0,
+                  angle: _expanded ? math.pi : 0,
                   child: Icon(
-                    Icons.chevron_right,
-                    size: ResponsiveHelper.iconSize(20),
+                    Icons.keyboard_arrow_down_rounded,
+                    size: ResponsiveHelper.iconSize(16),
                     color: AppColors.textBlackPrimary,
                   ),
                 ),
               ],
             ),
-          ),
-        ),
-        if (_expanded)
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: ResponsiveHelper.padding(10),
-              right: ResponsiveHelper.padding(16),
-            ),
-            child: Text(
-              widget.answer,
-              style: context.bodySmall.copyWith(
-                height: 1.5,
-                color: AppColors.textSecondary,
+            if (_expanded && isExpandable) ...[
+              SizedBox(height: ResponsiveHelper.spacing(10)),
+              Divider(height: 1, color: AppColors.brandSoft),
+              SizedBox(height: ResponsiveHelper.spacing(10)),
+              Text(
+                widget.answer!,
+                style: context.bodySmall.copyWith(
+                  fontSize: ResponsiveHelper.fontSize(13),
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                ),
               ),
-            ),
-          ),
-        Divider(
-          height: 1,
-          thickness: 1,
-          color: AppColors.borderDefault.withValues(alpha: 0.5),
+            ],
+          ],
         ),
-      ],
+      ),
     );
   }
 }

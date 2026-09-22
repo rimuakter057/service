@@ -7,6 +7,10 @@ import 'package:nchito/core/utils/assets_path/assets_path.dart';
 /// the Provider Home screen's lists and the Provider Booking Details
 /// screen.
 class ProviderBookingData {
+  /// Booking id — null for the static sample entries below; set when this
+  /// is mapped from a real API response so the details screen can fetch
+  /// the full record and call the status-change actions.
+  final String? id;
   final String customerName;
   final String service;
   final String price;
@@ -27,6 +31,7 @@ class ProviderBookingData {
   final String customerEmailOrPhone;
 
   const ProviderBookingData({
+    this.id,
     required this.customerName,
     required this.service,
     required this.price,

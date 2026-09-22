@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
-
 import 'package:nchito/features/common/common_widgets/app_button/app_button.dart';
 import 'package:nchito/core/utils/extensions/context_extension/context_extension.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import '../../../../../core/utils/app_colors/app_colors.dart';
 import '../../../../../core/utils/app_text/app_text.dart';
 
+class BookingFilterOption {
+  final String value;
+  final String label;
+
+  const BookingFilterOption({required this.value, required this.label});
+}
+
 /// Modal bottom sheet for filtering bookings by status (e.g. All Bookings,
-/// Pending, Accepted, Scheduled, In Progress, Completed, etc.).
+/// Pending, Accepted, Scheduled, In Progress, Completed, Cancelled, Rejected, Disputed).
 class BookingsFilterBottomSheet extends StatefulWidget {
   final String currentFilter;
   final ValueChanged<String> onApply;
@@ -18,16 +24,16 @@ class BookingsFilterBottomSheet extends StatefulWidget {
     required this.onApply,
   });
 
-  static const List<String> filterOptions = [
-    AppText.allBookings,
-    AppText.pending,
-    AppText.accepted,
-    AppText.scheduled,
-    AppText.inProgress,
-    AppText.completed,
-    AppText.cancelled,
-    AppText.rejected,
-    AppText.disputed,
+  static const List<BookingFilterOption> filterOptions = [
+    BookingFilterOption(value: 'all', label: AppText.allBookings),
+    BookingFilterOption(value: 'pending', label: AppText.pending),
+    BookingFilterOption(value: 'quoted', label: AppText.accepted),
+    BookingFilterOption(value: 'scheduled', label: AppText.scheduled),
+    BookingFilterOption(value: 'in_progress', label: AppText.inProgress),
+    BookingFilterOption(value: 'completed', label: AppText.completed),
+    BookingFilterOption(value: 'cancelled', label: AppText.cancelled),
+    BookingFilterOption(value: 'rejected', label: AppText.rejected),
+    BookingFilterOption(value: 'disputed', label: AppText.disputed),
   ];
 
   @override
@@ -36,20 +42,33 @@ class BookingsFilterBottomSheet extends StatefulWidget {
 }
 
 class _BookingsFilterBottomSheetState extends State<BookingsFilterBottomSheet> {
-  late String _selectedFilter;
+  late String _selectedGroup;
 
   @override
   void initState() {
     super.initState();
-    _selectedFilter = widget.currentFilter;
+    _selectedGroup = _resolveInitialValue(widget.currentFilter);
+  }
+
+  String _resolveInitialValue(String current) {
+    final trimmed = current.trim().toLowerCase();
+    for (final opt in BookingsFilterBottomSheet.filterOptions) {
+      if (opt.value.toLowerCase() == trimmed ||
+          opt.label.toLowerCase() == trimmed) {
+        return opt.value;
+      }
+    }
+    return current.isNotEmpty ? current : 'all';
   }
 
   void _onReset() {
-    setState(() => _selectedFilter = AppText.allBookings);
+    setState(() {
+      _selectedGroup = 'all';
+    });
   }
 
   void _onApply() {
-    widget.onApply(_selectedFilter);
+    widget.onApply(_selectedGroup);
     Navigator.of(context).pop();
   }
 
@@ -101,54 +120,55 @@ class _BookingsFilterBottomSheetState extends State<BookingsFilterBottomSheet> {
             ),
             SizedBox(height: ResponsiveHelper.spacing(16)),
 
-            // Filter Options List
+            // Filter Options List (Exact 100% original design matching Figma)
             Flexible(
               child: SingleChildScrollView(
                 child: Column(
-                  children: BookingsFilterBottomSheet.filterOptions
-                      .map((option) {
-                        final isSelected = option == _selectedFilter;
-                        return GestureDetector(
-                          onTap: () => setState(() => _selectedFilter = option),
-                          child: Container(
-                            margin: EdgeInsets.only(
-                              bottom: ResponsiveHelper.spacing(8),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: ResponsiveHelper.padding(16),
-                              vertical: ResponsiveHelper.padding(14),
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.borderDefault.withValues(
-                                alpha: 0.25,
-                              ),
-                              borderRadius: BorderRadius.circular(
-                                ResponsiveHelper.borderRadius(12),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  option,
-                                  style: context.bodyMedium.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.textBlackPrimary,
-                                  ),
-                                ),
-                                _RadioCircle(isSelected: isSelected),
-                              ],
-                            ),
+                  children: BookingsFilterBottomSheet.filterOptions.map((option) {
+                    final isSelected = option.value.toLowerCase() ==
+                            _selectedGroup.toLowerCase() ||
+                        option.label.toLowerCase() ==
+                            _selectedGroup.toLowerCase();
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedGroup = option.value),
+                      child: Container(
+                        margin: EdgeInsets.only(
+                          bottom: ResponsiveHelper.spacing(8),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveHelper.padding(16),
+                          vertical: ResponsiveHelper.padding(14),
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.borderDefault.withValues(
+                            alpha: 0.25,
                           ),
-                        );
-                      })
-                      .toList(),
+                          borderRadius: BorderRadius.circular(
+                            ResponsiveHelper.borderRadius(12),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              option.label,
+                              style: context.bodyMedium.copyWith(
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textBlackPrimary,
+                              ),
+                            ),
+                            _RadioCircle(isSelected: isSelected),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
             ),
             SizedBox(height: ResponsiveHelper.spacing(16)),
 
-            // Action Buttons (Reset Filter & Apply Filter)
+            // Action Buttons: Reset & Apply (Exact 100% original colors, radius & height)
             Row(
               children: [
                 Expanded(

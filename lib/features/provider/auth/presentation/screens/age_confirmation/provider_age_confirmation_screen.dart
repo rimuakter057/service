@@ -8,7 +8,7 @@ import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.da
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/app_text/app_text.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
-import 'package:nchito/features/provider/auth/presentation/screens/login/provider_login_screen.dart';
+import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/signup/provider_signup_screen.dart';
 
 class ProviderAgeConfirmationScreen extends StatelessWidget {
@@ -63,7 +63,7 @@ class ProviderAgeConfirmationScreen extends StatelessWidget {
                             if (context.canPop()) {
                               context.pop();
                             } else {
-                              context.go(ProviderLoginScreen.routeName);
+                              context.go(LoginScreen.routeName);
                             }
                           },
                           backgroundColor: const Color(0xFFFDE8E8),

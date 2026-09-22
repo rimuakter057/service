@@ -10,6 +10,8 @@ import 'package:nchito/features/common/common_widgets/app_calendar/app_calendar.
 import 'package:nchito/features/common/common_widgets/app_shimmer/app_shimmer.dart';
 import 'package:nchito/features/common/common_widgets/app_time_slot_picker/app_time_slot_picker.dart';
 import 'package:nchito/features/common/common_widgets/app_top_bar/app_top_bar.dart';
+import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
+import 'package:nchito/features/user/bookings/presentation/providers/customer_booking_detail_notifier.dart';
 import 'package:nchito/features/user/bookings/presentation/screens/booking_details/booking_details_screen.dart';
 import 'package:nchito/features/user/bookings/presentation/widgets/bookings_sample_data.dart';
 import 'package:nchito/features/user/explore/presentation/screens/book_a_service/book_a_service_screen.dart';
@@ -144,13 +146,52 @@ class _ProviderAvailabilityScreenState
               ),
                 child: AppButton(
                   text: bookLabel,
-                  onPressed: () {
+                  onPressed: () async {
                     if (widget.isRescheduling) {
-                      if (widget.booking is BookingHistoryData) {
-                        final updated =
-                            (widget.booking as BookingHistoryData).copyWith(
-                          status: AppText.inProgress,
+                      final currentBooking = widget.booking is BookingHistoryData
+                          ? widget.booking as BookingHistoryData
+                          : null;
+                      final bookingId = currentBooking?.id;
+
+                      final selectedSlotIndex =
+                          availabilityNotifier.selectedSlots.isNotEmpty
+                              ? availabilityNotifier.selectedSlots.first
+                              : -1;
+                      final slots = availabilityNotifier.availabilityModel?.slots;
+                      final selectedSlotModel = (slots != null &&
+                              selectedSlotIndex >= 0 &&
+                              selectedSlotIndex < slots.length)
+                          ? slots[selectedSlotIndex]
+                          : (slots?.where((s) => s.isAvailable).firstOrNull);
+
+                      if (bookingId == null || bookingId.isEmpty) {
+                        context.pop();
+                        return;
+                      }
+
+                      final notifier = context.read<CustomerBookingDetailNotifier>();
+                      final ok = await notifier.rescheduleBooking(
+                        bookingId,
+                        scheduledDate: _formatDate(_currentSelectedDate),
+                        scheduledTime: selectedSlotModel?.startTime ?? '',
+                      );
+                      if (!context.mounted) return;
+                      if (!ok) {
+                        AppSnackbar.showError(
+                          context,
+                          notifier.actionErrorMessage ??
+                              'Failed to reschedule booking',
                         );
+                        return;
+                      }
+                      AppSnackbar.showSuccess(
+                        context,
+                        'Reschedule request sent successfully',
+                      );
+                      final updated = currentBooking?.copyWith(
+                        status: AppText.inProgress,
+                      );
+                      if (updated != null) {
                         context.pushReplacement(
                           BookingDetailsScreen.routeName,
                           extra: updated,

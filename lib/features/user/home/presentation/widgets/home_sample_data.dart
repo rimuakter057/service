@@ -77,6 +77,9 @@ class HomeProviderData {
 }
 
 class HomeBookingData {
+  /// Booking id — null for the static sample cards, set when mapped from
+  /// a real API response (needed to submit a review/reschedule for it).
+  final String? id;
   final String iconAsset;
   final Color iconBgColor;
   final Color iconColor;
@@ -91,6 +94,7 @@ class HomeBookingData {
   final HomeProviderData provider;
 
   const HomeBookingData({
+    this.id,
     required this.iconAsset,
     required this.iconBgColor,
     required this.iconColor,

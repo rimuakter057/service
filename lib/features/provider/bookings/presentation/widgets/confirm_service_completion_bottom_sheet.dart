@@ -6,7 +6,7 @@ import 'package:nchito/core/utils/app_text/app_text.dart';
 
 /// Modal bottom sheet for provider to enter/verify customer OTP to complete service (Image 3)
 class ConfirmServiceCompletionBottomSheet extends StatefulWidget {
-  final VoidCallback onVerifyOtp;
+  final ValueChanged<String> onVerifyOtp;
 
   const ConfirmServiceCompletionBottomSheet({
     super.key,
@@ -46,8 +46,9 @@ class _ConfirmServiceCompletionBottomSheetState
   }
 
   void _onVerify() {
+    final code = _controllers.map((c) => c.text).join();
     Navigator.of(context).pop();
-    widget.onVerifyOtp();
+    widget.onVerifyOtp(code);
   }
 
   @override

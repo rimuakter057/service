@@ -9,6 +9,9 @@ import 'package:nchito/core/utils/assets_path/assets_path.dart';
 import 'package:nchito/features/user/home/presentation/widgets/detail_field.dart';
 import 'package:nchito/features/user/profile/presentation/screens/update_profile/update_profile_screen.dart';
 
+import 'package:provider/provider.dart';
+import 'package:nchito/features/user/profile/presentation/providers/user_profile_notifier.dart';
+
 /// Shows the signed-in user's profile info (name, email/phone) with an
 /// "Update Profile" action. Navigated to from [ProfileScreen]'s
 /// "My Profile" menu tile.
@@ -30,55 +33,81 @@ class MyProfileScreen extends StatelessWidget {
           children: [
             const TopAppbar(title: AppText.myProfile),
             Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveHelper.padding(24),
-                ),
-                child: Column(
-                  children: [
-                    // Avatar
-                    Container(
-                      width: ResponsiveHelper.width(100),
-                      height: ResponsiveHelper.width(100),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          ResponsiveHelper.borderRadius(24),
-                        ),
-                        border: Border.all(
-                          color: AppColors.borderDefault,
-                          width: ResponsiveHelper.borderWidth(1),
-                        ),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                          ResponsiveHelper.borderRadius(23),
-                        ),
-                        child: Image.asset(
-                          AssetsPath.avatarUser,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: ResponsiveHelper.spacing(16)),
+              child: Consumer<UserProfileNotifier>(
+                builder: (context, notifier, child) {
+                  final profile = notifier.profile;
+                  final name = (profile?.fullName != null &&
+                          profile!.fullName.trim().isNotEmpty)
+                      ? profile.fullName.trim()
+                      : AppText.userNameVaughan;
+                  final identifier = (profile?.phone != null &&
+                          profile!.phone!.trim().isNotEmpty)
+                      ? profile.phone!.trim()
+                      : ((profile?.email != null &&
+                              profile!.email!.trim().isNotEmpty)
+                          ? profile.email!.trim()
+                          : AppText.userPhoneVaughan);
+                  final avatarUrl = profile?.avatar;
 
-                    DetailField(
-                      label: AppText.name,
-                      value: AppText.userNameVaughan,
-                      color: _fieldColor,
-                      radius: _fieldRadius,
-                      contentPadding: _fieldPadding,
-                      gap: _fieldGap,
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveHelper.padding(24),
                     ),
-                    SizedBox(height: ResponsiveHelper.spacing(10)),
-                    DetailField(
-                      label: AppText.emailPhoneNumber,
-                      value: AppText.userPhoneVaughan,
-                      color: _fieldColor,
-                      radius: _fieldRadius,
-                      contentPadding: _fieldPadding,
-                      gap: _fieldGap,
-                    ),
-                    SizedBox(height: ResponsiveHelper.spacing(16)),
+                    child: Column(
+                      children: [
+                        // Avatar
+                        Container(
+                          width: ResponsiveHelper.width(100),
+                          height: ResponsiveHelper.width(100),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              ResponsiveHelper.borderRadius(24),
+                            ),
+                            border: Border.all(
+                              color: AppColors.borderDefault,
+                              width: ResponsiveHelper.borderWidth(1),
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                              ResponsiveHelper.borderRadius(23),
+                            ),
+                            child: (avatarUrl != null &&
+                                    avatarUrl.trim().isNotEmpty)
+                                ? Image.network(
+                                    avatarUrl,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Image.asset(
+                                      AssetsPath.avatarUser,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Image.asset(
+                                    AssetsPath.avatarUser,
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveHelper.spacing(16)),
+
+                        DetailField(
+                          label: AppText.name,
+                          value: name,
+                          color: _fieldColor,
+                          radius: _fieldRadius,
+                          contentPadding: _fieldPadding,
+                          gap: _fieldGap,
+                        ),
+                        SizedBox(height: ResponsiveHelper.spacing(10)),
+                        DetailField(
+                          label: AppText.emailPhoneNumber,
+                          value: identifier,
+                          color: _fieldColor,
+                          radius: _fieldRadius,
+                          contentPadding: _fieldPadding,
+                          gap: _fieldGap,
+                        ),
+                        SizedBox(height: ResponsiveHelper.spacing(16)),
 
                     AppButton(
                       text: AppText.updateProfile,
@@ -110,11 +139,13 @@ class MyProfileScreen extends StatelessWidget {
                     SizedBox(height: ResponsiveHelper.spacing(24)),
                   ],
                 ),
-              ),
-            ),
-          ],
+              );
+            },
+          ),
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  ),
+);
+}
 }

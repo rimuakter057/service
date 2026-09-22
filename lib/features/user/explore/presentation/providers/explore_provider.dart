@@ -9,9 +9,11 @@ import '../widgets/explore_sample_data.dart';
 
 class ExploreProviderNotifier extends ChangeNotifier {
   ExploreProviderNotifier({ExploreRepository? repository})
-      : _getExploreProviders =
+      : _repository = repository ?? ExploreRepositoryImpl(),
+        _getExploreProviders =
             GetExploreProviders(repository ?? ExploreRepositoryImpl());
 
+  final ExploreRepository _repository;
   final GetExploreProviders _getExploreProviders;
 
   bool _isLoading = false;
@@ -235,6 +237,51 @@ class ExploreProviderNotifier extends ChangeNotifier {
     } finally {
       _isLoadingMore = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> toggleFavorite(String providerId) async {
+    final index = _providers.indexWhere((p) => p.id == providerId);
+    if (index == -1) return;
+
+    final currentItem = _providers[index];
+    final newFavorited = !currentItem.isFavorited;
+
+    // Optimistic UI update
+    _providers[index] = ExploreProviderItemModel(
+      id: currentItem.id,
+      fullName: currentItem.fullName,
+      businessName: currentItem.businessName,
+      avatar: currentItem.avatar,
+      headline: currentItem.headline,
+      serviceTypes: currentItem.serviceTypes,
+      serviceTypeNames: currentItem.serviceTypeNames,
+      serviceTypeChips: currentItem.serviceTypeChips,
+      serviceArea: currentItem.serviceArea,
+      city: currentItem.city,
+      startingPrice: currentItem.startingPrice,
+      currency: currentItem.currency,
+      ratingAverage: currentItem.ratingAverage,
+      ratingCount: currentItem.ratingCount,
+      totalJobsCompleted: currentItem.totalJobsCompleted,
+      isVerified: currentItem.isVerified,
+      isAcceptingBookings: currentItem.isAcceptingBookings,
+      isFavorited: newFavorited,
+    );
+    notifyListeners();
+
+    try {
+      if (newFavorited) {
+        await _repository.addFavorite(providerId);
+      } else {
+        await _repository.removeFavorite(providerId);
+      }
+    } catch (_) {
+      // Revert optimistic update on failure
+      if (index < _providers.length && _providers[index].id == providerId) {
+        _providers[index] = currentItem;
+        notifyListeners();
+      }
     }
   }
 

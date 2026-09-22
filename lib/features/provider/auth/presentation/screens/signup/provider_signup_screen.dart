@@ -14,7 +14,7 @@ import 'package:nchito/core/utils/validators/validators.dart';
 import 'package:provider/provider.dart';
 import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
 import 'package:nchito/features/provider/auth/presentation/providers/provider_auth_provider.dart';
-import 'package:nchito/features/provider/auth/presentation/screens/login/provider_login_screen.dart';
+import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/verify_identity/verify_identity_screen.dart';
 import 'package:nchito/features/provider/auth/presentation/screens/verify_otp/provider_verify_otp_screen.dart';
 
@@ -267,7 +267,7 @@ class _ProviderSignUpScreenState extends State<ProviderSignUpScreen> {
                               SizedBox(width: ResponsiveHelper.spacing(4)),
                               GestureDetector(
                                 onTap: () => context.push(
-                                  ProviderLoginScreen.routeName,
+                                  LoginScreen.routeName,
                                 ),
                                 child: Text(
                                   AppText.logInQuestion,

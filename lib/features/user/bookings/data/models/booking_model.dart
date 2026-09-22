@@ -337,6 +337,7 @@ class BookingResponseModel {
         );
 
     return HomeBookingData(
+      id: id,
       iconAsset: iconAsset,
       iconBgColor: iconBg,
       iconColor: iconColor,
@@ -431,6 +432,7 @@ class BookingResponseModel {
                 : _capitalize(status)));
 
     return BookingHistoryData(
+      id: id,
       iconAsset: _resolveCategoryIcon(resolvedServiceName),
       iconBgColor: const Color(0xFFDBEAFE),
       providerName: resolvedProviderName,

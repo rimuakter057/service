@@ -96,7 +96,7 @@ class ProviderAuthRemoteDataSourceImpl implements ProviderAuthRemoteDataSource {
     bool rememberMe = false,
   }) async {
     final response = await _apiClient.post(
-      ApiUrl.providerLogin,
+      ApiUrl.authLogin,
       data: {
         'identifier': identifier,
         'password': password,

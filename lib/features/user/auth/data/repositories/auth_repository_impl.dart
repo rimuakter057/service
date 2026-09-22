@@ -79,10 +79,30 @@ class AuthRepositoryImpl implements AuthRepository {
         rememberMe: rememberMe,
       );
 
-      await _extractTokensAndSave(response, defaultRole: 'customer');
+      // Detect dynamic role from response ('customer' or 'provider')
+      String detectedRole = 'customer';
+      final dataMap = response['data'];
+      if (dataMap is Map<String, dynamic>) {
+        if (dataMap['role'] != null && dataMap['role'].toString().isNotEmpty) {
+          detectedRole = dataMap['role'].toString();
+        } else if (dataMap['tokens'] is Map<String, dynamic> &&
+            dataMap['tokens']['role'] != null &&
+            dataMap['tokens']['role'].toString().isNotEmpty) {
+          detectedRole = dataMap['tokens']['role'].toString();
+        } else if (dataMap['user'] is Map<String, dynamic> &&
+            dataMap['user']['role'] != null &&
+            dataMap['user']['role'].toString().isNotEmpty) {
+          detectedRole = dataMap['user']['role'].toString();
+        }
+      } else if (response['role'] != null && response['role'].toString().isNotEmpty) {
+        detectedRole = response['role'].toString();
+      }
 
-      final user = _extractUser(response, identifier, 'customer');
-      await TokenStorage.saveRole(user.role.isNotEmpty ? user.role : 'customer');
+      await _extractTokensAndSave(response, defaultRole: detectedRole);
+
+      final user = _extractUser(response, identifier, detectedRole);
+      final finalRole = user.role.isNotEmpty ? user.role : detectedRole;
+      await TokenStorage.saveRole(finalRole);
       final message = response['message'] as String? ?? 'Logged in successfully.';
       return (user, message);
     } on AppException catch (e) {

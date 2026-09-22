@@ -11,7 +11,7 @@ import 'package:nchito/core/utils/validators/validators.dart';
 import 'package:provider/provider.dart';
 import 'package:nchito/features/common/common_widgets/app_snackbar/app_snackbar.dart';
 import 'package:nchito/features/provider/auth/presentation/providers/provider_auth_provider.dart';
-import 'package:nchito/features/provider/auth/presentation/screens/login/provider_login_screen.dart';
+import 'package:nchito/features/user/auth/presentation/screens/login/login_screen.dart';
 
 class ProviderSetNewPasswordScreen extends StatefulWidget {
   static const String routeName = '/provider/set-new-password';
@@ -66,7 +66,7 @@ class _ProviderSetNewPasswordScreenState
         context,
         authProvider.successMessage ?? 'Password reset successfully.',
       );
-      context.go(ProviderLoginScreen.routeName);
+      context.go(LoginScreen.routeName);
     } else {
       AppSnackbar.showError(
         context,

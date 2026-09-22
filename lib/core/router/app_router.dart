@@ -107,7 +107,7 @@ class AppRouter {
       ///============= auth section provider ============
       GoRoute(
         path: ProviderLoginScreen.routeName,
-        builder: (context, state) => const ProviderLoginScreen(),
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: ProviderAgeConfirmationScreen.routeName,
@@ -426,7 +426,11 @@ class AppRouter {
               : (extra is HomeProviderData
                     ? extra.reviewCount
                     : (extra != null ? extra.toString() : '0'));
-          return AllReviewsScreen(reviewCount: reviewCount);
+          final providerId = extra is HomeProviderData ? extra.id : null;
+          return AllReviewsScreen(
+            reviewCount: reviewCount,
+            providerId: providerId,
+          );
         },
       ),
       GoRoute(
@@ -535,9 +539,27 @@ class AppRouter {
       ),
       GoRoute(
         path: BookingDetailsScreen.routeName,
-        builder: (context, state) => BookingDetailsScreen(
-          booking: state.extra as BookingHistoryData,
-        ),
+        builder: (context, state) {
+          if (state.extra is BookingHistoryData) {
+            final data = state.extra as BookingHistoryData;
+            return BookingDetailsScreen(
+              booking: data,
+              bookingId: data.id,
+            );
+          } else if (state.extra is String) {
+            return BookingDetailsScreen(
+              bookingId: state.extra as String,
+            );
+          } else if (state.extra is Map<String, dynamic>) {
+            final map = state.extra as Map<String, dynamic>;
+            return BookingDetailsScreen(
+              booking: map['booking'] as BookingHistoryData?,
+              bookingId: map['id']?.toString() ??
+                  (map['booking'] as BookingHistoryData?)?.id,
+            );
+          }
+          return const BookingDetailsScreen();
+        },
       ),
       GoRoute(
         path: DpoCheckoutScreen.routeName,
@@ -553,9 +575,25 @@ class AppRouter {
       ),
       GoRoute(
         path: DisputeDetailsScreen.routeName,
-        builder: (context, state) => DisputeDetailsScreen(
-          booking: state.extra as BookingHistoryData?,
-        ),
+        builder: (context, state) {
+          if (state.extra is BookingHistoryData) {
+            final data = state.extra as BookingHistoryData;
+            return DisputeDetailsScreen(
+              booking: data,
+              bookingId: data.id,
+            );
+          } else if (state.extra is String) {
+            return DisputeDetailsScreen(disputeId: state.extra as String);
+          } else if (state.extra is Map<String, dynamic>) {
+            final map = state.extra as Map<String, dynamic>;
+            return DisputeDetailsScreen(
+              booking: map['booking'] as BookingHistoryData?,
+              disputeId: map['disputeId'] as String?,
+              bookingId: map['bookingId'] as String? ?? (map['booking'] as BookingHistoryData?)?.id,
+            );
+          }
+          return const DisputeDetailsScreen();
+        },
       ),
 
 

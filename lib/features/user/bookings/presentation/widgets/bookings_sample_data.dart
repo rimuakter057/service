@@ -7,6 +7,7 @@ import 'package:nchito/features/user/home/presentation/widgets/home_sample_data.
 /// One row of booking data shown on the My Bookings screen — also carries
 /// everything the Booking Details screen needs.
 class BookingHistoryData {
+  final String? id;
   final String iconAsset;
   final Color iconBgColor;
   final String providerName;
@@ -27,6 +28,7 @@ class BookingHistoryData {
   final String? serviceCost;
 
   const BookingHistoryData({
+    this.id,
     required this.iconAsset,
     required this.iconBgColor,
     required this.providerName,
@@ -44,6 +46,7 @@ class BookingHistoryData {
   });
 
   BookingHistoryData copyWith({
+    String? id,
     String? iconAsset,
     Color? iconBgColor,
     String? providerName,
@@ -60,6 +63,7 @@ class BookingHistoryData {
     String? serviceCost,
   }) {
     return BookingHistoryData(
+      id: id ?? this.id,
       iconAsset: iconAsset ?? this.iconAsset,
       iconBgColor: iconBgColor ?? this.iconBgColor,
       providerName: providerName ?? this.providerName,

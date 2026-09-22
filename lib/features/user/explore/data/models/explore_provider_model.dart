@@ -68,7 +68,13 @@ class ExploreProviderItemModel {
     required this.isFavorited,
   });
 
-  factory ExploreProviderItemModel.fromJson(Map<String, dynamic> json) {
+  factory ExploreProviderItemModel.fromJson(Map<String, dynamic> rawJson) {
+    final json = (rawJson['provider'] is Map<String, dynamic>)
+        ? rawJson['provider'] as Map<String, dynamic>
+        : ((rawJson['provider_detail'] is Map<String, dynamic>)
+            ? rawJson['provider_detail'] as Map<String, dynamic>
+            : rawJson);
+
     double parseRating(dynamic val) {
       if (val is num) return val.toDouble();
       if (val is String) return double.tryParse(val) ?? 0.0;
@@ -81,12 +87,25 @@ class ExploreProviderItemModel {
       return 0;
     }
 
+    final id = json['id']?.toString() ?? rawJson['id']?.toString() ?? '';
+    final fullName = json['full_name']?.toString() ??
+        json['name']?.toString() ??
+        json['business_name']?.toString() ??
+        'Service Provider';
+    final businessName = json['business_name']?.toString() ?? '';
+    final avatar = json['avatar']?.toString() ??
+        json['image']?.toString() ??
+        json['photo']?.toString();
+    final headline = json['headline']?.toString() ??
+        json['bio']?.toString() ??
+        'Experienced Service Specialist';
+
     return ExploreProviderItemModel(
-      id: json['id'] as String? ?? '',
-      fullName: json['full_name'] as String? ?? '',
-      businessName: json['business_name'] as String? ?? '',
-      avatar: json['avatar'] as String?,
-      headline: json['headline'] as String? ?? '',
+      id: id,
+      fullName: fullName,
+      businessName: businessName,
+      avatar: avatar,
+      headline: headline,
       serviceTypes: (json['service_types'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
@@ -100,16 +119,20 @@ class ExploreProviderItemModel {
                   ServiceTypeChipModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
-      serviceArea: json['service_area'] as String? ?? '',
-      city: json['city'] as String? ?? '',
-      startingPrice: json['starting_price']?.toString() ?? '0.00',
-      currency: json['currency'] as String? ?? 'ZMW',
+      serviceArea: json['service_area']?.toString() ?? 'Lusaka',
+      city: json['city']?.toString() ?? 'Lusaka',
+      startingPrice: json['starting_price']?.toString() ??
+          json['price']?.toString() ??
+          '0.00',
+      currency: json['currency']?.toString() ?? 'ZMW',
       ratingAverage: parseRating(json['rating_average']),
       ratingCount: parseInt(json['rating_count']),
       totalJobsCompleted: parseInt(json['total_jobs_completed']),
       isVerified: json['is_verified'] as bool? ?? false,
       isAcceptingBookings: json['is_accepting_bookings'] as bool? ?? true,
-      isFavorited: json['is_favorited'] as bool? ?? false,
+      isFavorited: json['is_favorited'] as bool? ??
+          rawJson['is_favorited'] as bool? ??
+          false,
     );
   }
 
@@ -297,3 +320,102 @@ class ExploreProvidersResponseModel {
     );
   }
 }
+
+class FavoriteProvidersResponseModel {
+  final bool success;
+  final int count;
+  final List<ExploreProviderItemModel> data;
+
+  const FavoriteProvidersResponseModel({
+    required this.success,
+    required this.count,
+    required this.data,
+  });
+
+  factory FavoriteProvidersResponseModel.fromJson(dynamic json) {
+    if (json is List) {
+      final items = json
+          .map((e) => ExploreProviderItemModel.fromJson(
+              (e as Map<String, dynamic>)..putIfAbsent('is_favorited', () => true)))
+          .toList();
+      return FavoriteProvidersResponseModel(
+        success: true,
+        count: items.length,
+        data: items,
+      );
+    }
+    if (json is Map<String, dynamic>) {
+      final rawList =
+          (json['data'] ?? json['results']) as List<dynamic>? ?? [];
+      final items = rawList
+          .map((e) => ExploreProviderItemModel.fromJson(
+              (e as Map<String, dynamic>)..putIfAbsent('is_favorited', () => true)))
+          .toList();
+      return FavoriteProvidersResponseModel(
+        success: json['success'] as bool? ?? true,
+        count: json['count'] as int? ?? items.length,
+        data: items,
+      );
+    }
+    return const FavoriteProvidersResponseModel(
+      success: true,
+      count: 0,
+      data: [],
+    );
+  }
+}
+
+class ExploreFiltersResponseModel {
+  final bool success;
+  final List<String> categories;
+  final List<String> cities;
+  final double minPrice;
+  final double maxPrice;
+  final List<String> sortOptions;
+  final List<String> ratingOptions;
+
+  const ExploreFiltersResponseModel({
+    required this.success,
+    required this.categories,
+    required this.cities,
+    required this.minPrice,
+    required this.maxPrice,
+    required this.sortOptions,
+    required this.ratingOptions,
+  });
+
+  factory ExploreFiltersResponseModel.fromJson(Map<String, dynamic> json) {
+    final data = (json['data'] is Map<String, dynamic>)
+        ? json['data'] as Map<String, dynamic>
+        : json;
+
+    double parseDouble(dynamic val, double fallback) {
+      if (val is num) return val.toDouble();
+      if (val is String) return double.tryParse(val) ?? fallback;
+      return fallback;
+    }
+
+    return ExploreFiltersResponseModel(
+      success: json['success'] as bool? ?? true,
+      categories: (data['categories'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      cities: (data['cities'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      minPrice: parseDouble(data['min_price'], 0.0),
+      maxPrice: parseDouble(data['max_price'], 500.0),
+      sortOptions: (data['sort_options'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+      ratingOptions: (data['rating_options'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+    );
+  }
+}
+

@@ -3,6 +3,9 @@ import 'package:nchito/core/utils/assets_path/assets_path.dart';
 
 /// One row of conversation data shown on the Messages screen.
 class MessageData {
+  /// Conversation id — null for the static sample rows, set when mapped
+  /// from a real API response (needed to open the chat thread).
+  final String? id;
   final String avatarAsset;
   final String name;
   final String lastMessage;
@@ -21,6 +24,7 @@ class MessageData {
   final bool isMessagingUnavailable;
 
   const MessageData({
+    this.id,
     required this.avatarAsset,
     required this.name,
     required this.lastMessage,

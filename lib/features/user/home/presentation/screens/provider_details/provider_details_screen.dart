@@ -15,6 +15,7 @@ import 'package:nchito/features/user/home/presentation/screens/all_reviews/all_r
 import 'package:nchito/features/user/home/presentation/screens/provider_availability/provider_availability_screen.dart';
 import 'package:nchito/features/user/home/presentation/widgets/detail_field.dart';
 import 'package:nchito/features/user/home/presentation/widgets/home_sample_data.dart';
+import 'package:nchito/features/user/profile/presentation/providers/favorite_providers_notifier.dart';
 
 /// Full provider profile — displays dynamic provider details from API
 /// with safe default values for any null fields.
@@ -68,7 +69,15 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
             TopAppbar(
               title: AppText.providerDetails,
               trailing: GestureDetector(
-                onTap: () => setState(() => _isFavorite = !_isFavorite),
+                onTap: () async {
+                  final providerId = widget.provider.id;
+                  setState(() => _isFavorite = !_isFavorite);
+                  if (providerId != null && providerId.trim().isNotEmpty) {
+                    await context
+                        .read<FavoriteProvidersNotifier>()
+                        .toggleFavorite(providerId.trim());
+                  }
+                },
                 child: BgIcon(
                   assetPath: AssetsPath.exploreProviderDetailsIconFavoriteOutline,
                   bgColor: AppColors.brandSoft,
@@ -175,7 +184,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                       trailing: GestureDetector(
                         onTap: () => context.push(
                           AllReviewsScreen.routeName,
-                          extra: provider.reviewCount,
+                          extra: provider,
                         ),
                         child: BgIcon(
                           assetPath: AssetsPath.logInIconEyeToggle,

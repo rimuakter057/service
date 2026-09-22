@@ -19,12 +19,26 @@ import 'package:nchito/features/user/profile/presentation/screens/privacy_policy
 import 'package:nchito/features/user/profile/presentation/screens/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:nchito/features/common/common_widgets/app_logout_bottom_sheet/app_logout_bottom_sheet.dart';
 import 'package:nchito/features/user/profile/presentation/widgets/profile_menu_tile.dart';
+import 'package:nchito/features/user/profile/presentation/providers/user_profile_notifier.dart';
 
 /// User profile screen displaying user avatar, name, and options list.
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   static const String routeName = '/profile';
 
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserProfileNotifier>().fetchProfile();
+    });
+  }
 
   void _onLogOutTap(BuildContext context) {
     showModalBottomSheet(
@@ -68,40 +82,65 @@ class ProfileScreen extends StatelessWidget {
 
                     // Avatar & Name
                     Center(
-                      child: Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                ResponsiveHelper.borderRadius(24),
+                      child: Consumer<UserProfileNotifier>(
+                        builder: (context, profileNotifier, child) {
+                          final profile = profileNotifier.profile;
+                          final name = (profile?.fullName != null &&
+                                  profile!.fullName.trim().isNotEmpty)
+                              ? profile.fullName.trim()
+                              : AppText.userNameVaughan;
+                          final avatarUrl = profile?.avatar;
+
+                          return Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    ResponsiveHelper.borderRadius(24),
+                                  ),
+                                  border: Border.all(
+                                    color: AppColors.borderDefault,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                    ResponsiveHelper.borderRadius(22),
+                                  ),
+                                  child: (avatarUrl != null &&
+                                          avatarUrl.trim().isNotEmpty)
+                                      ? Image.network(
+                                          avatarUrl,
+                                          width: ResponsiveHelper.width(96),
+                                          height: ResponsiveHelper.width(96),
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) => Image.asset(
+                                            AssetsPath.avatarUser,
+                                            width: ResponsiveHelper.width(96),
+                                            height: ResponsiveHelper.width(96),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )
+                                      : Image.asset(
+                                          AssetsPath.avatarUser,
+                                          width: ResponsiveHelper.width(96),
+                                          height: ResponsiveHelper.width(96),
+                                          fit: BoxFit.cover,
+                                        ),
+                                ),
                               ),
-                              border: Border.all(
-                                color: AppColors.borderDefault,
-                                width: 1.5,
+                              SizedBox(height: ResponsiveHelper.spacing(12)),
+                              Text(
+                                name,
+                                style: context.titleMedium.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontStyle: FontStyle.italic,
+                                  color: AppColors.textBlackPrimary,
+                                ),
                               ),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(
-                                ResponsiveHelper.borderRadius(22),
-                              ),
-                              child: Image.asset(
-                                AssetsPath.avatarUser,
-                                width: ResponsiveHelper.width(96),
-                                height: ResponsiveHelper.width(96),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: ResponsiveHelper.spacing(12)),
-                          Text(
-                            AppText.userNameVaughan,
-                            style: context.titleMedium.copyWith(
-                              fontWeight: FontWeight.w700,
-                              fontStyle: FontStyle.italic,
-                              color: AppColors.textBlackPrimary,
-                            ),
-                          ),
-                        ],
+                            ],
+                          );
+                        },
                       ),
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(24)),

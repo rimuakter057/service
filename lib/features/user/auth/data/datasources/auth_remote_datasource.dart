@@ -100,7 +100,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     bool rememberMe = false,
   }) async {
     final response = await _apiClient.post(
-      ApiUrl.customerLogin,
+      ApiUrl.authLogin,
       data: {
         'identifier': identifier,
         'password': password,
