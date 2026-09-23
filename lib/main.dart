@@ -15,10 +15,10 @@ import 'features/user/home/presentation/providers/provider_detail_provider.dart'
 import 'features/user/home/presentation/providers/provider_availability_provider.dart';
 import 'features/user/home/presentation/providers/near_providers_notifier.dart';
 import 'features/user/home/presentation/providers/ongoing_bookings_notifier.dart';
+import 'features/user/home/presentation/providers/home_search_notifier.dart';
 import 'features/user/bookings/presentation/providers/booking_notifier.dart';
 import 'features/common/cms_support/presentation/providers/company_notifier.dart';
 import 'features/common/cms_support/presentation/providers/faq_notifier.dart';
-
 import 'features/user/bookings/presentation/providers/customer_bookings_notifier.dart';
 import 'features/user/bookings/presentation/providers/customer_booking_detail_notifier.dart';
 import 'features/user/bookings/presentation/providers/customer_dispute_notifier.dart';
@@ -49,6 +49,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => CustomerDisputeNotifier()),
         ChangeNotifierProvider(create: (_) => NearProvidersNotifier()),
         ChangeNotifierProvider(create: (_) => OngoingBookingsNotifier()),
+        ChangeNotifierProvider(create: (_) => HomeSearchNotifier()),
         ChangeNotifierProvider(create: (_) => CompanyNotifier()),
         ChangeNotifierProvider(create: (_) => ProviderCompanyNotifier()),
         ChangeNotifierProvider(create: (_) => FaqNotifier()),

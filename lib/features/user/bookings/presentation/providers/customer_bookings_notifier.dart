@@ -78,13 +78,16 @@ class CustomerBookingsNotifier extends ChangeNotifier {
       final response = await _getBookings(
         group: _selectedGroup == 'all' ? null : _selectedGroup,
         search: _searchQuery.trim().isNotEmpty ? _searchQuery.trim() : null,
+        page: 1,
+        pageSize: _pageSize,
       );
 
       _bookings = response.results;
       _totalCount = response.count;
       _totalPages = response.totalPages;
       _currentPage = response.currentPage;
-      _hasNextPage = response.next != null && response.next!.isNotEmpty;
+      _hasNextPage = (response.next != null && response.next!.isNotEmpty) ||
+          (_currentPage < _totalPages);
       _errorMessage = null;
     } on Failure catch (failure) {
       _errorMessage = failure.message;
@@ -113,10 +116,14 @@ class CustomerBookingsNotifier extends ChangeNotifier {
         pageSize: _pageSize,
       );
 
-      _bookings.addAll(response.results);
-      _currentPage = response.currentPage;
+      final existingIds = _bookings.map((b) => b.id).toSet();
+      final newItems = response.results.where((b) => !existingIds.contains(b.id));
+      _bookings.addAll(newItems);
+      _currentPage = response.currentPage > 0 ? response.currentPage : nextPage;
       _totalPages = response.totalPages;
-      _hasNextPage = response.next != null && response.next!.isNotEmpty;
+      _totalCount = response.count;
+      _hasNextPage = (response.next != null && response.next!.isNotEmpty) ||
+          (_currentPage < _totalPages);
       _loadMoreErrorMessage = null;
     } on Failure catch (failure) {
       _loadMoreErrorMessage = failure.message;

@@ -442,6 +442,42 @@ class ProviderBookingDetailModel {
     }).join(' ');
   }
 
+  static String _resolveCategoryIcon(String category) {
+    final lower = category.toLowerCase();
+    if (lower.contains('gardening') || lower.contains('landscaping')) {
+      return AssetsPath.categoryGardening;
+    } else if (lower.contains('moving') || lower.contains('relocation')) {
+      return AssetsPath.bookingIconMoving;
+    } else if (lower.contains('electrical')) {
+      return AssetsPath.bookingIconElectrical;
+    } else if (lower.contains('cleaning')) {
+      return AssetsPath.bookingIconCleaning;
+    } else if (lower.contains('plumbing')) {
+      return AssetsPath.categoryPlumbing;
+    } else if (lower.contains('painting') || lower.contains('decorating')) {
+      return AssetsPath.categoryPainting;
+    }
+    return AssetsPath.bookingIconCleaning;
+  }
+
+  static Color _resolveCategoryBgColor(String category) {
+    final lower = category.toLowerCase();
+    if (lower.contains('gardening') || lower.contains('landscaping')) {
+      return const Color(0xFFECFCCB); // lime-50
+    } else if (lower.contains('moving') || lower.contains('relocation')) {
+      return const Color(0xFFDBEAFE); // blue-50
+    } else if (lower.contains('electrical')) {
+      return const Color(0xFFFFF7ED); // orange-50
+    } else if (lower.contains('cleaning')) {
+      return const Color(0xFFD1FAE5); // emerald-50
+    } else if (lower.contains('plumbing')) {
+      return const Color(0xFFFEE2E2); // red-50
+    } else if (lower.contains('painting') || lower.contains('decorating')) {
+      return const Color(0xFFCCFBF1); // teal-50
+    }
+    return const Color(0xFFDBEAFE); // default blue-50
+  }
+
   String get displayPrice {
     final cur = (currency != null && currency!.trim().isNotEmpty)
         ? currency!.trim()
@@ -528,15 +564,29 @@ class ProviderBookingDetailModel {
         ? customerDetail!.contactPhone!.trim()
         : (counterparty?.contactPhone?.trim().isNotEmpty == true
             ? counterparty!.contactPhone!.trim()
-            : (counterparty?.email ?? ''));
+            : (counterparty?.email?.isNotEmpty == true
+                ? counterparty!.email!
+                : '–'));
+
+    final resolvedLocation =
+        (locationText != null && locationText!.isNotEmpty)
+            ? locationText!
+            : '–';
+
+    final resolvedDetails =
+        (instructions != null && instructions!.isNotEmpty)
+            ? instructions!
+            : (reference?.isNotEmpty == true
+                ? 'Booking ref: $reference'
+                : '–');
 
     return ProviderBookingData(
       id: id,
       customerName: resolvedCustomerName,
       service: resolvedServiceName,
       price: displayPrice,
-      iconAsset: AssetsPath.categoryCleaning,
-      iconBgColor: const Color(0xFFDBEAFE),
+      iconAsset: _resolveCategoryIcon(resolvedServiceName),
+      iconBgColor: _resolveCategoryBgColor(resolvedServiceName),
       day: () {
         try {
           return DateTime.parse(scheduledDate ?? '').day.toString().padLeft(2, '0');
@@ -557,16 +607,10 @@ class ProviderBookingDetailModel {
       }(),
       time: _formatDisplayTime(scheduledTime),
       status: resolvedStatus,
-      location: (locationText != null && locationText!.isNotEmpty)
-          ? locationText!
-          : 'Lusaka, Zambia',
+      location: resolvedLocation,
       fullDate: _formatDisplayDate(scheduledDate),
       fullTime: _formatDisplayTime(scheduledTime),
-      details: (instructions != null && instructions!.isNotEmpty)
-          ? instructions!
-          : (reference?.isNotEmpty == true
-              ? 'Booking reference: $reference'
-              : 'Service booking request.'),
+      details: resolvedDetails,
       customerPhoto: avatar,
       customerEmailOrPhone: phoneOrEmail,
     );

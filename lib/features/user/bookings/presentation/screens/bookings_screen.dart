@@ -37,6 +37,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   void _onScroll() {
+    if (!_scrollController.hasClients) return;
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       context.read<CustomerBookingsNotifier>().loadMoreBookings();
@@ -83,15 +84,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       notifier.errorMessage != null && notifier.bookings.isEmpty;
                   final isEmpty = notifier.isEmpty;
 
-                  // Item count calculation:
-                  // 1 (search bar) + [shimmer count OR bookings count + (loadingMore ? 1 : 0)]
+                  final showPaginationFooter =
+                      notifier.isLoadingMore || notifier.loadMoreErrorMessage != null;
                   int totalItems = 1;
                   if (isLoadingInitial) {
                     totalItems += 6; // 6 shimmer items
                   } else if (hasError || isEmpty) {
                     totalItems += 1; // error or empty message widget
                   } else {
-                    totalItems += bookings.length + (notifier.isLoadingMore ? 1 : 0);
+                    totalItems += bookings.length + (showPaginationFooter ? 1 : 0);
                   }
 
                   return RefreshIndicator(
@@ -187,10 +188,33 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           );
                         }
 
-                        // State 4: Load more pagination shimmer at the end
+                        // State 4: Load more pagination shimmer or error retry at the end
                         final bookingIndex = index - 1;
                         if (bookingIndex >= bookings.length) {
-                          return const BookingTileShimmer();
+                          if (notifier.isLoadingMore) {
+                            return const BookingTileShimmer();
+                          }
+                          if (notifier.loadMoreErrorMessage != null) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: ResponsiveHelper.padding(12),
+                              ),
+                              child: Center(
+                                child: TextButton(
+                                  onPressed: () =>
+                                      notifier.loadMoreBookings(),
+                                  child: Text(
+                                    '${notifier.loadMoreErrorMessage!} Tap to retry',
+                                    style: TextStyle(
+                                      fontSize: ResponsiveHelper.fontSize(12),
+                                      color: AppColors.red,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
                         }
 
                         // State 5: Real Booking Tile (100% exact design)

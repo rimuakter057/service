@@ -155,6 +155,42 @@ class ProviderBookingModel {
     }).join(' ');
   }
 
+  static String _resolveCategoryIcon(String category) {
+    final lower = category.toLowerCase();
+    if (lower.contains('gardening') || lower.contains('landscaping')) {
+      return AssetsPath.categoryGardening;
+    } else if (lower.contains('moving') || lower.contains('relocation')) {
+      return AssetsPath.bookingIconMoving;
+    } else if (lower.contains('electrical')) {
+      return AssetsPath.bookingIconElectrical;
+    } else if (lower.contains('cleaning')) {
+      return AssetsPath.bookingIconCleaning;
+    } else if (lower.contains('plumbing')) {
+      return AssetsPath.categoryPlumbing;
+    } else if (lower.contains('painting') || lower.contains('decorating')) {
+      return AssetsPath.categoryPainting;
+    }
+    return AssetsPath.bookingIconCleaning;
+  }
+
+  static Color _resolveCategoryBgColor(String category) {
+    final lower = category.toLowerCase();
+    if (lower.contains('gardening') || lower.contains('landscaping')) {
+      return const Color(0xFFECFCCB); // lime-50
+    } else if (lower.contains('moving') || lower.contains('relocation')) {
+      return const Color(0xFFDBEAFE); // blue-50
+    } else if (lower.contains('electrical')) {
+      return const Color(0xFFFFF7ED); // orange-50
+    } else if (lower.contains('cleaning')) {
+      return const Color(0xFFD1FAE5); // emerald-50
+    } else if (lower.contains('plumbing')) {
+      return const Color(0xFFFEE2E2); // red-50
+    } else if (lower.contains('painting') || lower.contains('decorating')) {
+      return const Color(0xFFCCFBF1); // teal-50
+    }
+    return const Color(0xFFDBEAFE); // default blue-50
+  }
+
   String get displayPrice {
     final cur = (currency != null && currency!.trim().isNotEmpty)
         ? currency!.trim()
@@ -204,34 +240,51 @@ class ProviderBookingModel {
 
     final resolvedServiceName = serviceTitle?.isNotEmpty == true
         ? serviceTitle!
-        : (serviceTypeName?.isNotEmpty == true ? serviceTypeName! : 'Service');
+        : (serviceTypeName?.isNotEmpty == true
+            ? serviceTypeName!
+            : (service?.isNotEmpty == true
+                ? service!
+                : _capitalize(serviceType).isNotEmpty
+                    ? _capitalize(serviceType)
+                    : 'Service'));
 
     final resolvedStatus = statusLabel?.isNotEmpty == true
         ? statusLabel!
         : (statusDisplay?.isNotEmpty == true ? statusDisplay! : _capitalize(status));
 
+    final resolvedCustomerName = customerName?.isNotEmpty == true
+        ? customerName!
+        : 'Customer';
+
+    final resolvedLocation = locationText.isNotEmpty ? locationText : '–';
+
+    final resolvedDetails = instructions.isNotEmpty
+        ? instructions
+        : (reference?.isNotEmpty == true
+            ? 'Booking ref: $reference'
+            : '–');
+
+    final resolvedPhoto =
+        (customerAvatar != null && customerAvatar!.trim().isNotEmpty)
+            ? customerAvatar!.trim()
+            : AssetsPath.avatarUser;
+
     return ProviderBookingData(
       id: id,
-      customerName: customerName?.isNotEmpty == true ? customerName! : 'Customer',
+      customerName: resolvedCustomerName,
       service: resolvedServiceName,
       price: displayPrice,
-      iconAsset: AssetsPath.categoryCleaning,
-      iconBgColor: const Color(0xFFDBEAFE),
+      iconAsset: _resolveCategoryIcon(resolvedServiceName),
+      iconBgColor: _resolveCategoryBgColor(resolvedServiceName),
       day: dayStr,
       month: monthStr,
       time: _formatDisplayTime(scheduledTime),
       status: resolvedStatus,
-      location: locationText.isNotEmpty ? locationText : 'Lusaka, Zambia',
+      location: resolvedLocation,
       fullDate: _formatDisplayDate(scheduledDate),
       fullTime: _formatDisplayTime(scheduledTime),
-      details: instructions.isNotEmpty
-          ? instructions
-          : (reference?.isNotEmpty == true
-              ? 'Booking reference: $reference'
-              : 'Service booking request.'),
-      customerPhoto: (customerAvatar != null && customerAvatar!.trim().isNotEmpty)
-          ? customerAvatar!.trim()
-          : AssetsPath.avatarUser,
+      details: resolvedDetails,
+      customerPhoto: resolvedPhoto,
       customerEmailOrPhone: '',
     );
   }

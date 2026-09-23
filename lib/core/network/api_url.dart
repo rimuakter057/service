@@ -49,6 +49,7 @@ class ApiUrl {
 
   // ===== Catalog / Categories =====
   static const String categories = '/customer/catalog/categories/';
+  static const String catalogSearch = '/customer/catalog/search/';
 
   // ===== Customer Providers =====
   static const String customerProviders = '/customer/providers/';

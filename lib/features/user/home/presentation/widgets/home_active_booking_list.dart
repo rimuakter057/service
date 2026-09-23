@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.dart';
 import 'package:nchito/features/user/home/presentation/providers/ongoing_bookings_notifier.dart';
-import 'package:nchito/features/user/home/presentation/screens/booking_details/home_booking_details_screen.dart';
+import 'package:nchito/features/user/bookings/presentation/screens/booking_details/booking_details_screen.dart';
 
 import 'booking_list_tile.dart';
 import 'home_sample_data.dart';
@@ -87,85 +87,78 @@ class _HomeActiveBookingListState extends State<HomeActiveBookingList> {
             ? notifier.homeBookings
             : homeActiveBookings;
 
+        final rawBookings = notifier.rawBookings;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ...bookings.map(
-              (booking) => Padding(
+            for (int i = 0; i < bookings.length; i++) ...[
+              Padding(
                 padding: EdgeInsets.only(bottom: ResponsiveHelper.spacing(12)),
                 child: BookingListTile(
-                  iconAsset: booking.iconAsset,
-                  iconBgColor: booking.iconBgColor,
-                  iconColor: booking.iconColor,
-                  providerName: booking.providerName,
-                  service: booking.service,
-                  price: booking.price,
-                  date: booking.date,
-                  time: booking.time,
-                  onTap: () => context.push(
-                    HomeBookingDetailsScreen.routeName,
-                    extra: booking,
+                  iconAsset: bookings[i].iconAsset,
+                  iconBgColor: bookings[i].iconBgColor,
+                  iconColor: bookings[i].iconColor,
+                  providerName: bookings[i].providerName,
+                  service: bookings[i].service,
+                  price: bookings[i].price,
+                  date: bookings[i].date,
+                  time: bookings[i].time,
+                  onTap: () {
+                    final bookingHistory = i < rawBookings.length
+                        ? rawBookings[i].toBookingHistoryData()
+                        : null;
+                    if (bookingHistory != null) {
+                      context.push(
+                        BookingDetailsScreen.routeName,
+                        extra: bookingHistory,
+                      );
+                    } else if (bookings[i].id != null &&
+                        bookings[i].id!.isNotEmpty) {
+                      context.push(
+                        BookingDetailsScreen.routeName,
+                        extra: bookings[i].id,
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+
+            // Pagination: Show loading spinner automatically on scroll
+            if (notifier.isLoadingMore) ...[
+              SizedBox(height: ResponsiveHelper.spacing(8)),
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: ResponsiveHelper.padding(8),
+                  ),
+                  child: const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.brandPrimary,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-
-            // Pagination: Load More button / indicator if has next page
-            if (notifier.hasNextPage) ...[
+            ] else if (notifier.loadMoreErrorMessage != null) ...[
               SizedBox(height: ResponsiveHelper.spacing(4)),
               Center(
-                child: notifier.isLoadingMore
-                    ? Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: ResponsiveHelper.padding(8),
-                        ),
-                        child: const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.brandPrimary,
-                            ),
-                          ),
-                        ),
-                      )
-                    : TextButton(
-                        onPressed: () => notifier.loadMore(),
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: ResponsiveHelper.padding(16),
-                            vertical: ResponsiveHelper.padding(8),
-                          ),
-                          backgroundColor: AppColors.brandSoft,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              ResponsiveHelper.borderRadius(8),
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          'Load More Bookings',
-                          style: TextStyle(
-                            fontSize: ResponsiveHelper.fontSize(12),
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.brandPrimary,
-                          ),
-                        ),
-                      ),
-              ),
-              if (notifier.loadMoreErrorMessage != null) ...[
-                SizedBox(height: ResponsiveHelper.spacing(4)),
-                Center(
+                child: TextButton(
+                  onPressed: () => notifier.loadMore(),
                   child: Text(
-                    notifier.loadMoreErrorMessage!,
+                    '${notifier.loadMoreErrorMessage!} Tap to retry',
                     style: TextStyle(
                       fontSize: ResponsiveHelper.fontSize(11),
                       color: AppColors.red,
                     ),
                   ),
                 ),
-              ],
+              ),
             ],
           ],
         );

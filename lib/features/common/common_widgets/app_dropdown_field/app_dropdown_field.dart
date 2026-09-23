@@ -12,6 +12,7 @@ class AppDropdownField extends StatelessWidget {
   final String hint;
   final String? value;
   final VoidCallback onTap;
+  final Widget? trailingIcon;
 
   const AppDropdownField({
     super.key,
@@ -19,6 +20,7 @@ class AppDropdownField extends StatelessWidget {
     required this.hint,
     required this.value,
     required this.onTap,
+    this.trailingIcon,
   });
 
   @override
@@ -51,20 +53,23 @@ class AppDropdownField extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  value ?? hint,
-                  style: context.bodyMedium.copyWith(
-                    color: value != null
-                        ? AppColors.textBlackPrimary
-                        : AppColors.textGrey,
-                    fontWeight: FontWeight.w500,
+                Expanded(
+                  child: Text(
+                    value ?? hint,
+                    style: context.bodyMedium.copyWith(
+                      color: value != null
+                          ? AppColors.textBlackPrimary
+                          : AppColors.textGrey,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-                Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: AppColors.textGrey,
-                  size: ResponsiveHelper.iconSize(22),
-                ),
+                trailingIcon ??
+                    Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: AppColors.textGrey,
+                      size: ResponsiveHelper.iconSize(22),
+                    ),
               ],
             ),
           ),

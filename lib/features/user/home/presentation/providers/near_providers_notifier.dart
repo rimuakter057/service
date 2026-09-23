@@ -47,21 +47,15 @@ class NearProvidersNotifier extends ChangeNotifier {
   bool _hasNextPage = false;
   bool get hasNextPage => _hasNextPage;
 
-  String _city = 'Lusaka';
-  String get city => _city;
-
   double? _lat;
   double? get lat => _lat;
 
   double? _lng;
   double? get lng => _lng;
 
-  void setCity(String newCity) {
-    if (_city != newCity) {
-      _city = newCity;
-      fetchNearProviders(refresh: true);
-    }
-  }
+  /// Default Lusaka, Zambia coordinates used as fallback if device GPS is unavailable
+  static const double defaultLat = -15.3875;
+  static const double defaultLng = 28.3228;
 
   void setLocation({double? lat, double? lng}) {
     _lat = lat;
@@ -69,7 +63,7 @@ class NearProvidersNotifier extends ChangeNotifier {
     fetchNearProviders(refresh: true);
   }
 
-  /// Initial or refreshed fetch of near providers with current GPS coordinates
+  /// Initial or refreshed fetch of near providers with current GPS coordinates and sort=nearest
   Future<void> fetchNearProviders({bool refresh = false}) async {
     _currentPage = 1;
     _isLoading = true;
@@ -87,14 +81,15 @@ class NearProvidersNotifier extends ChangeNotifier {
         if (position != null) {
           _lat = position.latitude;
           _lng = position.longitude;
+        } else {
+          // Fallback coordinates for Lusaka so we always query by lat/lng
+          _lat = defaultLat;
+          _lng = defaultLng;
         }
       }
 
       final res = await _getExploreProviders(
-        city: (_lat == null || _lng == null)
-            ? (_city.isNotEmpty ? _city : null)
-            : null,
-        sort: (_lat != null && _lng != null) ? 'nearest' : null,
+        sort: 'nearest',
         lat: _lat,
         lng: _lng,
         page: 1,
@@ -129,12 +124,9 @@ class NearProvidersNotifier extends ChangeNotifier {
 
     try {
       final res = await _getExploreProviders(
-        city: (_lat == null || _lng == null)
-            ? (_city.isNotEmpty ? _city : null)
-            : null,
-        sort: (_lat != null && _lng != null) ? 'nearest' : null,
-        lat: _lat,
-        lng: _lng,
+        sort: 'nearest',
+        lat: _lat ?? defaultLat,
+        lng: _lng ?? defaultLng,
         page: nextPage,
         pageSize: _pageSize,
       );

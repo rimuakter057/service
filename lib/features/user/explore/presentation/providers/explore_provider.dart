@@ -5,6 +5,7 @@ import '../../data/models/explore_provider_model.dart';
 import '../../data/repositories/explore_repository_impl.dart';
 import '../../domain/repositories/explore_repository.dart';
 import '../../domain/usecases/get_explore_providers.dart';
+import 'package:nchito/core/services/location_service.dart';
 import '../widgets/explore_sample_data.dart';
 
 class ExploreProviderNotifier extends ChangeNotifier {
@@ -65,6 +66,11 @@ class ExploreProviderNotifier extends ChangeNotifier {
   double? _currentMinRating;
   String? _currentSort;
   String? _currentDate;
+  double? _currentLat;
+  double? _currentLng;
+
+  static const double defaultLat = -15.3875;
+  static const double defaultLng = 28.3228;
 
   String? get currentCategory => _currentCategory;
   String? get currentCity => _currentCity;
@@ -73,6 +79,8 @@ class ExploreProviderNotifier extends ChangeNotifier {
   double? get currentMinRating => _currentMinRating;
   String? get currentSort => _currentSort;
   String? get currentDate => _currentDate;
+  double? get currentLat => _currentLat;
+  double? get currentLng => _currentLng;
 
   bool get hasActiveFilters =>
       (_currentCategory != null && _currentCategory!.isNotEmpty) ||
@@ -94,6 +102,8 @@ class ExploreProviderNotifier extends ChangeNotifier {
     double? minRating,
     String? sort,
     String? date,
+    double? lat,
+    double? lng,
   }) async {
     _currentCategory = category;
     _currentCity = city;
@@ -102,6 +112,8 @@ class ExploreProviderNotifier extends ChangeNotifier {
     _currentMinRating = minRating;
     _currentSort = sort;
     _currentDate = date;
+    _currentLat = lat;
+    _currentLng = lng;
 
     await fetchProviders(refresh: true);
   }
@@ -115,6 +127,8 @@ class ExploreProviderNotifier extends ChangeNotifier {
     _currentMinRating = null;
     _currentSort = null;
     _currentDate = null;
+    _currentLat = null;
+    _currentLng = null;
 
     await fetchProviders(refresh: true);
   }
@@ -129,6 +143,8 @@ class ExploreProviderNotifier extends ChangeNotifier {
     _currentMinRating = null;
     _currentSort = null;
     _currentDate = null;
+    _currentLat = null;
+    _currentLng = null;
 
     await fetchProviders(search: '', refresh: true);
   }
@@ -143,6 +159,8 @@ class ExploreProviderNotifier extends ChangeNotifier {
     double? minRating,
     String? sort,
     String? date,
+    double? lat,
+    double? lng,
     bool refresh = false,
   }) async {
     if (search != null) _searchQuery = search;
@@ -153,6 +171,22 @@ class ExploreProviderNotifier extends ChangeNotifier {
     if (minRating != null) _currentMinRating = minRating;
     if (sort != null) _currentSort = sort;
     if (date != null) _currentDate = date;
+    if (lat != null) _currentLat = lat;
+    if (lng != null) _currentLng = lng;
+
+    // If sorting by nearest, automatically acquire device lat/lng if not provided
+    if (_currentSort == 'nearest') {
+      if (_currentLat == null || _currentLng == null) {
+        final position = await LocationService.getCurrentPosition();
+        if (position != null) {
+          _currentLat = position.latitude;
+          _currentLng = position.longitude;
+        } else {
+          _currentLat = defaultLat;
+          _currentLng = defaultLng;
+        }
+      }
+    }
 
     _currentPage = 1;
     _isLoading = true;
@@ -173,6 +207,8 @@ class ExploreProviderNotifier extends ChangeNotifier {
         minRating: _currentMinRating,
         sort: _currentSort,
         date: _currentDate,
+        lat: _currentLat,
+        lng: _currentLng,
         page: 1,
         pageSize: _pageSize,
       );
@@ -216,6 +252,8 @@ class ExploreProviderNotifier extends ChangeNotifier {
         minRating: _currentMinRating,
         sort: _currentSort,
         date: _currentDate,
+        lat: _currentLat,
+        lng: _currentLng,
         page: nextPage,
         pageSize: _pageSize,
       );

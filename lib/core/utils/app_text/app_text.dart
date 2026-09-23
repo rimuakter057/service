@@ -819,6 +819,15 @@ class AppText {
       "Customer Canceled This Booking";
   static const String on27Aug2026 = "On 27 Aug 2026 – 06:20 AM";
   static const String noReviewYet = "No Review Yet";
+  static const String startService = "Start Service";
+  static const String resendCompletionCode = "Resend OTP Code";
+  static const String startServiceConfirmTitle = "Start Service?";
+  static const String startServiceConfirmDescription =
+      "Are you sure you want to start this service? The booking will be marked as In Progress.";
+  static const String bookingStartedSuccessfully =
+      "Booking started successfully!";
+  static const String completionCodeResentSuccessfully =
+      "Completion code resent successfully!";
 
   // ==========================================================
   // MY SERVICES SCREEN (PROVIDER_SERVICES_SECTION)
@@ -908,4 +917,6 @@ class AppText {
   static const String areYouSureYouWantToAddThisService =
       "Are you sure you want to add this service to your profile! Customers will be able to view and book this service once it is approved.";
   static const String twoOngoingBookings = "2 Ongoing Bookings";
+  static const String noPendingRequestsYet = "No pending requests yet";
+  static const String noBookingsForToday = "No bookings for today";
 }

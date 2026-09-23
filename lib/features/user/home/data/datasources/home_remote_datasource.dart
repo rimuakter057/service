@@ -3,6 +3,7 @@ import 'package:nchito/core/network/api_url.dart';
 import '../models/category_model.dart';
 import '../models/provider_detail_model.dart';
 import '../models/provider_day_availability_model.dart';
+import '../models/catalog_search_model.dart';
 
 abstract class HomeRemoteDataSource {
   Future<List<CategoryModel>> getCategories();
@@ -11,6 +12,7 @@ abstract class HomeRemoteDataSource {
     String providerId, {
     String? date,
   });
+  Future<CatalogSearchResultModel> searchCatalog(String query);
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
@@ -67,6 +69,19 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       return ProviderDayAvailabilityModel.fromJson(map);
     }
     throw FormatException('Unexpected response format: $responseData');
+  }
+
+  @override
+  Future<CatalogSearchResultModel> searchCatalog(String query) async {
+    final response = await _apiClient.get(
+      ApiUrl.catalogSearch,
+      queryParameters: {'q': query},
+    );
+    final responseData = response.data;
+    if (responseData is Map<String, dynamic>) {
+      return CatalogSearchResultModel.fromJson(responseData);
+    }
+    return const CatalogSearchResultModel(services: [], providers: []);
   }
 }
 

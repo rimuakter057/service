@@ -1,5 +1,6 @@
 import '../../data/models/provider_detail_model.dart';
 import '../../data/models/provider_day_availability_model.dart';
+import '../../data/models/catalog_search_model.dart';
 import '../entities/category.dart';
 
 abstract class HomeRepository {
@@ -9,5 +10,6 @@ abstract class HomeRepository {
     String providerId, {
     String? date,
   });
+  Future<CatalogSearchResultModel> searchCatalog(String query);
 }
 

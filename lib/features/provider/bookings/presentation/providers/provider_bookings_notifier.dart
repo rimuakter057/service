@@ -40,6 +40,16 @@ class ProviderBookingsNotifier extends ChangeNotifier {
   String _searchQuery = '';
   String get searchQuery => _searchQuery;
 
+  /// YYYY-MM-DD date filter — set via calendar tap; mutually exclusive
+  /// with [_filterToday].
+  String? _selectedDate;
+  String? get selectedDate => _selectedDate;
+
+  /// When true, passes `today=true` to the API (Home screen's
+  /// "Today's Bookings" section).  Cleared whenever [_selectedDate] is set.
+  bool _filterToday = false;
+  bool get filterToday => _filterToday;
+
   int _currentPage = 1;
   int get currentPage => _currentPage;
 
@@ -61,6 +71,8 @@ class ProviderBookingsNotifier extends ChangeNotifier {
 
   bool get hasSearchQuery => _searchQuery.trim().isNotEmpty;
 
+  bool get hasDateFilter => _selectedDate != null || _filterToday;
+
   bool get isEmpty => !_isLoading && _bookings.isEmpty;
 
   Timer? _debounceTimer;
@@ -79,13 +91,18 @@ class ProviderBookingsNotifier extends ChangeNotifier {
       final response = await _getBookings(
         group: _selectedGroup == 'all' ? null : _selectedGroup,
         search: _searchQuery.trim().isNotEmpty ? _searchQuery.trim() : null,
+        date: _selectedDate,
+        today: _filterToday ? true : null,
+        page: 1,
+        pageSize: _pageSize,
       );
 
       _bookings = response.results;
       _totalCount = response.count;
       _totalPages = response.totalPages;
       _currentPage = response.currentPage;
-      _hasNextPage = response.next != null && response.next!.isNotEmpty;
+      _hasNextPage = (response.next != null && response.next!.isNotEmpty) ||
+          (_currentPage < _totalPages);
       _errorMessage = null;
     } on Failure catch (failure) {
       _errorMessage = failure.message;
@@ -109,14 +126,20 @@ class ProviderBookingsNotifier extends ChangeNotifier {
       final response = await _getBookings(
         group: _selectedGroup == 'all' ? null : _selectedGroup,
         search: _searchQuery.trim().isNotEmpty ? _searchQuery.trim() : null,
+        date: _selectedDate,
+        today: _filterToday ? true : null,
         page: nextPage,
         pageSize: _pageSize,
       );
 
-      _bookings.addAll(response.results);
-      _currentPage = response.currentPage;
+      final existingIds = _bookings.map((b) => b.id).toSet();
+      final newItems = response.results.where((b) => !existingIds.contains(b.id));
+      _bookings.addAll(newItems);
+      _currentPage = response.currentPage > 0 ? response.currentPage : nextPage;
       _totalPages = response.totalPages;
-      _hasNextPage = response.next != null && response.next!.isNotEmpty;
+      _totalCount = response.count;
+      _hasNextPage = (response.next != null && response.next!.isNotEmpty) ||
+          (_currentPage < _totalPages);
       _loadMoreErrorMessage = null;
     } on Failure catch (failure) {
       _loadMoreErrorMessage = failure.message;
@@ -126,6 +149,29 @@ class ProviderBookingsNotifier extends ChangeNotifier {
       _isLoadingMore = false;
       notifyListeners();
     }
+  }
+
+  /// Filter by a specific calendar date (format: YYYY-MM-DD).
+  Future<void> fetchBookingsByDate(DateTime date) async {
+    _selectedDate =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    _filterToday = false;
+    await fetchBookings(refresh: true);
+  }
+
+  /// Filter with `today=true` — used on the Home screen and the
+  /// "Today" shortcut on the Bookings screen.
+  Future<void> fetchTodaysBookings() async {
+    _filterToday = true;
+    _selectedDate = null;
+    await fetchBookings(refresh: true);
+  }
+
+  /// Remove date/today filter and reload all bookings.
+  Future<void> clearDateFilter() async {
+    _selectedDate = null;
+    _filterToday = false;
+    await fetchBookings(refresh: true);
   }
 
   Future<void> applyFilter(String groupValue) async {
@@ -150,6 +196,8 @@ class ProviderBookingsNotifier extends ChangeNotifier {
   Future<void> resetFilters() async {
     _selectedGroup = 'all';
     _searchQuery = '';
+    _selectedDate = null;
+    _filterToday = false;
     _debounceTimer?.cancel();
     await fetchBookings(refresh: true);
   }

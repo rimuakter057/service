@@ -7,10 +7,34 @@ import 'package:nchito/core/utils/helpers/responsive_helper/responsive_helper.da
 import 'package:nchito/core/utils/app_colors/app_colors.dart';
 import 'package:nchito/core/utils/assets_path/assets_path.dart';
 
-class HomeHeader extends StatelessWidget {
+import 'package:provider/provider.dart';
+import '../providers/home_search_notifier.dart';
+
+class HomeHeader extends StatefulWidget {
   final VoidCallback? onNotificationTap;
 
   const HomeHeader({super.key, this.onNotificationTap});
+
+  @override
+  State<HomeHeader> createState() => _HomeHeaderState();
+}
+
+class _HomeHeaderState extends State<HomeHeader> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +48,6 @@ class HomeHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Row(
             children: [
               ClipRRect(
@@ -46,7 +69,7 @@ class HomeHeader extends StatelessWidget {
                       style: context.titleMedium.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: ResponsiveHelper.fontSize(17),
-                        color: AppColors.textBlackPrimary
+                        color: AppColors.textBlackPrimary,
                       ),
                     ),
                     SizedBox(height: ResponsiveHelper.spacing(4)),
@@ -55,7 +78,6 @@ class HomeHeader extends StatelessWidget {
                         AppIcon(
                           assetPath: AssetsPath.iconLocation,
                           size: ResponsiveHelper.iconSize(14),
-
                         ),
                         SizedBox(width: ResponsiveHelper.spacing(4)),
                         Text(
@@ -69,7 +91,6 @@ class HomeHeader extends StatelessWidget {
                         AppIcon(
                           assetPath: AssetsPath.dropDown,
                           size: ResponsiveHelper.iconSize(14),
-
                         ),
                       ],
                     ),
@@ -77,7 +98,7 @@ class HomeHeader extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: onNotificationTap,
+                onTap: widget.onNotificationTap,
                 child: BgIcon(
                   assetPath: AssetsPath.iconNotification,
                   bgColor: AppColors.brandSoft,
@@ -115,6 +136,15 @@ class HomeHeader extends StatelessWidget {
                 AppSearchField(
                   hint: 'Search for a service....',
                   searchIconAsset: AssetsPath.iconSearch,
+                  controller: _searchController,
+                  onChanged: (val) =>
+                      context.read<HomeSearchNotifier>().onSearchChanged(val),
+                  onSubmitted: (val) =>
+                      context.read<HomeSearchNotifier>().searchImmediately(val),
+                  onClear: () {
+                    _searchController.clear();
+                    context.read<HomeSearchNotifier>().clearSearch();
+                  },
                 ),
               ],
             ),

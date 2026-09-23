@@ -28,10 +28,16 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
+  /// Locally tracked selected date so we can reset the calendar when
+  /// the user clears the date filter.
+  DateTime? _calendarSelectedDate;
+
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    final now = DateTime.now();
+    _calendarSelectedDate = DateTime(now.year, now.month, now.day);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProviderBookingsNotifier>().fetchBookings();
     });
@@ -57,6 +63,27 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> {
         },
       ),
     );
+  }
+
+  /// Called when the user taps a day in the calendar.
+  void _onDateSelected(DateTime date) {
+    setState(() => _calendarSelectedDate = date);
+    context.read<ProviderBookingsNotifier>().fetchBookingsByDate(date);
+  }
+
+  /// Called by the "Today" chip — filters with today=true.
+  void _onTodayTap(ProviderBookingsNotifier notifier) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    setState(() => _calendarSelectedDate = today);
+    notifier.fetchTodaysBookings();
+  }
+
+  /// Called by the "Clear" chip — removes date filter.
+  void _onClearDate(ProviderBookingsNotifier notifier) {
+    final now = DateTime.now();
+    setState(() => _calendarSelectedDate = DateTime(now.year, now.month, now.day));
+    notifier.clearDateFilter();
   }
 
   @override
@@ -93,8 +120,8 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> {
                       notifier.errorMessage != null && notifier.bookings.isEmpty;
                   final isEmpty = notifier.isEmpty;
 
-                  // Item count: 1 (search bar + calendar) + [shimmer OR
-                  // error/empty OR bookings + (loadingMore ? 1 : 0)]
+                  // Item count: 1 (search bar + calendar + date chips) +
+                  // [shimmer OR error/empty OR bookings + (loadingMore ? 1 : 0)]
                   int totalItems = 1;
                   if (isLoadingInitial) {
                     totalItems += 6;
@@ -134,7 +161,48 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> {
                                   onFilterTap: _onFilterTap,
                                 ),
                               ),
-                              const AppCalendar(),
+
+                              // Calendar with date-tap integration
+                              AppCalendar(
+                                initialSelectedDate: _calendarSelectedDate,
+                                onDateSelected: _onDateSelected,
+                              ),
+
+                              SizedBox(height: ResponsiveHelper.spacing(10)),
+
+                              // Date filter chips
+                              Row(
+                                children: [
+                                  // "Today" shortcut chip
+                                  _DateFilterChip(
+                                    label: AppText.today,
+                                    isActive: notifier.filterToday,
+                                    onTap: () => _onTodayTap(notifier),
+                                  ),
+                                  SizedBox(width: ResponsiveHelper.spacing(8)),
+
+                                  // Show selected date if filtering by date
+                                  if (notifier.selectedDate != null)
+                                    _DateFilterChip(
+                                      label: _formatChipDate(
+                                          notifier.selectedDate!),
+                                      isActive: true,
+                                      onTap: () => _onClearDate(notifier),
+                                      showClose: true,
+                                    ),
+
+                                  // Clear all date filter
+                                  if (notifier.hasDateFilter) ...[
+                                    SizedBox(width: ResponsiveHelper.spacing(8)),
+                                    _DateFilterChip(
+                                      label: 'All Dates',
+                                      isActive: false,
+                                      onTap: () => _onClearDate(notifier),
+                                    ),
+                                  ],
+                                ],
+                              ),
+
                               SizedBox(height: ResponsiveHelper.spacing(14)),
                             ],
                           );
@@ -227,6 +295,77 @@ class _ProviderBookingsScreenState extends State<ProviderBookingsScreen> {
         ),
       ),
       bottomNavigationBar: const ProviderBottomNavBar(currentIndex: 1),
+    );
+  }
+
+  String _formatChipDate(String yyyyMmDd) {
+    try {
+      final dt = DateTime.parse(yyyyMmDd);
+      const months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ];
+      return '${dt.day} ${months[dt.month - 1]}';
+    } catch (_) {
+      return yyyyMmDd;
+    }
+  }
+}
+
+/// Small pill-chip for the date filter row.
+class _DateFilterChip extends StatelessWidget {
+  final String label;
+  final bool isActive;
+  final bool showClose;
+  final VoidCallback onTap;
+
+  const _DateFilterChip({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+    this.showClose = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveHelper.padding(12),
+          vertical: ResponsiveHelper.padding(6),
+        ),
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.brandPrimary : AppColors.white,
+          borderRadius: BorderRadius.circular(ResponsiveHelper.borderRadius(100)),
+          border: Border.all(
+            color: isActive ? AppColors.brandPrimary : AppColors.borderDefault,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: ResponsiveHelper.fontSize(11),
+                fontWeight: FontWeight.w600,
+                color: isActive ? AppColors.white : AppColors.textSecondary,
+              ),
+            ),
+            if (showClose) ...[
+              SizedBox(width: ResponsiveHelper.spacing(4)),
+              Icon(
+                Icons.close_rounded,
+                size: ResponsiveHelper.iconSize(12),
+                color: isActive ? AppColors.white : AppColors.textSecondary,
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

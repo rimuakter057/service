@@ -461,8 +461,17 @@ class AppRouter {
       ///============= explore section user ============
       GoRoute(
         path: HomeBookingDetailsScreen.routeName,
-        builder: (context, state) =>
-            HomeBookingDetailsScreen(booking: state.extra as HomeBookingData),
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is HomeBookingData) {
+            return BookingDetailsScreen(bookingId: extra.id);
+          } else if (extra is BookingHistoryData) {
+            return BookingDetailsScreen(booking: extra, bookingId: extra.id);
+          } else if (extra is String) {
+            return BookingDetailsScreen(bookingId: extra);
+          }
+          return const BookingDetailsScreen();
+        },
       ),
       GoRoute(
         path: ExploreProviderScreen.routeName,
@@ -544,6 +553,11 @@ class AppRouter {
             final data = state.extra as BookingHistoryData;
             return BookingDetailsScreen(
               booking: data,
+              bookingId: data.id,
+            );
+          } else if (state.extra is HomeBookingData) {
+            final data = state.extra as HomeBookingData;
+            return BookingDetailsScreen(
               bookingId: data.id,
             );
           } else if (state.extra is String) {

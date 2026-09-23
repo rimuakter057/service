@@ -244,12 +244,16 @@ class ExploreProviderItemModel {
     final cleanName = fullName.isNotEmpty ? fullName : businessName;
     final mockEmail = '${cleanName.toLowerCase().replaceAll(RegExp(r'\s+'), '.')}@gmail.com';
     final service = primaryServiceName;
+    final firstTypeId = serviceTypes.isNotEmpty
+        ? serviceTypes.first
+        : (serviceTypeChips.isNotEmpty ? serviceTypeChips.first.id : null);
 
     return HomeProviderData(
       id: id,
       photo: photoPath,
       name: cleanName.isNotEmpty ? cleanName : 'Service Provider',
       service: service,
+      serviceTypeId: firstTypeId,
       price: displayPrice,
       rating: displayRating,
       email: mockEmail,
@@ -260,12 +264,21 @@ class ExploreProviderItemModel {
           : 'Experienced and certified specialist offering top-quality $service services across Lusaka.',
       reviewCount: ratingCount.toString(),
       totalJobsCompleted: totalJobsCompleted.toString(),
-      tags: [
-        ProviderTag(
-          iconAsset: badge.iconAsset,
-          label: service,
-        ),
-      ],
+      tags: serviceTypeChips.isNotEmpty
+          ? serviceTypeChips
+              .map((c) => ProviderTag(
+                    iconAsset: badge.iconAsset,
+                    label: c.name,
+                    id: c.id,
+                  ))
+              .toList()
+          : [
+              ProviderTag(
+                iconAsset: badge.iconAsset,
+                label: service,
+                id: firstTypeId,
+              ),
+            ],
     );
   }
 }

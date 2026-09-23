@@ -208,14 +208,37 @@ class ProviderDetailModel {
         ? serviceTypeNames.first
         : (fallback?.service.isNotEmpty == true ? fallback!.service : 'Professional Service');
 
+    final firstTypeId = serviceTypes.isNotEmpty
+        ? serviceTypes.first
+        : (serviceTypeChips.isNotEmpty
+            ? serviceTypeChips.first['id']?.toString()
+            : fallback?.serviceTypeId);
+
     // Tags list
     final List<ProviderTag> resolvedTags = [];
-    if (serviceTypeNames.isNotEmpty) {
-      for (final name in serviceTypeNames) {
+    if (serviceTypeChips.isNotEmpty) {
+      for (final chip in serviceTypeChips) {
+        final name = chip['name']?.toString() ?? '';
+        final id = chip['id']?.toString();
+        if (name.isNotEmpty) {
+          resolvedTags.add(
+            ProviderTag(
+              iconAsset: _resolveCategoryIcon(name),
+              label: name,
+              id: id,
+            ),
+          );
+        }
+      }
+    } else if (serviceTypeNames.isNotEmpty) {
+      for (int i = 0; i < serviceTypeNames.length; i++) {
+        final name = serviceTypeNames[i];
+        final id = i < serviceTypes.length ? serviceTypes[i] : null;
         resolvedTags.add(
           ProviderTag(
             iconAsset: _resolveCategoryIcon(name),
             label: name,
+            id: id,
           ),
         );
       }
@@ -226,6 +249,7 @@ class ProviderDetailModel {
         ProviderTag(
           iconAsset: _resolveCategoryIcon(primaryService),
           label: primaryService,
+          id: firstTypeId,
         ),
       );
     }
@@ -236,10 +260,11 @@ class ProviderDetailModel {
         : (fallback?.photo.isNotEmpty == true ? fallback!.photo : AssetsPath.providerRobert);
 
     return HomeProviderData(
-      id: id.isNotEmpty ? id : fallback?.id,
+      id: id,
       photo: resolvedPhoto,
       name: cleanName,
       service: primaryService,
+      serviceTypeId: firstTypeId,
       price: startingPrice.isNotEmpty ? '$currency $startingPrice' : (fallback?.price ?? 'ZMW 100'),
       rating: ratingAverage > 0 ? ratingAverage.toStringAsFixed(1) : (fallback?.rating ?? '5.0'),
       email: resolvedEmail,

@@ -14,6 +14,7 @@ import 'package:nchito/features/common/common_widgets/app_icon/app_icon.dart';
 import 'package:nchito/features/common/common_widgets/app_icon/bg_icon.dart';
 import 'package:nchito/features/common/common_widgets/app_select_sheet/app_select_sheet.dart';
 import 'package:nchito/features/user/bookings/data/models/booking_model.dart';
+import 'package:nchito/features/user/bookings/data/repositories/booking_repository_impl.dart';
 import 'package:nchito/features/user/bookings/presentation/providers/booking_notifier.dart';
 import 'package:nchito/features/user/bookings/presentation/screens/booking_details/booking_details_screen.dart';
 import 'package:nchito/features/user/home/presentation/screens/provider_details/provider_details_screen.dart';
@@ -26,21 +27,30 @@ const List<String> _defaultServiceTypeOptions = [
   'Plumbing',
   'Moving & Relocation',
   'Painting & Decorating',
+  'Beauty & Personal Care',
 ];
 
-const List<String> _availableSlotOptions = [
-  '8:00 AM – 10:00 AM',
-  '10:30 AM – 12:30 PM',
-  '1:00 PM – 3:00 PM',
-  '3:30 PM – 5:30 PM',
-];
-
-const Map<String, String> _slotToTimeMap = {
-  '8:00 AM – 10:00 AM': '08:00:00',
-  '10:30 AM – 12:30 PM': '10:30:00',
-  '1:00 PM – 3:00 PM': '13:00:00',
-  '3:30 PM – 5:30 PM': '15:30:00',
+const Map<String, String> _knownCategoryNameToIdMap = {
+  'Cleaning': '6a8e703141a4558c444a1e92',
+  'Plumbing': '6a8e703141a4558c444a1e93',
+  'Electrical': '6a8e703141a4558c444a1e94',
+  'Gardening & Landscaping': '6a8e703141a4558c444a1e95',
+  'Gardening': '6a8e703141a4558c444a1e95',
+  'Home Maintenance': '6a8e703241a4558c444a1e96',
+  'Painting & Decorating': '6a8e703241a4558c444a1e97',
+  'Painting': '6a8e703241a4558c444a1e97',
+  'Moving & Relocation': '6a8e703241a4558c444a1e98',
+  'Moving': '6a8e703241a4558c444a1e98',
+  'Beauty & Personal Care': '6a8e703241a4558c444a1e99',
+  'Beauty': '6a8e703241a4558c444a1e99',
+  'Personal Care': '6a8e703241a4558c444a1e99',
 };
+
+bool _isValidObjectId(String? str) {
+  if (str == null || str.trim().length != 24) return false;
+  return RegExp(r'^[0-9a-fA-F]{24}$').hasMatch(str.trim());
+}
+
 
 class BookAServiceScreen extends StatefulWidget {
   static const String routeName = '/book-a-service';
@@ -66,10 +76,12 @@ class BookAServiceScreen extends StatefulWidget {
 
 class _BookAServiceScreenState extends State<BookAServiceScreen> {
   String? _selectedServiceType;
-  String? _selectedSlot;
+  TimeOfDay? _selectedTimeOfDay;
   String? _selectedTime;
+  String? _displayTimeText;
   String? _selectedDate;
   List<String> _serviceTypeOptions = _defaultServiceTypeOptions;
+  final Map<String, String> _serviceTypeMap = {};
 
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _instructionsController = TextEditingController();
@@ -79,14 +91,29 @@ class _BookAServiceScreenState extends State<BookAServiceScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedSlot = widget.selectedSlot ?? _availableSlotOptions.first;
-    _selectedTime = widget.selectedTime ??
-        _slotToTimeMap[_selectedSlot] ??
-        '08:00:00';
 
     final now = DateTime.now();
     _selectedDate = widget.selectedDate ??
         '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
+    if (widget.selectedTime != null && widget.selectedTime!.isNotEmpty) {
+      _selectedTime = widget.selectedTime;
+      final parts = _selectedTime!.split(':');
+      if (parts.length >= 2) {
+        final hour = int.tryParse(parts[0]) ?? 8;
+        final minute = int.tryParse(parts[1]) ?? 0;
+        _selectedTimeOfDay = TimeOfDay(hour: hour, minute: minute);
+        final h = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+        final ampm = hour >= 12 ? 'PM' : 'AM';
+        _displayTimeText =
+            '${h.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $ampm';
+      }
+    } else {
+      _selectedTime = null;
+      _displayTimeText = null;
+    }
+
+    _serviceTypeMap.addAll(_knownCategoryNameToIdMap);
 
     // Populate service type options from provider if available
     final providerServiceTypes = <String>[];
@@ -96,27 +123,70 @@ class _BookAServiceScreenState extends State<BookAServiceScreen> {
           final label = tag.label.trim();
           if (label.isNotEmpty && !providerServiceTypes.contains(label)) {
             providerServiceTypes.add(label);
+            if (tag.id != null && _isValidObjectId(tag.id)) {
+              _serviceTypeMap[label] = tag.id!;
+            }
           }
         }
       }
       if (widget.provider!.service.trim().isNotEmpty &&
           !providerServiceTypes.contains(widget.provider!.service.trim())) {
         providerServiceTypes.add(widget.provider!.service.trim());
+        if (widget.provider!.serviceTypeId != null &&
+            _isValidObjectId(widget.provider!.serviceTypeId)) {
+          _serviceTypeMap[widget.provider!.service.trim()] =
+              widget.provider!.serviceTypeId!;
+        }
       }
     }
 
     if (providerServiceTypes.isNotEmpty) {
       _serviceTypeOptions = providerServiceTypes;
-      _selectedServiceType = providerServiceTypes.first;
     } else {
       _serviceTypeOptions = _defaultServiceTypeOptions;
-      _selectedServiceType = _serviceTypeOptions.first;
     }
 
-    if (widget.provider != null && widget.provider!.area.isNotEmpty) {
-      _locationController.text = widget.provider!.area;
-    } else {
-      _locationController.text = '12 Kabulonga Road, Lusaka';
+    // Keep fields unselected/empty so placeholders/hint texts are shown initially
+    _selectedServiceType = null;
+    _locationController.text = '';
+    _instructionsController.text = '';
+
+    _loadBookingForm();
+  }
+
+  Future<void> _loadBookingForm() async {
+    final providerId = widget.providerId ??
+        _provider.id ??
+        '6aae448a527875a24459c632';
+    try {
+      final response = await BookingRepositoryImpl().getBookingForm(providerId);
+      final data = response['data'] is Map<String, dynamic>
+          ? response['data'] as Map<String, dynamic>
+          : response;
+      final rawTypes = data['service_types'] as List<dynamic>?;
+      if (rawTypes != null && rawTypes.isNotEmpty) {
+        final names = <String>[];
+        final newMap = <String, String>{};
+        for (final item in rawTypes) {
+          if (item is Map<String, dynamic>) {
+            final id = item['id']?.toString() ?? '';
+            final name = item['name']?.toString() ?? '';
+            if (id.isNotEmpty && name.isNotEmpty) {
+              if (!names.contains(name)) names.add(name);
+              newMap[name] = id;
+              newMap[id] = id;
+            }
+          }
+        }
+        if (names.isNotEmpty && mounted) {
+          setState(() {
+            _serviceTypeOptions = names;
+            _serviceTypeMap.addAll(newMap);
+          });
+        }
+      }
+    } catch (_) {
+      // Graceful fallback to existing tags and known category mappings
     }
   }
 
@@ -137,50 +207,124 @@ class _BookAServiceScreenState extends State<BookAServiceScreen> {
     if (result != null) setState(() => _selectedServiceType = result);
   }
 
-  Future<void> _pickAvailableSlot() async {
-    final result = await AppSelectSheet.show(
-      context,
-      title: AppText.availableSlot,
-      options: _availableSlotOptions,
-      selected: _selectedSlot,
+  Future<void> _pickTime() async {
+    final now = TimeOfDay.now();
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTimeOfDay ?? now,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.brandPrimary,
+              onPrimary: Colors.white,
+              onSurface: AppColors.textBlackPrimary,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
-    if (result != null) {
+
+    if (picked != null) {
       setState(() {
-        _selectedSlot = result;
-        _selectedTime = _slotToTimeMap[result] ?? '08:00:00';
+        _selectedTimeOfDay = picked;
+        final hour = picked.hour.toString().padLeft(2, '0');
+        final minute = picked.minute.toString().padLeft(2, '0');
+        _selectedTime = '$hour:$minute:00';
+        _displayTimeText = picked.format(context);
       });
     }
+  }
+
+  void _onPressedSubmit() {
+    if (_selectedServiceType == null || _selectedServiceType!.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a service type.'),
+          backgroundColor: AppColors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_selectedTime == null || _selectedTime!.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please choose your preferred time.'),
+          backgroundColor: AppColors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_locationController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter service location.'),
+          backgroundColor: AppColors.red,
+        ),
+      );
+      return;
+    }
+
+    _showConfirmationSheet();
   }
 
   Future<void> _submitBookingRequest() async {
     final providerId = widget.providerId ??
         _provider.id ??
         '6aae448a527875a24459c632';
-    final selectedServiceText = (_selectedServiceType != null &&
-            _selectedServiceType!.trim().isNotEmpty)
-        ? _selectedServiceType!.trim()
-        : (_serviceTypeOptions.isNotEmpty
-            ? _serviceTypeOptions.first
-            : 'Moving & Relocation');
+    final selectedText = _selectedServiceType!.trim();
+
+    // Resolve MongoDB ObjectId (must be a 24-character hexadecimal string)
+    String resolvedServiceTypeId = '';
+
+    if (_isValidObjectId(selectedText)) {
+      resolvedServiceTypeId = selectedText.trim();
+    } else if (_serviceTypeMap.containsKey(selectedText) &&
+        _isValidObjectId(_serviceTypeMap[selectedText])) {
+      resolvedServiceTypeId = _serviceTypeMap[selectedText]!;
+    } else if (_knownCategoryNameToIdMap.containsKey(selectedText)) {
+      resolvedServiceTypeId = _knownCategoryNameToIdMap[selectedText]!;
+    } else if (widget.provider?.serviceTypeId != null &&
+        _isValidObjectId(widget.provider!.serviceTypeId)) {
+      resolvedServiceTypeId = widget.provider!.serviceTypeId!;
+    } else {
+      for (final entry in _serviceTypeMap.entries) {
+        if (selectedText.toLowerCase().contains(entry.key.toLowerCase()) ||
+            entry.key.toLowerCase().contains(selectedText.toLowerCase())) {
+          if (_isValidObjectId(entry.value)) {
+            resolvedServiceTypeId = entry.value;
+            break;
+          }
+        }
+      }
+      if (resolvedServiceTypeId.isEmpty) {
+        for (final entry in _knownCategoryNameToIdMap.entries) {
+          if (selectedText.toLowerCase().contains(entry.key.toLowerCase()) ||
+              entry.key.toLowerCase().contains(selectedText.toLowerCase())) {
+            resolvedServiceTypeId = entry.value;
+            break;
+          }
+        }
+      }
+    }
+
+    if (resolvedServiceTypeId.isEmpty) {
+      resolvedServiceTypeId = '6a8e703241a4558c444a1e99';
+    }
+
     final scheduledDate = _selectedDate ??
         '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}';
-    final scheduledTime = _selectedTime ??
-        _slotToTimeMap[_selectedSlot] ??
-        '08:00:00';
-    final location = _locationController.text.trim().isNotEmpty
-        ? _locationController.text.trim()
-        : '12 Kabulonga Road, Lusaka';
-    final instructions = _instructionsController.text.trim().isNotEmpty
-        ? _instructionsController.text.trim()
-        : 'Service request booking sent. Waiting for quote.';
 
     final request = CreateBookingRequestModel(
       provider: providerId,
-      serviceType: selectedServiceText,
+      serviceType: resolvedServiceTypeId,
       scheduledDate: scheduledDate,
-      scheduledTime: scheduledTime,
-      locationText: location,
-      instructions: instructions,
+      scheduledTime: _selectedTime!,
+      locationText: _locationController.text.trim(),
+      instructions: _instructionsController.text.trim(),
     );
 
     final bookingNotifier = context.read<BookingNotifier>();
@@ -192,7 +336,6 @@ class _BookAServiceScreenState extends State<BookAServiceScreen> {
     if (!mounted) return;
 
     if (result != null) {
-      // Navigate directly to booking details with the API response data as requested
       context.pushReplacement(
         BookingDetailsScreen.routeName,
         extra: result,
@@ -316,12 +459,17 @@ class _BookAServiceScreenState extends State<BookAServiceScreen> {
                       ),
                       SizedBox(height: ResponsiveHelper.spacing(18)),
 
-                      // Available Slot Dropdown
+                      // Choose Your Time (Time Picker)
                       AppDropdownField(
-                        label: AppText.availableSlot,
-                        hint: AppText.selectAvailableSlot,
-                        value: _selectedSlot,
-                        onTap: _pickAvailableSlot,
+                        label: 'Choose Your Time',
+                        hint: 'Choose Your Preferred Time',
+                        value: _displayTimeText,
+                        onTap: _pickTime,
+                        trailingIcon: Icon(
+                          Icons.access_time_outlined,
+                          color: AppColors.textGrey,
+                          size: ResponsiveHelper.iconSize(20),
+                        ),
                       ),
                       SizedBox(height: ResponsiveHelper.spacing(18)),
 
@@ -353,7 +501,7 @@ class _BookAServiceScreenState extends State<BookAServiceScreen> {
                         width: double.infinity,
                         height: ResponsiveHelper.height(52),
                         child: ElevatedButton(
-                          onPressed: isSubmitting ? null : _showConfirmationSheet,
+                          onPressed: isSubmitting ? null : _onPressedSubmit,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.brandPrimary,
                             foregroundColor: AppColors.white,

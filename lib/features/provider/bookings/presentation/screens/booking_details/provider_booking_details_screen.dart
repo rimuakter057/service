@@ -210,23 +210,21 @@ class _ProviderBookingDetailsScreenState
   }
 
   String get _serviceCostDisplay {
-    final raw = _currentPrice.replaceAll(RegExp(r'[^0-9.]'), '');
-    final val = double.tryParse(raw) ?? 500.00;
+    final raw = _currentPrice.replaceAll(RegExp(r'[a-zA-Z\s]'), '').trim();
+    final val = double.tryParse(raw) ?? 0.00;
     return 'ZMW ${val.toStringAsFixed(2)}';
   }
 
   String get _platformFeeDisplay {
-    final raw = _currentPrice.replaceAll(RegExp(r'[^0-9.]'), '');
-    final val = double.tryParse(raw) ?? 500.00;
-    final fee = val * 0.05;
-    return 'ZMW ${fee.toStringAsFixed(2)}';
+    final raw = _currentPrice.replaceAll(RegExp(r'[a-zA-Z\s]'), '').trim();
+    final val = double.tryParse(raw) ?? 0.00;
+    return 'ZMW ${(val * 0.05).toStringAsFixed(2)}';
   }
 
   String get _totalCostDisplay {
-    final raw = _currentPrice.replaceAll(RegExp(r'[^0-9.]'), '');
-    final val = double.tryParse(raw) ?? 500.00;
-    final total = val * 1.05;
-    return 'ZMW ${total.toStringAsFixed(2)}';
+    final raw = _currentPrice.replaceAll(RegExp(r'[a-zA-Z\s]'), '').trim();
+    final val = double.tryParse(raw) ?? 0.00;
+    return 'ZMW ${(val * 1.05).toStringAsFixed(2)}';
   }
 
   void _onReject(BuildContext context) {
@@ -510,6 +508,48 @@ class _ProviderBookingDetailsScreenState
         },
       ),
     );
+  }
+
+  Future<void> _onStartService(BuildContext context) async {
+    if (_bookingId == null || _bookingId!.isEmpty) {
+      setState(() {
+        _currentStatus = AppText.inProgress;
+      });
+      AppSnackbar.showSuccess(context, AppText.bookingStartedSuccessfully);
+      return;
+    }
+    final notifier = context.read<ProviderBookingDetailNotifier>();
+    final ok = await notifier.startBooking(_bookingId!);
+    if (!context.mounted) return;
+    if (ok) {
+      setState(() {
+        _currentStatus = AppText.inProgress;
+      });
+      AppSnackbar.showSuccess(context, AppText.bookingStartedSuccessfully);
+    } else {
+      AppSnackbar.showError(
+        context,
+        notifier.actionErrorMessage ?? 'Failed to start booking',
+      );
+    }
+  }
+
+  Future<void> _onResendOtpCode(BuildContext context) async {
+    if (_bookingId == null || _bookingId!.isEmpty) {
+      AppSnackbar.showSuccess(context, AppText.completionCodeResentSuccessfully);
+      return;
+    }
+    final notifier = context.read<ProviderBookingDetailNotifier>();
+    final ok = await notifier.resendCompletionCode(_bookingId!);
+    if (!context.mounted) return;
+    if (ok) {
+      AppSnackbar.showSuccess(context, AppText.completionCodeResentSuccessfully);
+    } else {
+      AppSnackbar.showError(
+        context,
+        notifier.actionErrorMessage ?? 'Failed to resend completion code',
+      );
+    }
   }
 
   @override
@@ -921,7 +961,7 @@ class _ProviderBookingDetailsScreenState
                                   ),
                                   SizedBox(height: ResponsiveHelper.spacing(4)),
                                   Text(
-                                    '27 Aug 2026 - 06:20 AM',
+                                    context.read<ProviderBookingDetailNotifier>().bookingDetail?.formattedCompletedOn ?? '–',
                                     style: context.bodySmall.copyWith(
                                       fontWeight: FontWeight.w500,
                                       fontStyle: FontStyle.italic,
@@ -1183,7 +1223,13 @@ class _ProviderBookingDetailsScreenState
                                   ),
                                   SizedBox(height: ResponsiveHelper.spacing(4)),
                                   Text(
-                                    AppText.on27Aug2026,
+                                    (() {
+                                      final detail = context.read<ProviderBookingDetailNotifier>().bookingDetail;
+                                      if (detail?.cancelledAt != null && detail!.cancelledAt!.isNotEmpty) {
+                                        return ProviderBookingDetailModel.formattedShortDate(detail.cancelledAt);
+                                      }
+                                      return '–';
+                                    })(),
                                     style: context.bodySmall.copyWith(
                                       fontWeight: FontWeight.w500,
                                       fontStyle: FontStyle.italic,
@@ -1229,24 +1275,38 @@ class _ProviderBookingDetailsScreenState
                             : AppColors.white,
                       )
                     : _currentStatus == AppText.inProgress
-                    ? Row(
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Expanded(
-                            child: AppButton(
-                              text: AppText.messageCustomer,
-                              onPressed: () => _onMessageCustomer(context),
-                              backgroundColor: AppColors.brandPrimary,
-                              textColor: AppColors.white,
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: AppButton(
+                                  text: AppText.messageCustomer,
+                                  onPressed: () => _onMessageCustomer(context),
+                                  backgroundColor: AppColors.brandPrimary,
+                                  textColor: AppColors.white,
+                                ),
+                              ),
+                              SizedBox(width: ResponsiveHelper.spacing(12)),
+                              Expanded(
+                                child: AppButton(
+                                  text: AppText.markAsCompleted,
+                                  onPressed: () => _onMarkAsCompleted(context),
+                                  backgroundColor: AppColors.brandPrimary,
+                                  textColor: AppColors.white,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(width: ResponsiveHelper.spacing(12)),
-                          Expanded(
-                            child: AppButton(
-                              text: AppText.markAsCompleted,
-                              onPressed: () => _onMarkAsCompleted(context),
-                              backgroundColor: AppColors.brandPrimary,
-                              textColor: AppColors.white,
-                            ),
+                          SizedBox(height: ResponsiveHelper.spacing(10)),
+                          AppButton(
+                            text: AppText.resendCompletionCode,
+                            onPressed: () => _onResendOtpCode(context),
+                            width: double.infinity,
+                            backgroundColor: AppColors.bgOverlay.withValues(alpha: 0.06),
+                            borderColor: AppColors.brandPrimary,
+                            textColor: AppColors.brandPrimary,
                           ),
                         ],
                       )
@@ -1303,13 +1363,30 @@ class _ProviderBookingDetailsScreenState
                                   ),
                                   SizedBox(
                                       height: ResponsiveHelper.spacing(10)),
-                                  AppButton(
-                                    text: AppText.messageCustomer,
-                                    onPressed: () =>
-                                        _onMessageCustomer(context),
-                                    width: double.infinity,
-                                    backgroundColor: AppColors.brandPrimary,
-                                    textColor: AppColors.white,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: AppButton(
+                                          text: AppText.messageCustomer,
+                                          onPressed: () =>
+                                              _onMessageCustomer(context),
+                                          backgroundColor: AppColors.brandPrimary,
+                                          textColor: AppColors.white,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          width: ResponsiveHelper.spacing(10)),
+                                      Expanded(
+                                        child: AppButton(
+                                          text: AppText.startService,
+                                          onPressed: () =>
+                                              _onStartService(context),
+                                          backgroundColor:
+                                              AppColors.brandPrimary,
+                                          textColor: AppColors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               )

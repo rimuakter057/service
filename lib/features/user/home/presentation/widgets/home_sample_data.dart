@@ -40,8 +40,9 @@ class HomeCategoryData {
 class ProviderTag {
   final String iconAsset;
   final String label;
+  final String? id;
 
-  const ProviderTag({required this.iconAsset, required this.label});
+  const ProviderTag({required this.iconAsset, required this.label, this.id});
 }
 
 class HomeProviderData {
@@ -49,6 +50,7 @@ class HomeProviderData {
   final String photo;
   final String name;
   final String service;
+  final String? serviceTypeId;
   final String price;
   final String rating;
   final String email;
@@ -64,6 +66,7 @@ class HomeProviderData {
     required this.photo,
     required this.name,
     required this.service,
+    this.serviceTypeId,
     required this.price,
     required this.rating,
     required this.email,

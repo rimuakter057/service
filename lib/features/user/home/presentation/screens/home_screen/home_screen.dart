@@ -16,15 +16,56 @@ import 'package:nchito/features/user/home/presentation/widgets/section_header.da
 import 'package:provider/provider.dart';
 import 'package:nchito/features/user/home/presentation/providers/near_providers_notifier.dart';
 import 'package:nchito/features/user/home/presentation/providers/ongoing_bookings_notifier.dart';
+import 'package:nchito/features/user/home/presentation/providers/home_search_notifier.dart';
+import 'package:nchito/features/user/home/presentation/widgets/home_search_results.dart';
 import 'package:nchito/features/user/notifications/presentation/screens/notifications_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
 
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final searchNotifier = context.read<HomeSearchNotifier>();
+    if (searchNotifier.hasActiveSearch) return;
+
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    if (maxScroll > 100 && currentScroll >= maxScroll - 150) {
+      final notifier = context.read<OngoingBookingsNotifier>();
+      if (!notifier.isLoading &&
+          !notifier.isLoadingMore &&
+          notifier.hasNextPage) {
+        notifier.loadMore();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final searchNotifier = context.watch<HomeSearchNotifier>();
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
@@ -40,57 +81,66 @@ class HomeScreen extends StatelessWidget {
                 child: RefreshIndicator(
                   color: AppColors.brandPrimary,
                   onRefresh: () async {
-                    await Future.wait([
-                      context
-                          .read<NearProvidersNotifier>()
-                          .fetchNearProviders(refresh: true),
-                      context
-                          .read<OngoingBookingsNotifier>()
-                          .fetchOngoingBookings(refresh: true),
-                    ]);
+                    if (searchNotifier.hasActiveSearch) {
+                      await searchNotifier.searchImmediately(
+                        searchNotifier.searchQuery,
+                      );
+                    } else {
+                      await Future.wait([
+                        context
+                            .read<NearProvidersNotifier>()
+                            .fetchNearProviders(refresh: true),
+                        context
+                            .read<OngoingBookingsNotifier>()
+                            .fetchOngoingBookings(refresh: true),
+                      ]);
+                    }
                   },
                   child: SingleChildScrollView(
+                    controller: _scrollController,
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: EdgeInsets.symmetric(
                       horizontal: ResponsiveHelper.padding(24),
                       vertical: ResponsiveHelper.padding(20),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppText.selectableFeaturedService,
-                          style: context.labelMedium
-                              .copyWith(color: AppColors.textBlackPrimary),
-                        ),
-                        SizedBox(height: ResponsiveHelper.spacing(12)),
+                    child: searchNotifier.hasActiveSearch
+                        ? HomeSearchResults(searchNotifier: searchNotifier)
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppText.selectableFeaturedService,
+                                style: context.labelMedium.copyWith(
+                                    color: AppColors.textBlackPrimary),
+                              ),
+                              SizedBox(height: ResponsiveHelper.spacing(12)),
 
-                        ///service items=====================================
-                        const HomeCategoryGrid(),
-                        SizedBox(height: ResponsiveHelper.spacing(24)),
+                              ///service items=====================================
+                              const HomeCategoryGrid(),
+                              SizedBox(height: ResponsiveHelper.spacing(24)),
 
-                        SectionHeader(
-                          title: AppText.popularNearYou,
-                          onViewAllTap: () =>
-                              context.push(ExploreProviderScreen.routeName),
-                        ),
-                        SizedBox(height: ResponsiveHelper.spacing(12)),
+                              SectionHeader(
+                                title: AppText.popularNearYou,
+                                onViewAllTap: () => context
+                                    .push(ExploreProviderScreen.routeName),
+                              ),
+                              SizedBox(height: ResponsiveHelper.spacing(12)),
 
-                        ///popular near ====================================
-                        const HomePopularProviders(),
-                        SizedBox(height: ResponsiveHelper.spacing(24)),
+                              ///popular near ====================================
+                              const HomePopularProviders(),
+                              SizedBox(height: ResponsiveHelper.spacing(24)),
 
-                        SectionHeader(
-                          title: AppText.activeBooking,
-                          onViewAllTap: () =>
-                              context.push(BookingsScreen.routeName),
-                        ),
-                        SizedBox(height: ResponsiveHelper.spacing(12)),
+                              SectionHeader(
+                                title: AppText.activeBooking,
+                                onViewAllTap: () =>
+                                    context.push(BookingsScreen.routeName),
+                              ),
+                              SizedBox(height: ResponsiveHelper.spacing(12)),
 
-                        ///active booking list==========================
-                        const HomeActiveBookingList(),
-                      ],
-                    ),
+                              ///active booking list==========================
+                              const HomeActiveBookingList(),
+                            ],
+                          ),
                   ),
                 ),
               ),

@@ -5,6 +5,7 @@ import '../../domain/repositories/home_repository.dart';
 import '../datasources/home_remote_datasource.dart';
 import '../models/provider_detail_model.dart';
 import '../models/provider_day_availability_model.dart';
+import '../models/catalog_search_model.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
   HomeRepositoryImpl({HomeRemoteDataSource? remoteDataSource})
@@ -51,6 +52,18 @@ class HomeRepositoryImpl implements HomeRepository {
       throw Failure.fromException(e);
     } catch (e) {
       throw UnknownFailure('Failed to load provider availability. Please try again.');
+    }
+  }
+
+  @override
+  Future<CatalogSearchResultModel> searchCatalog(String query) async {
+    try {
+      final results = await _remoteDataSource.searchCatalog(query);
+      return results;
+    } on AppException catch (e) {
+      throw Failure.fromException(e);
+    } catch (e) {
+      throw UnknownFailure('Failed to search catalog. Please try again.');
     }
   }
 }
